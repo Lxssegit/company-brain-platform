@@ -1,0 +1,400 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+}
+
+enum RoleKey {
+  SUPER_ADMIN
+  COMPANY_ADMIN
+  DEPARTMENT_ADMIN
+  MANAGER
+  EMPLOYEE
+}
+
+enum PermissionKey {
+  READ
+  CREATE
+  EDIT
+  DELETE
+  APPROVE
+  MANAGE_USERS
+  MANAGE_BRANCH
+  MANAGE_DECISIONS
+}
+
+enum BranchKind {
+  COMPANY
+  DEPARTMENT
+  TEAM
+  PERSONAL
+}
+
+enum BranchAccess {
+  READ
+  DENY
+}
+
+enum KnowledgeType {
+  FACT
+  PROCESS
+  RULE
+  DECISION
+  CUSTOMER
+  PRODUCT
+  PERSON
+  EXCEPTION
+  PROCEDURE
+  LESSON
+  POLICY
+}
+
+enum KnowledgeScope {
+  PERSONAL
+  TEAM
+  DEPARTMENT
+  COMPANY
+}
+
+enum KnowledgeStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum SourceType {
+  DOCUMENT
+  EMAIL
+  MEETING
+  CHAT
+  CRM
+  ERP
+  MANUAL
+  EMPLOYEE_INPUT
+  DECISION
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum DecisionStatus {
+  ACTIVE
+  SUPERSEDED
+  EXPIRED
+  DRAFT
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  branches  Branch[]
+  roles     Role[]
+  knowledgeUnits KnowledgeUnit[]
+  sources Source[]
+  reviews Review[]
+  auditLogs AuditLog[]
+  decisions Decision[]
+}
+
+model User {
+  id             String       @id @default(cuid())
+  organizationId String?
+  name           String?
+  email          String       @unique
+  emailVerified  DateTime?
+  image          String?
+  passwordHash   String?
+  totpSecretEncrypted        String?
+  totpPendingSecretEncrypted String?
+  totpEnabled    Boolean      @default(false)
+  status         UserStatus   @default(INVITED)
+  roleId         String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  role         Role?         @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  accounts     Account[]
+  sessions     Session[]
+  createdRoles Role[]         @relation("RoleCreatedBy")
+  branchMemberships BranchMember[]
+  knowledgeCreated KnowledgeUnit[] @relation("KnowledgeCreatedBy")
+  knowledgeApproved KnowledgeUnit[] @relation("KnowledgeApprovedBy")
+  requestedReviews Review[] @relation("ReviewRequestedBy")
+  reviewedReviews Review[] @relation("ReviewReviewedBy")
+  auditLogs AuditLog[]
+  decisionsCreated Decision[] @relation("DecisionCreatedBy")
+
+  @@index([organizationId, status])
+  @@index([organizationId, roleId])
+}
+
+model Role {
+  id             String       @id @default(cuid())
+  organizationId String?
+  key            RoleKey
+  name           String
+  createdById    String?
+  createdAt      DateTime     @default(now())
+
+  organization Organization?   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User?           @relation("RoleCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  users        User[]
+  permissions  RolePermission[]
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+}
+
+model RolePermission {
+  roleId        String
+  permissionKey PermissionKey
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionKey])
+}
+
+model Branch {
+  id             String     @id @default(uuid())
+  organizationId String
+  parentId       String?
+  kind           BranchKind
+  name           String
+  description    String?
+  ownerUserId    String?
+  path           String
+  depth          Int        @default(0)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parent       Branch?       @relation("BranchTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children     Branch[]      @relation("BranchTree")
+  memberships  BranchMember[]
+  knowledgeUnits KnowledgeUnit[]
+  reviews Review[]
+  decisionBranches DecisionBranch[]
+
+  @@index([organizationId, parentId])
+  @@index([organizationId, path])
+}
+
+model BranchMember {
+  branchId   String
+  userId     String
+  access     BranchAccess
+  grantedBy  String
+  createdAt  DateTime @default(now())
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([branchId, userId])
+  @@index([userId, access])
+}
+
+model KnowledgeUnit {
+  id             String          @id @default(uuid())
+  organizationId String
+  branchId       String
+  type           KnowledgeType
+  title          String
+  content        String
+  scope          KnowledgeScope
+  status         KnowledgeStatus @default(DRAFT)
+  createdById    String
+  approvedById   String?
+  confidence     Float?
+  verifiedAt     DateTime?
+  embedding      Unsupported("vector")?
+  embeddingModel String?
+  embeddedAt     DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch             @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy    User               @relation("KnowledgeCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  approvedBy   User?              @relation("KnowledgeApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+  sources      KnowledgeSource[]
+  reviews      Review[]
+
+  @@index([organizationId, branchId, status, scope])
+  @@index([organizationId, createdById, status])
+}
+
+model Source {
+  id             String     @id @default(uuid())
+  organizationId String
+  type           SourceType
+  title          String
+  externalUrl    String?
+  externalId     String?
+  metadata       Json?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  knowledge    KnowledgeSource[]
+  decisions    DecisionSource[]
+
+  @@index([organizationId, type])
+}
+
+model KnowledgeSource {
+  knowledgeUnitId String
+  sourceId        String
+  citation        String?
+  relevance       Float?
+
+  knowledgeUnit KnowledgeUnit @relation(fields: [knowledgeUnitId], references: [id], onDelete: Cascade)
+  source        Source        @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@id([knowledgeUnitId, sourceId])
+}
+
+model Review {
+  id              String       @id @default(uuid())
+  organizationId  String
+  knowledgeUnitId String
+  targetBranchId  String
+  requestedById   String
+  reviewerId      String?
+  status          ReviewStatus @default(PENDING)
+  comment         String?
+  createdAt       DateTime     @default(now())
+  resolvedAt      DateTime?
+
+  organization  Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  knowledgeUnit KnowledgeUnit @relation(fields: [knowledgeUnitId], references: [id], onDelete: Cascade)
+  targetBranch  Branch        @relation(fields: [targetBranchId], references: [id], onDelete: Cascade)
+  requestedBy   User          @relation("ReviewRequestedBy", fields: [requestedById], references: [id], onDelete: Restrict)
+  reviewer      User?         @relation("ReviewReviewedBy", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, targetBranchId, status])
+  @@index([organizationId, requestedById, status])
+}
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  organizationId String
+  actorUserId    String
+  action         String
+  entityType     String
+  entityId       String
+  before         Json?
+  after          Json?
+  requestId      String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User         @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, entityType, entityId])
+}
+
+model Decision {
+  id                  String         @id @default(uuid())
+  organizationId      String
+  title               String
+  description         String
+  reason              String
+  department          String?
+  createdById         String
+  createdAt           DateTime       @default(now())
+  validFrom           DateTime
+  validUntil          DateTime?
+  status              DecisionStatus @default(ACTIVE)
+  exceptions          Json?
+  supersedesDecisionId String?
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User          @relation("DecisionCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  affectedBranches DecisionBranch[]
+  sources      DecisionSource[]
+  supersedes   Decision?     @relation("DecisionSupersession", fields: [supersedesDecisionId], references: [id], onDelete: SetNull)
+  supersededBy Decision[]    @relation("DecisionSupersession")
+
+  @@index([organizationId, status, validFrom, validUntil])
+  @@index([organizationId, createdById])
+  @@index([organizationId, supersedesDecisionId])
+}
+
+model DecisionBranch {
+  decisionId String
+  branchId   String
+
+  decision Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+
+  @@id([decisionId, branchId])
+  @@index([branchId, decisionId])
+}
+
+model DecisionSource {
+  decisionId String
+  sourceId   String
+  citation   String?
+
+  decision Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  source   Source   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@id([decisionId, sourceId])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
