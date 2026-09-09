@@ -6,12 +6,15 @@ import { verifyTotp } from "@/lib/auth/totp";
 import { prisma } from "@/lib/db/prisma";
 import { isDevAuthUser, updateDevAuthUser } from "@/lib/auth/dev-store";
 import { auditEvent } from "@/lib/audit/write";
+import { clientKey, rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
 import { errorResponse } from "@/lib/http";
 
 const codeSchema = z.object({ code: z.string().trim().regex(/^\d{6}$/) });
 
 export async function POST(request: Request) {
   try {
+    const limited = rateLimit(clientKey(request, "2fa-verify"), 8, 60_000);
+    if (!limited.ok) return tooManyRequests(limited.retryAfterSeconds);
     const user = await requireOrganizationUser();
     const body = codeSchema.parse(await request.json());
     if (!user.totpPendingSecretEncrypted) return NextResponse.json({ error: "Die Zwei-Faktor-Einrichtung wurde noch nicht gestartet." }, { status: 422 });

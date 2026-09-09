@@ -4,6 +4,7 @@ import { requirePermission } from "@/lib/auth/authorize";
 import { AIProviderError, getAIProvider } from "@/lib/ai/provider";
 import { retrieveAuthorizedContext } from "@/lib/retrieval/search";
 import { UNKNOWN_ANSWER } from "@/lib/retrieval/context";
+import { clientKey, rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
 import { errorResponse } from "@/lib/http";
 
 const chatSchema = z.object({ message: z.string().trim().min(2).max(4000), branchId: z.string().uuid().optional() });
@@ -14,6 +15,8 @@ function systemPrompt() {
 
 export async function POST(request: Request) {
   try {
+    const limited = rateLimit(clientKey(request, "chat"), 20, 60_000);
+    if (!limited.ok) return tooManyRequests(limited.retryAfterSeconds);
     const user = await requirePermission("READ");
     const body = chatSchema.parse(await request.json());
     const retrieval = await retrieveAuthorizedContext(user, body.message, { branchId: body.branchId });

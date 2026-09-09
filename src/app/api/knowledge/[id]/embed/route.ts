@@ -5,6 +5,7 @@ import { getAIProvider } from "@/lib/ai/provider";
 import { prisma } from "@/lib/db/prisma";
 import { visibleKnowledgeWhere } from "@/lib/knowledge/access";
 import { auditEvent } from "@/lib/audit/write";
+import { clientKey, rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
 import { errorResponse } from "@/lib/http";
 
 function vectorLiteral(values: number[]) {
@@ -14,6 +15,8 @@ function vectorLiteral(values: number[]) {
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const limited = rateLimit(clientKey(request, "embed"), 30, 60_000);
+    if (!limited.ok) return tooManyRequests(limited.retryAfterSeconds);
     const user = await requirePermission("EDIT");
     if (!user.organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
     const organizationId = user.organizationId;

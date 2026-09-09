@@ -7,6 +7,7 @@ import { verifyPassword } from "@/lib/auth/password";
 import { decryptSecret } from "@/lib/auth/crypto";
 import { verifyTotp } from "@/lib/auth/totp";
 import { authenticateDevUser, devAuthFallbackEnabled } from "@/lib/auth/dev-store";
+import { rateLimit } from "@/lib/security/rate-limit";
 
 const providers = [
   ...(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET
@@ -22,6 +23,10 @@ const providers = [
           const password = typeof credentials?.password === "string" ? credentials.password : "";
           const totpCode = typeof credentials?.totpCode === "string" ? credentials.totpCode : "";
           if (!email || !password) return null;
+          /* Sign-in runs inside NextAuth's own route, so the gate lives here.
+             Keyed by address rather than by caller: the thing worth bounding is
+             guesses against one account. */
+          if (!rateLimit(`login:${email}`, 10, 60_000).ok) return null;
           try {
             const user = await prisma.user.findUnique({ where: { email }, include: { role: true } });
             if (user && user.status === "ACTIVE" && user.organizationId && verifyPassword(password, user.passwordHash)) {

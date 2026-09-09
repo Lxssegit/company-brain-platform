@@ -7,12 +7,15 @@ import { verifyPassword } from "@/lib/auth/password";
 import { prisma } from "@/lib/db/prisma";
 import { isDevAuthUser, updateDevAuthUser } from "@/lib/auth/dev-store";
 import { auditEvent } from "@/lib/audit/write";
+import { clientKey, rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
 import { errorResponse } from "@/lib/http";
 
 const disableSchema = z.object({ password: z.string().min(1), code: z.string().trim().regex(/^\d{6}$/) });
 
 export async function POST(request: Request) {
   try {
+    const limited = rateLimit(clientKey(request, "2fa-disable"), 8, 60_000);
+    if (!limited.ok) return tooManyRequests(limited.retryAfterSeconds);
     const user = await requireOrganizationUser();
     const body = disableSchema.parse(await request.json());
     if (!user.passwordHash || !verifyPassword(body.password, user.passwordHash) || !user.totpEnabled || !user.totpSecretEncrypted || !verifyTotp(decryptSecret(user.totpSecretEncrypted), body.code)) return NextResponse.json({ error: "Passwort oder Zwei-Faktor-Code stimmt nicht." }, { status: 422 });
