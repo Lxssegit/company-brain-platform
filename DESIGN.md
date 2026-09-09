@@ -321,6 +321,15 @@ hovers.
 
 ### Named Rules
 
+**The Disabled-Is-A-Colour Rule.** An unavailable control is restated in muted
+colour, never faded with `opacity`. Fading an element fades its text and its
+ground together and closes the gap between them: the gold primary button at 0.5
+opacity measured 1.9:1, illegible exactly where it has to say what cannot be
+done yet. Disabled primary is `rgba(255, 180, 90, .2)` under
+`rgba(255, 245, 229, .75)` text (7.3:1); every other disabled control keeps its
+ground and drops its text to `--on-night-subtle` (5.4:1 or better). No disabled
+state in this system falls below 5:1.
+
 **The Glow-Is-Light Rule.** A zero-offset coloured shadow is only permitted on an
 element that is supposed to be emitting light. Everything else uses tone and a
 hairline. A glowing card is a category error.
@@ -341,13 +350,15 @@ left border, and no hard-offset shadow anywhere in the system.
 
 - **Shape:** Fully rounded pill (99px), never wrapping.
 - **Primary:** Ember Gold ground with near-black text (`#241109`), 10px/16px
-  padding, plus an offset ember bloom in marketing contexts.
+  padding. It carries no shadow: a coloured shadow on the night ground reads as
+  a halo under the button rather than as height, and depth here is tonal.
 - **Quiet:** Transparent with a hairline border and cream text; the border
   strengthens and the surface lifts to `--night-raised` on hover.
 - **Ghost:** No border, muted text, used for app-bar actions.
 - **States:** hover, `:focus-visible` (2px gold ring, 3px offset), `:active`
-  (1px translate), `:disabled` (0.5 opacity, not-allowed), and `aria-busy`
-  (progress cursor plus an inline spinner that only exists while busy).
+  (1px translate), `:disabled` (see The Disabled-Is-A-Colour Rule), and
+  `aria-busy` (progress cursor plus an inline spinner that only exists while
+  busy).
 - **Critical:** `background: transparent` is set on the base class. Without it a
   `<button>` inherits the UA's grey `buttonface` while the same class on an `<a>`
   renders correctly.
@@ -366,7 +377,8 @@ left border, and no hard-offset shadow anywhere in the system.
 - **Focus:** Border shifts to gold with a soft gold ring at zero offset.
 - **Error:** `aria-invalid` turns the border Warm Alarm; the message sits below
   in a bordered note, not as a floating tooltip.
-- **Disabled:** 0.55 opacity, not-allowed cursor.
+- **Disabled:** text drops to `--on-night-subtle`, cursor `not-allowed`. The
+  border and ground stay put, per The Disabled-Is-A-Colour Rule.
 - **Code fields** widen letter-spacing to `.28em` with tabular figures.
 
 ### Navigation
@@ -425,4 +437,10 @@ every aspect ratio.
   from the day side.
 - **Don't** animate `padding`, `width`, `height` or `margin`. Transform and
   opacity only.
+- **Don't** fade an interactive element to express that it is unavailable. See
+  The Disabled-Is-A-Colour Rule.
+- **Don't** lay a low-opacity warm radial over a working surface. It reads as
+  haze rather than light, and it makes the surface's own contrast unmeasurable:
+  a contrast checker reading through it reported 2:1 for text that measures
+  17.7:1.
 - **Don't** let the display serif touch a label, a control, or a value.

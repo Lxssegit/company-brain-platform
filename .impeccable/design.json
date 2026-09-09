@@ -258,7 +258,7 @@
       "refersTo": "button-primary",
       "description": "The one filled control. Ember Gold with near-black text.",
       "html": "<button class=\"ds-btn ds-btn-primary\">Company Brain öffnen</button>",
-      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:10px 16px;border:1px solid transparent;border-radius:99px;background:transparent;font:600 .9375rem/1.4 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;white-space:nowrap;cursor:pointer;transition:background 200ms cubic-bezier(.16,1,.3,1),border-color 200ms cubic-bezier(.16,1,.3,1)}.ds-btn-primary{background:#ffb45a;color:#241109;box-shadow:0 10px 30px -12px rgba(255,137,47,.75)}.ds-btn-primary:hover{background:#ffc47a;box-shadow:0 16px 38px -14px rgba(255,137,47,.9)}.ds-btn-primary:focus-visible{outline:2px solid #ffb45a;outline-offset:3px}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:disabled{opacity:.5;cursor:not-allowed}"
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:10px 16px;border:1px solid transparent;border-radius:99px;background:transparent;font:600 .9375rem/1.4 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;white-space:nowrap;cursor:pointer;transition:background 200ms cubic-bezier(.16,1,.3,1),border-color 200ms cubic-bezier(.16,1,.3,1)}.ds-btn-primary{background:#ffb45a;color:#241109}.ds-btn-primary:hover{background:#ffc47a}.ds-btn-primary:focus-visible{outline:2px solid #ffb45a;outline-offset:3px}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:disabled{background:rgba(255,180,90,.2);color:rgba(255,245,229,.75);cursor:not-allowed}"
     },
     {
       "name": "Quiet Button",
@@ -346,7 +346,9 @@
         "name": "The Glow-Is-Light Rule",
         "body": "A zero-offset coloured shadow is only permitted on an element that is supposed to be emitting light. Everything else uses tone and a hairline. A glowing card is a category error.",
         "section": "elevation"
-      }
+      },
+      "Disabled is a colour, not a transparency: fading a control fades its text and its ground together. Disabled primary is rgba(255,180,90,.2) under rgba(255,245,229,.75); every other disabled control keeps its ground and drops its text to --on-night-subtle. Nothing disabled falls below 5:1.",
+      "No low-opacity warm radial over a working surface. It reads as haze rather than light, and a contrast checker reading through it reported 2:1 for text that measures 17.7:1."
     ],
     "dos": [
       "Do place every new colour on the rust to ember to gold ramp, or justify it as one of the two semantic signals.",
