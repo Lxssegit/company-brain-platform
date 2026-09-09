@@ -1,5 +1,5 @@
 import type { DecisionCandidate, DecisionConflict, KnowledgeCandidate, RetrievalResult, RetrievalSource } from "@/lib/retrieval/types";
-import { lexicalScore, tokenize } from "@/lib/retrieval/scoring";
+import { tokenize } from "@/lib/retrieval/scoring";
 
 export const UNKNOWN_ANSWER = "I don't have enough verified company knowledge to answer this.";
 
@@ -46,8 +46,4 @@ export function buildGroundedContext(input: { authorizedBranchIds: string[]; kno
   if (input.decisions.length) sections.push("DECISIONS\n" + input.decisions.map((item) => `[D:${item.id}] ${item.title} (${item.department ?? "company"})\nDecision: ${item.description}\nReason: ${item.reason}\nExceptions: ${Array.isArray(item.exceptions) ? item.exceptions.join("; ") : "none"}\nSources: ${item.sources.length ? item.sources.map(sourceLabel).join("; ") : "none"}`).join("\n\n"));
   if (conflicts.length) sections.push("CONFLICTS\n" + conflicts.map((conflict) => `${conflict.explanation} IDs: ${conflict.decisionIds.join(", ")}`).join("\n"));
   return { status: conflicts.length ? "CONFLICT" : sections.length ? "ANSWERABLE" : "UNKNOWN", authorizedBranchIds: input.authorizedBranchIds, knowledge: input.knowledge, decisions: input.decisions, conflicts, citations, promptContext: sections.join("\n\n---\n\n") };
-}
-
-export function rankKnowledge<T extends { title: string; content: string }>(query: string, items: T[]) {
-  return items.map((item) => ({ item, score: lexicalScore(query, item.title, item.content) })).sort((a, b) => b.score - a.score);
 }

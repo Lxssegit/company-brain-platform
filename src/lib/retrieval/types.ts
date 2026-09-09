@@ -49,6 +49,8 @@ export type DecisionConflict = {
 
 export type RetrievalResult = {
   status: "ANSWERABLE" | "UNKNOWN" | "CONFLICT";
+  /** Whether vector search actually ran, so a silent downgrade is visible. */
+  diagnostics?: { vectorSearch: "used" | "unavailable" | "not_configured"; candidateSource: "hybrid" | "lexical" | "recent" };
   authorizedBranchIds: string[];
   knowledge: KnowledgeCandidate[];
   decisions: DecisionCandidate[];
