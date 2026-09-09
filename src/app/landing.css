@@ -1,89 +1,270 @@
 /* Company Brain landing page */
-.landing-page { overflow: clip; background: #170d09; color: #fff5e5; font-family: Arial, sans-serif; }
+
+@property --tree-progress { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+.landing-page {
+  /* Ground and light. The page is one ember lit in a dark room; every accent
+     is a step along that same warm ramp rather than a separate hue. */
+  --night: #170d09;
+  --night-raised: rgba(255, 233, 205, .06);
+  --ember: #ff8d38;
+  --gold: #ffb45a;
+  --cream: #fff5e5;
+  --day: #f7eee2;
+  --day-ink: #29150d;
+
+  /* Text tints are the foreground at lower opacity, never gray, and never
+     below .52 -- that is where 4.5:1 against --night gives out. */
+  --on-night: var(--cream);
+  --on-night-muted: rgba(255, 245, 229, .68);
+  --on-night-subtle: rgba(255, 245, 229, .54);
+  --hairline: rgba(255, 225, 178, .16);
+  --hairline-strong: rgba(255, 225, 178, .3);
+
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --measure: 62ch;
+
+  overflow: clip;
+  background: var(--night);
+  color: var(--on-night);
+  color-scheme: dark;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
 .landing-page a { color: inherit; }
-.landing-nav { position: absolute; z-index: 10; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 28px clamp(22px, 6vw, 92px); font-size: 11px; }
-.landing-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; letter-spacing: -.3px; text-decoration: none; }
-.brand-orb { display: grid; width: 28px; height: 28px; place-items: center; border: 1px solid rgba(255, 193, 109, .45); border-radius: 50%; color: #ffc16d; background: rgba(255, 153, 62, .13); box-shadow: 0 0 25px rgba(255, 133, 44, .25); }
-.landing-nav-actions { display: flex; align-items: center; gap: 28px; color: rgba(255, 245, 229, .63); }
-.landing-nav-actions a { text-decoration: none; transition: color .2s ease; }
-.landing-nav-actions a:hover { color: #ffc16d; }
-.landing-nav-actions a:last-child { padding: 10px 14px; border: 1px solid rgba(255, 225, 178, .23); border-radius: 99px; color: #fff4df; }
-.landing-nav-actions span, .hero-button span { margin-left: 8px; color: #ffc16d; }
-.landing-hero { position: relative; display: flex; min-height: 100vh; align-items: center; padding: 140px clamp(22px, 12vw, 190px) 100px; isolation: isolate; background: radial-gradient(circle at 75% 45%, rgba(213, 83, 24, .24), transparent 24%), radial-gradient(circle at 90% 95%, rgba(255, 183, 86, .1), transparent 35%), #170d09; }
-.landing-hero::after { position: absolute; right: 8vw; bottom: 8vh; width: 32vw; height: 32vw; border: 1px solid rgba(255, 179, 83, .12); border-radius: 50%; content: ""; opacity: .7; }
-.hero-copy { position: relative; z-index: 2; max-width: 720px; }
-.landing-kicker { display: flex; align-items: center; gap: 9px; margin: 0 0 22px; color: #ffb45a; font: 10px/1.4 monospace; letter-spacing: .17em; text-transform: uppercase; }
-.kicker-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #ff963e; box-shadow: 0 0 14px #ff963e; }
-.hero-copy h1 { max-width: 780px; margin: 0; font: 700 clamp(54px, 8vw, 118px)/.91 Arial, sans-serif; letter-spacing: -7px; }
-.hero-copy h1 em, .landing-cta h2 em { color: #ffb45a; font-style: normal; text-shadow: 0 0 35px rgba(255, 137, 47, .35); }
-.hero-description { max-width: 455px; margin: 34px 0 0; color: rgba(255, 245, 229, .6); font-size: 16px; line-height: 1.65; }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 36px; }
-.hero-button { display: inline-flex; align-items: center; border-radius: 99px; padding: 14px 19px; font-size: 11px; font-weight: 700; text-decoration: none; transition: transform .25s ease, background .25s ease, border-color .25s ease; }
-.hero-button:hover { transform: translateY(-3px); }
-.hero-button-primary { color: #241109 !important; background: #ffb45a; box-shadow: 0 8px 35px rgba(255, 137, 47, .2); }
-.hero-button-primary span { color: #7e351c; }
-.hero-button-quiet { border: 1px solid rgba(255, 225, 178, .2); color: rgba(255, 245, 229, .78) !important; }
-.hero-button-quiet:hover { border-color: rgba(255, 193, 109, .65); }
-.hero-proof { display: flex; align-items: center; gap: 12px; margin-top: 86px; color: rgba(255, 245, 229, .38); font: 10px monospace; letter-spacing: .04em; }
-.hero-proof > span:first-child { color: #ffb45a; }
-.proof-line { width: 54px; height: 1px; background: rgba(255, 193, 109, .4); }
-.hero-light { position: absolute; z-index: -1; border-radius: 50%; filter: blur(3px); pointer-events: none; }
-.hero-light-one { top: 25%; right: 15%; width: 17vw; height: 17vw; background: radial-gradient(circle, rgba(255, 198, 107, .2), transparent 68%); animation: float-light 6s ease-in-out infinite; }
-.hero-light-two { right: 36%; bottom: 20%; width: 8vw; height: 8vw; background: radial-gradient(circle, rgba(255, 110, 35, .35), transparent 70%); animation: float-light 4s ease-in-out -2s infinite; }
-@keyframes float-light { 50% { transform: translate3d(0, -18px, 0) scale(1.08); } }
 
-.brain-story { position: relative; height: 285vh; background: radial-gradient(circle at 50% 48%, rgba(130, 47, 18, .34), transparent 29%), #170d09; }
-.story-sticky { position: sticky; top: 0; height: 100vh; min-height: 650px; overflow: hidden; }
-.story-intro { position: absolute; z-index: 3; top: 13vh; left: clamp(22px, 7vw, 110px); width: min(330px, 32vw); }
-.story-intro h2, .library-heading h2, .landing-cta h2 { margin: 0; font: 700 clamp(35px, 4.5vw, 67px)/.98 Arial, sans-serif; letter-spacing: -3.3px; }
-.story-intro h2 span, .library-heading h2 span { color: #ffb45a; }
-.story-intro > p:last-child { margin-top: 24px; color: rgba(255, 245, 229, .55); font-size: 13px; line-height: 1.65; }
-.brain-tree-scene { position: absolute; inset: 10vh 4vw 3vh 25vw; }
-.brain-tree-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.tree-trunk-glow, .tree-branch-glow { fill: none; stroke: #ff8d38; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30; opacity: .26; filter: blur(14px); }
+/* The surfaces we did not draw still belong to the page. */
+.landing-page ::selection { color: #1b0f09; background: #ffc985; }
+.landing-page :focus-visible { border-radius: 6px; outline: 2px solid var(--gold); outline-offset: 3px; }
+.landing-page :where(button, a) { caret-color: var(--gold); }
+.landing-page :where(h1, h2) { text-wrap: balance; }
+.landing-page :where(p) { text-wrap: pretty; }
+
+.icon { width: 1em; height: 1em; margin-left: .55em; vertical-align: -.09em; }
+.brand-mark { width: 22px; height: 22px; color: var(--gold); }
+
+/* Display voice. Capped at 6rem, tracking never tighter than -.02em: an
+   editorial serif loses its joins long before a grotesk does. */
+.landing-page :where(h1, h2) {
+  margin: 0;
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -.02em;
+  line-height: .99;
+}
+
+.hero-copy h1 { font-size: clamp(2.9rem, 7.4vw, 6rem); }
+.story-intro h2 { font-size: clamp(2.1rem, 3.6vw, 3.3rem); }
+.index-inner h2, .landing-cta h2 { font-size: clamp(2.2rem, 4.6vw, 4.1rem); }
+
+.hero-copy h1 em, .landing-cta h2 em { color: var(--gold); font-style: italic; }
+.story-intro h2 span { color: var(--gold); }
+
+/* ---------- navigation ---------- */
+
+.landing-nav { position: absolute; z-index: 10; top: 0; right: 0; left: 0; display: flex; align-items: center; justify-content: space-between; padding: 26px clamp(22px, 6vw, 92px); font-size: .875rem; }
+.landing-brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; text-decoration: none; }
+.landing-nav-actions { display: flex; align-items: center; gap: 26px; color: var(--on-night-muted); }
+.landing-nav-actions a { text-decoration: none; transition: color .25s var(--ease); }
+.landing-nav-actions a:hover { color: var(--gold); }
+.nav-signin { display: inline-flex; align-items: center; padding: 9px 16px; border: 1px solid var(--hairline); border-radius: 99px; color: var(--on-night); transition: border-color .25s var(--ease), background .25s var(--ease); }
+.nav-signin:hover { border-color: var(--hairline-strong); background: var(--night-raised); }
+
+/* ---------- hero ---------- */
+
+.landing-hero {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  align-content: center;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .78fr);
+  align-items: center;
+  padding: 132px clamp(22px, 7vw, 118px) 92px;
+  gap: 40px;
+  isolation: isolate;
+}
+
+.hero-copy { position: relative; z-index: 2; max-width: 44rem; }
+.hero-copy h1 { max-width: 13ch; }
+.hero-description { max-width: 46ch; margin: 30px 0 0; color: var(--on-night-muted); font-size: 1.0625rem; line-height: 1.62; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
+.hero-proof { margin: 40px 0 0; padding-top: 18px; border-top: 1px solid var(--hairline); max-width: 30ch; color: var(--on-night-subtle); font-size: .9375rem; }
+
+.hero-button { display: inline-flex; align-items: center; border-radius: 99px; padding: 13px 20px; font-size: .9375rem; font-weight: 600; text-decoration: none; transition: transform .3s var(--ease), background .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
+.hero-button:hover { transform: translateY(-2px); }
+.hero-button-primary { color: #241109 !important; background: var(--gold); box-shadow: 0 10px 30px -12px rgba(255, 137, 47, .75); }
+.hero-button-primary:hover { background: #ffc47a; box-shadow: 0 16px 38px -14px rgba(255, 137, 47, .9); }
+.hero-button-quiet { border: 1px solid var(--hairline); color: var(--on-night) !important; }
+.hero-button-quiet:hover { border-color: var(--hairline-strong); background: var(--night-raised); }
+
+/* The right half used to be empty. It now carries the first light of the tree
+   that the next section grows, so the hero and the story share one source. */
+.hero-ember {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 1;
+  width: 100%;
+  justify-self: center;
+}
+.hero-seed { display: block; width: 100%; height: 100%; overflow: visible; }
+.hero-seed-ring { fill: none; stroke: var(--hairline); stroke-width: 1.4; }
+.hero-seed-trunk { fill: none; stroke: url(#seedTrunk); stroke-width: 11; stroke-linecap: round; }
+.hero-seed-limb { fill: none; stroke: url(#seedTrunk); stroke-width: 5.5; stroke-linecap: round; }
+.hero-seed-root { fill: none; stroke: #d66527; stroke-width: 3.5; stroke-linecap: round; opacity: .75; }
+.hero-seed-core { fill: #fff1b9; }
+.hero-seed-tip { fill: #fff1b9; }
+
+/* ---------- the tree grows ---------- */
+
+.brain-story { position: relative; height: 250vh; background: radial-gradient(circle at 50% 46%, rgba(130, 47, 18, .3), transparent 34%), var(--night); }
+.brain-story::after { position: absolute; right: 0; bottom: 0; left: 0; height: 210px; background: radial-gradient(115% 100% at 50% 100%, rgba(255, 170, 92, .2), rgba(255, 122, 40, .05) 46%, transparent 74%); content: ""; pointer-events: none; }
+.story-sticky { position: sticky; top: 0; display: grid; overflow: hidden; height: 100vh; min-height: 620px; align-items: center; grid-template-columns: minmax(270px, 26%) minmax(0, 1fr); padding: 84px clamp(22px, 4vw, 56px) 84px clamp(22px, 7vw, 110px); gap: clamp(24px, 4vw, 64px); }
+.story-intro { z-index: 3; }
+.story-intro > p { margin-top: 22px; max-width: 34ch; color: var(--on-night-muted); font-size: .9375rem; }
+
+.brain-tree-scene { position: relative; height: 100%; min-width: 0; }
+.brain-tree-svg { display: block; width: 100%; height: 100%; }
+
+/* One authored moment: scroll draws the trunk, then each limb in turn, then
+   the canopy answers. Every element below reads the same progress value. */
+.tree-limb, .branch-node { --limb-p: clamp(0, calc((var(--tree-progress) - var(--limb-start)) / var(--limb-span)), 1); }
+
+.tree-trunk-glow, .tree-branch-glow { fill: none; stroke: var(--ember); stroke-linecap: round; stroke-linejoin: round; stroke-width: 30; opacity: .22; filter: blur(14px); }
 .tree-trunk, .tree-branch { fill: none; stroke: url(#trunkGradient); stroke-linecap: round; stroke-linejoin: round; }
-.tree-trunk { stroke-width: 18; filter: url(#softGlow); }
+.tree-trunk { stroke-width: 18; }
 .tree-branch { stroke: url(#branchGradient); stroke-width: 8; }
-.tree-root { fill: none; stroke: #d66527; stroke-linecap: round; stroke-width: 5; opacity: .8; }
-.tree-core { fill: #ffb45a; opacity: .22; filter: url(#treeGlow); }
-.tree-core-inner { fill: #fff1b9; filter: url(#softGlow); }
-.tree-sparks circle { fill: #ffe8a5; animation: spark-drift 4s ease-in-out infinite; }
-.tree-sparks circle:nth-child(2n) { animation-delay: -1.5s; }
-@keyframes spark-drift { 50% { opacity: .35; transform: translateY(-10px); } }
-.tree-orbit { position: absolute; z-index: -1; border: 1px solid rgba(255, 175, 84, .12); border-radius: 50%; transform: rotate(-18deg); pointer-events: none; }
-.orbit-one { inset: 16% 20% 8% 19%; animation: orbit-pulse 7s ease-in-out infinite; }
-.orbit-two { inset: 4% 4% 25% 35%; border-color: rgba(255, 113, 45, .08); transform: rotate(35deg); }
-@keyframes orbit-pulse { 50% { transform: rotate(-12deg) scale(1.03); opacity: .55; } }
-.tree-label { position: absolute; top: 48%; left: 50%; color: rgba(255, 245, 229, .8); font: 10px monospace; letter-spacing: .14em; text-align: center; transform: translate(-50%, -50%); pointer-events: none; }
-.tree-label span { display: block; margin-top: 7px; color: #ffb45a; font-size: 8px; letter-spacing: .08em; opacity: .75; }
-.branch-node { position: absolute; z-index: 4; top: var(--node-y); left: var(--node-x); display: flex; align-items: center; gap: 8px; border: 0; padding: 0; color: #fff4df; background: transparent; cursor: pointer; transform: translate(-50%, calc(-50% + var(--node-offset))); transition: transform .2s ease; }
-.branch-node-pulse { display: block; width: 12px; height: 12px; border: 2px solid var(--node-accent); border-radius: 50%; background: #2b140b; box-shadow: 0 0 0 5px rgba(255, 159, 69, .1), 0 0 20px var(--node-accent); transition: transform .25s ease; }
-.branch-node-label { padding: 7px 10px; border: 1px solid rgba(255, 225, 178, .18); border-radius: 99px; background: rgba(36, 17, 9, .75); backdrop-filter: blur(8px); font-size: 10px; white-space: nowrap; }
-.branch-node:hover .branch-node-pulse, .branch-node.is-active .branch-node-pulse { transform: scale(1.35); }
-.branch-node.is-active .branch-node-label { border-color: var(--node-accent); color: var(--node-accent); }
-.tree-scroll-note { position: absolute; bottom: 6vh; left: 50%; display: flex; align-items: center; gap: 10px; color: rgba(255, 245, 229, .42); font: 9px monospace; letter-spacing: .12em; text-transform: uppercase; transform: translateX(-50%); }
-.scroll-line { display: block; width: 34px; height: 1px; background: #ff963e; }
-.story-progress { position: absolute; right: clamp(22px, 6vw, 90px); bottom: 6vh; display: flex; align-items: center; gap: 12px; width: 130px; color: rgba(255, 245, 229, .4); font: 9px monospace; }
-.story-progress > span { display: block; height: 1px; flex: 1; background: #ff963e; box-shadow: 0 0 9px #ff963e; }
-.story-progress small { font-size: 9px; }
+.tree-root { fill: none; stroke: #d66527; stroke-linecap: round; stroke-width: 5; opacity: .75; }
 
-.branch-library { padding: 150px clamp(22px, 8vw, 130px) 170px; background: #f7eee2; color: #29150d; }
-.library-heading { max-width: 760px; margin: 0 auto 65px; }
-.branch-library .landing-kicker { color: #c35e27; }
-.library-heading h2 span { color: #c35e27; }
-.branch-grid { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 1100px; margin: 0 auto; gap: 12px; }
-.branch-card { position: relative; display: flex; min-height: 275px; flex-direction: column; align-items: flex-start; border: 1px solid rgba(92, 50, 29, .14); border-radius: 5px; padding: 22px; color: #29150d; background: rgba(255, 252, 247, .54); cursor: pointer; text-align: left; transition: transform .3s ease, background .3s ease, border-color .3s ease; }
-.branch-card:hover, .branch-card.is-active { border-color: #dc7b36; background: #fffaf2; transform: translateY(-7px); }
-.branch-card-number { color: #b96a37; font: 10px monospace; }
-.branch-card-orb { width: 13px; height: 13px; margin: 32px 0 25px; border-radius: 50%; box-shadow: 0 0 24px currentColor; }
-.branch-card-eyebrow { color: #a1785b; font: 9px monospace; letter-spacing: .12em; text-transform: uppercase; }
-.branch-card strong { margin-top: 7px; font-size: 18px; letter-spacing: -.5px; }
-.branch-card-copy { margin-top: 14px; color: #876e5d; font-size: 11px; line-height: 1.5; }
-.branch-card-arrow { position: absolute; right: 20px; bottom: 20px; color: #c35e27; font-size: 16px; }
-.landing-cta { display: flex; align-items: flex-end; justify-content: space-between; gap: 35px; padding: 145px clamp(22px, 8vw, 130px); background: #170d09; }
-.landing-cta .landing-kicker { margin-bottom: 20px; }
-.landing-footer { display: flex; justify-content: space-between; gap: 20px; padding: 25px clamp(22px, 8vw, 130px); border-top: 1px solid rgba(255, 225, 178, .12); color: rgba(255, 245, 229, .38); background: #170d09; font: 10px monospace; }
-.landing-footer a { color: #ffb45a; text-decoration: none; }
-@media (max-width: 900px) { .story-intro { top: 9vh; width: 300px; }.brain-tree-scene { inset: 20vh 2vw 4vh 4vw; }.branch-grid { grid-template-columns: repeat(2, 1fr); }.landing-cta { align-items: flex-start; flex-direction: column; } }
-@media (max-width: 600px) { .landing-nav-actions a:first-child { display: none; }.landing-nav { padding: 20px; }.landing-hero { padding: 125px 22px 75px; }.hero-copy h1 { letter-spacing: -4px; }.hero-proof { margin-top: 55px; }.brain-story { height: 245vh; }.story-intro { left: 22px; width: calc(100% - 44px); }.story-intro h2 { font-size: 38px; }.story-intro > p:last-child { max-width: 300px; }.brain-tree-scene { inset: 27vh -16vw 4vh -16vw; transform: scale(.95); }.branch-node-label { font-size: 9px; }.tree-scroll-note { bottom: 3vh; }.story-progress { right: 22px; bottom: 3vh; }.branch-grid { grid-template-columns: 1fr; }.branch-card { min-height: 225px; }.landing-cta { padding: 100px 22px; }.landing-cta h2 { font-size: 41px; }.landing-footer { flex-wrap: wrap; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+.tree-trunk, .tree-trunk-glow { stroke-dasharray: 1; stroke-dashoffset: clamp(0, calc(1 - var(--tree-progress) / .3), 1); }
+.tree-root { stroke-dasharray: 1; stroke-dashoffset: clamp(0, calc(1 - (var(--tree-progress) - .1) / .26), 1); }
+.tree-branch, .tree-branch-glow { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--limb-p)); }
+
+.tree-limb-tip { fill: var(--limb-accent); opacity: clamp(0, calc((var(--limb-p) - .82) * 6), 1); }
+.tree-canopy { opacity: clamp(0, calc((var(--tree-progress) - .44) / .34), 1); }
+.tree-crown { fill: #fff1b9; opacity: clamp(0, calc((var(--tree-progress) - .24) * 8), 1); filter: url(#softGlow); }
+.tree-core { fill: var(--gold); opacity: clamp(0, calc(var(--tree-progress) / .3), 1); }
+.tree-core-inner { fill: #fff1b9; opacity: clamp(0, calc(var(--tree-progress) / .3), 1); }
+.tree-sparks circle { fill: #ffe0a2; filter: url(#softGlow); opacity: clamp(0, calc((var(--tree-progress) - .58) / .26), 1); }
+
+/* The one thing that keeps moving on its own: the heart of the tree. */
+@keyframes core-breath { 50% { transform: scale(1.18); opacity: .85; } }
+.tree-core-inner { transform-box: fill-box; transform-origin: center; animation: core-breath 3.6s ease-in-out infinite; }
+
+.tree-caption { position: absolute; right: 0; bottom: -6px; left: 0; display: none; margin: 0; color: var(--limb-accent, var(--gold)); font-size: 1.0625rem; text-align: center; transition: color .3s var(--ease); }
+.tree-labels { position: absolute; inset: 0; pointer-events: none; }
+.branch-node {
+  position: absolute;
+  top: var(--node-y);
+  left: var(--node-x);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--on-night);
+  cursor: pointer;
+  font: inherit;
+  opacity: clamp(0, calc((var(--limb-p) - .8) * 5), 1);
+  pointer-events: auto;
+  transition: opacity .2s linear;
+}
+.branch-node.side-left { transform: translate(-100%, -50%); padding-right: 16px; }
+.branch-node.side-right { transform: translate(0, -50%); padding-left: 16px; }
+.branch-node-label { padding: 7px 13px; border: 1px solid var(--hairline); border-radius: 99px; background: rgba(28, 15, 9, .82); backdrop-filter: blur(8px); font-size: .8125rem; white-space: nowrap; transition: border-color .25s var(--ease), color .25s var(--ease), transform .3s var(--ease); }
+.branch-node:hover .branch-node-label { transform: translateY(-2px); border-color: var(--limb-accent); }
+.branch-node.is-active .branch-node-label { border-color: var(--limb-accent); color: var(--limb-accent); }
+
+.story-progress { position: absolute; right: clamp(22px, 6vw, 90px); bottom: 5vh; z-index: 3; display: flex; align-items: center; gap: 14px; width: 160px; color: var(--on-night-subtle); font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.story-progress-track { position: relative; flex: 1; height: 2px; border-radius: 2px; background: rgba(255, 225, 178, .2); }
+.story-progress-track i { position: absolute; inset: 0 auto 0 0; width: calc(var(--tree-progress) * 100%); border-radius: 2px; background: var(--gold); box-shadow: 0 0 12px rgba(255, 180, 90, .8); }
+
+/* ---------- the branch index ---------- */
+
+/* Not cards. Seven rows read top to bottom, the way the tree reads root to
+   tip, so nothing hides behind a hover and no grid leaves an orphan. */
+.branch-index {
+  position: relative;
+  padding: 132px clamp(22px, 8vw, 130px) 150px;
+  border-top: 1px solid rgba(255, 168, 84, .55);
+  background: var(--day);
+  color: var(--day-ink);
+}
+.branch-index ::selection { color: #fffaf2; background: #9c4515; }
+.branch-index :focus-visible { outline-color: #a4491a; }
+.index-inner { max-width: 1080px; margin: 0 auto; }
+.index-inner h2 { color: var(--day-ink); }
+.index-inner h2 span { color: #a8481a; }
+.index-list { margin: 60px 0 0; padding: 0; list-style: none; border-top: 1px solid rgba(41, 21, 13, .16); }
+.index-list li { border-bottom: 1px solid rgba(41, 21, 13, .16); }
+.index-row {
+  display: grid;
+  width: 100%;
+  align-items: baseline;
+  padding: 26px 4px;
+  border: 0;
+  gap: 4px 26px;
+  grid-template-columns: 14px minmax(0, 13ch) minmax(0, 1fr);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: background .3s var(--ease);
+}
+.index-row:hover, .index-row.is-active { background: rgba(255, 252, 247, .72); }
+.index-dot { width: 11px; height: 11px; align-self: center; border-radius: 50%; background: var(--limb-accent); box-shadow: 0 1px 3px rgba(92, 50, 29, .35); transition: transform .3s var(--ease); }
+.index-row:hover .index-dot, .index-row.is-active .index-dot { transform: scale(1.45); }
+.index-name { font-family: var(--font-display), ui-serif, Georgia, serif; font-size: 1.5rem; letter-spacing: -.01em; }
+.index-copy { max-width: 58ch; color: #6a5041; font-size: .9375rem; line-height: 1.6; }
+.index-row.is-active .index-copy { color: #543c2e; }
+
+/* ---------- close ---------- */
+
+.landing-cta { display: flex; align-items: flex-end; justify-content: space-between; padding: 150px clamp(22px, 8vw, 130px); gap: 40px; background: var(--night); }
+.landing-footer { display: flex; justify-content: space-between; padding: 26px clamp(22px, 8vw, 130px); border-top: 1px solid var(--hairline); gap: 20px; color: var(--on-night-subtle); background: var(--night); font-size: .875rem; }
+.landing-footer a { display: inline-flex; align-items: center; color: var(--gold); text-decoration: none; }
+.landing-footer a:hover { text-decoration: underline; text-underline-offset: .28em; }
+
+/* ---------- narrower viewports ---------- */
+
+@media (max-width: 1100px) {
+  .landing-hero { grid-template-columns: minmax(0, 1fr); }
+  .hero-ember { position: absolute; z-index: -1; top: 10%; right: -20%; width: 64vw; }
+  .hero-copy { max-width: none; }
+  .story-sticky { grid-template-columns: minmax(230px, 33%) minmax(0, 1fr); padding-left: clamp(22px, 5vw, 60px); }
+}
+
+@media (max-width: 760px) {
+  .landing-nav { padding: 18px 22px; font-size: .8125rem; }
+  .landing-nav-actions { gap: 16px; }
+  .landing-nav-actions > a:first-child { display: none; }
+  .landing-hero { min-height: auto; padding: 120px 22px 80px; }
+  .hero-copy h1 { max-width: none; }
+  .hero-ember { top: 4%; right: -30%; width: 96vw; }
+
+  .brain-story { height: 215vh; }
+  .story-sticky { display: flex; min-height: 540px; flex-direction: column; padding: 9vh 22px 8vh; gap: 18px; }
+  .story-intro { width: auto; }
+  .story-intro > p { max-width: none; }
+  /* A floating label would clip at this width, so the tree keeps its lit tips
+     and the caption names whichever limb is growing. */
+  .brain-tree-scene { flex: 1; min-height: 0; }
+  .tree-caption { display: block; }
+  .story-progress { position: static; width: auto; }
+
+  .branch-index { padding: 96px 22px 110px; }
+  .index-list { margin-top: 42px; }
+  .index-row { padding: 22px 4px; gap: 10px 14px; grid-template-columns: 12px minmax(0, 1fr); }
+  .index-copy { grid-column: 2; }
+
+  .landing-cta { flex-direction: column; align-items: flex-start; padding: 110px 22px; }
+  .landing-footer { flex-wrap: wrap; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page *, .landing-page *::before, .landing-page *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .landing-page { scroll-behavior: auto; }
+}
