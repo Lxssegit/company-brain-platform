@@ -48,6 +48,7 @@ das Paket `pgvector`.
 | `/freigaben` | Die Warteschlange: was auf eine Entscheidung wartet |
 | `/team` | Wer mitarbeitet, und wen man einlädt |
 | `/einladung/<token>` | Wo eine eingeladene Person ihr Passwort vergibt |
+| `/organisation` | Wo ein Konto ohne Unternehmen eines gründet |
 
 ## Sicherheitsköpfe und CSP
 
@@ -82,6 +83,18 @@ zwei Regeln, die im Code stehen und getestet sind:
   zurück, was noch ihnen allein gehört: eine persönliche Notiz, ein Entwurf,
   etwas noch nicht Freigegebenes. Vereinbartes Wissen entfernt nur eine
   erhöhte Rolle.
+
+## Ein Unternehmen gründen
+
+Wer sich anmeldet und zu keinem Unternehmen gehört — nach einer Anmeldung über
+Google etwa —, landet auf `/organisation` und gründet dort eines. Damit wird das
+Konto Unternehmens-Admin, und der Unternehmenszweig entsteht als Wurzel des
+Baums mit.
+
+Vorher war das nicht erreichbar: `POST /api/organizations` verlangte ein aktives
+Konto, aktiv wurde man aber nur durch den Beitritt zu einem Unternehmen. Jede
+geschützte Seite schickte ein solches Konto zurück auf `/login` — angemeldet und
+trotzdem zur Anmeldung geschickt, in einer Schleife.
 
 ## Einladungen
 

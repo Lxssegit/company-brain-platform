@@ -11,7 +11,11 @@ export default async function ReviewsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
   const account = await getCurrentUser().catch(() => null);
-  if (!account || account.status !== "ACTIVE") redirect("/login");
+  if (!account) redirect("/login");
+  /* Signed in and belonging nowhere is not "not signed in". Sending it to
+     /login produced a loop: sign in, get bounced, sign in again. */
+  if (!account.organizationId) redirect("/organisation");
+  if (account.status !== "ACTIVE") redirect("/login");
 
   const mayApprove = hasRolePermission(account.role?.key, "APPROVE");
 

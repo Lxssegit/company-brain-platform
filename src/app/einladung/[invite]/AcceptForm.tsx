@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-
-const MIN = 10;
+import { PASSWORD_MIN_LENGTH as MIN } from "@/lib/auth/password-policy";
 
 export function AcceptForm({ invite, name, email }: { invite: string; name: string; email: string }) {
   const router = useRouter();

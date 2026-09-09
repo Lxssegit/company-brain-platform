@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db/prisma";
-import { hashPassword } from "@/lib/auth/password";
+import { hashPassword, PASSWORD_MIN_LENGTH } from "@/lib/auth/password";
 import { auditEvent } from "@/lib/audit/write";
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
 import { inviteIdentifier, inviteSecretMatches, parseInviteParam } from "@/lib/invitations/token";
 import { errorResponse } from "@/lib/http";
 
-/* Ten characters, no composition rules: length is what actually resists
-   guessing, and the attempt itself is rate-limited and the result hashed. */
+/* No composition rules: length is what actually resists guessing, and the
+   attempt itself is rate-limited and the result hashed. The minimum is the
+   hash function's own, imported rather than repeated. */
 const acceptSchema = z.object({
   invite: z.string().min(24).max(400),
-  password: z.string().min(10).max(200),
+  password: z.string().min(PASSWORD_MIN_LENGTH).max(200),
 });
 
 /**

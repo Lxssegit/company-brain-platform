@@ -14,6 +14,9 @@ export default async function DashboardPage() {
   /* Read the record rather than the token so the page shows the organization's
      name instead of its id. The session is the fallback, not the source. */
   const account = await getCurrentUser().catch(() => null);
+  /* Signed in and belonging nowhere has a page of its own. Without this the
+     dashboard rendered an organization-shaped screen with every field empty. */
+  if (account && !account.organizationId) redirect("/organisation");
   const organization = account?.organization?.name ?? null;
   const role = account?.role?.key ?? session.user.role ?? null;
   const name = account?.name ?? session.user.name ?? session.user.email ?? "Ihr Konto";

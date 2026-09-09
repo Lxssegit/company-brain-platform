@@ -29,7 +29,10 @@ const providers = [
           if (!rateLimit(`login:${email}`, 10, 60_000).ok) return null;
           try {
             const user = await prisma.user.findUnique({ where: { email }, include: { role: true } });
-            if (user && user.status === "ACTIVE" && user.organizationId && verifyPassword(password, user.passwordHash)) {
+            /* No organizationId check here. An account that belongs to
+               nowhere yet is exactly the account that has to sign in to found
+               one; every page and route decides for itself what it needs. */
+            if (user && user.status === "ACTIVE" && verifyPassword(password, user.passwordHash)) {
               if (user.totpEnabled) {
                 if (!user.totpSecretEncrypted) return null;
                 try {

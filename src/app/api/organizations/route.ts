@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db/prisma";
 import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
+import { slugify } from "@/lib/domain/slug";
 import { API_ERROR } from "@/lib/i18n/api";
 import type { PermissionKey, RoleKey } from "@prisma/client";
 import { PERMISSION_KEYS, ROLE_KEYS } from "@/lib/domain/enums";
@@ -31,10 +32,6 @@ const roleNames: Record<RoleKey, string> = {
   EMPLOYEE: "Employee",
 };
 
-function slugify(value: string) {
-  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
-}
-
 export async function GET() {
   try {
     const session = await auth();
@@ -58,7 +55,11 @@ export async function POST(request: Request) {
        one and reassign themselves to it as its admin. */
     const account = await getCurrentUser();
     if (!account) return NextResponse.json({ error: API_ERROR.unauthenticated }, { status: 401 });
-    if (account.status !== "ACTIVE") return NextResponse.json({ error: API_ERROR.accountInactive }, { status: 403 });
+    /* Not "must be ACTIVE": an account becomes ACTIVE by joining an
+       organization, so requiring it here made founding one impossible for the
+       only people who ever need to — a dead end the route was written for and
+       then locked itself out of. Suspension is the state that must refuse. */
+    if (account.status === "SUSPENDED") return NextResponse.json({ error: API_ERROR.accountInactive }, { status: 403 });
     if (account.organizationId) return NextResponse.json({ error: API_ERROR.alreadyInOrganization }, { status: 409 });
 
     const body = createOrganizationSchema.parse(await request.json());

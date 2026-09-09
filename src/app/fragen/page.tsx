@@ -10,7 +10,11 @@ export default async function AskPage() {
   if (!session?.user?.id) redirect("/login");
 
   const account = await getCurrentUser().catch(() => null);
-  if (!account || account.status !== "ACTIVE") redirect("/login");
+  if (!account) redirect("/login");
+  /* Signed in and belonging nowhere is not "not signed in". Sending it to
+     /login produced a loop: sign in, get bounced, sign in again. */
+  if (!account.organizationId) redirect("/organisation");
+  if (account.status !== "ACTIVE") redirect("/login");
 
   /* The branch filter offers only what this account may read, so the control
      itself cannot be used to probe for branches that exist but are not theirs. */

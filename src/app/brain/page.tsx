@@ -38,7 +38,11 @@ export default async function BrainPage() {
     /* Role and organization come from the record, never from the token: a
        session outlives the account state it was minted with. */
     const account = await getCurrentUser();
-    if (!account || account.status !== "ACTIVE") redirect("/login");
+    if (!account) redirect("/login");
+  /* Signed in and belonging nowhere is not "not signed in". Sending it to
+     /login produced a loop: sign in, get bounced, sign in again. */
+  if (!account.organizationId) redirect("/organisation");
+  if (account.status !== "ACTIVE") redirect("/login");
     branches = await getVisibleBranches(account);
   } catch (error) {
     if (error && typeof error === "object" && "digest" in error) throw error;

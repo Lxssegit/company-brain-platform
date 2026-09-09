@@ -21,7 +21,11 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
   try {
     /* Same reason as /brain: authorize against the record, not the token. */
     const account = await getCurrentUser();
-    if (!account || account.status !== "ACTIVE") redirect("/login");
+    if (!account) redirect("/login");
+  /* Signed in and belonging nowhere is not "not signed in". Sending it to
+     /login produced a loop: sign in, get bounced, sign in again. */
+  if (!account.organizationId) redirect("/organisation");
+  if (account.status !== "ACTIVE") redirect("/login");
     if (!(await canReadBranch(account, branchId))) notFound();
     branches = await getVisibleBranches(account);
 
