@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/auth/current-user";
 import { getVisibleBranches } from "@/lib/branches/access";
 import { AppBar } from "@/components/AppBar";
 import { BRANCH_KIND_LABEL, branchCount } from "@/lib/i18n/de";
@@ -29,14 +30,18 @@ function Tree({ branches, parentId = null }: { branches: Branches; parentId?: st
 export default async function BrainPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
-  const user = { id: session.user.id, organizationId: session.user.organizationId, role: session.user.role ? { key: session.user.role as "SUPER_ADMIN" | "COMPANY_ADMIN" | "DEPARTMENT_ADMIN" | "MANAGER" | "EMPLOYEE" } : null };
   /* The tree reads from PostgreSQL. If that is unreachable the page used to
      throw; it now says so, because a blank 500 teaches the reader nothing. */
   let branches: Branches = [];
   let unreachable = false;
   try {
-    branches = await getVisibleBranches(user);
-  } catch {
+    /* Role and organization come from the record, never from the token: a
+       session outlives the account state it was minted with. */
+    const account = await getCurrentUser();
+    if (!account || account.status !== "ACTIVE") redirect("/login");
+    branches = await getVisibleBranches(account);
+  } catch (error) {
+    if (error && typeof error === "object" && "digest" in error) throw error;
     unreachable = true;
   }
 

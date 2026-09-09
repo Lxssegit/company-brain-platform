@@ -54,6 +54,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
   pages: { signIn: "/login" },
   callbacks: {
+    /* The credentials provider checks TOTP; an OAuth sign-in never did, so an
+       account that had turned on two-step could sign in around it. Until the
+       OAuth flow carries its own challenge step, refuse rather than bypass. */
+    async signIn({ user, account }) {
+      if (!account || account.provider === "local") return true;
+      if (!user?.email) return true;
+      try {
+        const record = await prisma.user.findUnique({ where: { email: user.email }, select: { totpEnabled: true } });
+        if (record?.totpEnabled) return "/login?error=TwoFactorRequired";
+      } catch {
+        return true;
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.userId = user.id;

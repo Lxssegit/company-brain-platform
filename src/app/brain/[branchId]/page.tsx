@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/auth/current-user";
 import { canReadBranch, getVisibleBranches } from "@/lib/branches/access";
 import { getInheritancePath } from "@/lib/branches/tree";
 import { AppBar } from "@/components/AppBar";
@@ -9,14 +10,16 @@ import { BRANCH_KIND_LABEL } from "@/lib/i18n/de";
 export default async function BranchPage({ params }: { params: Promise<{ branchId: string }> }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
-  const user = { id: session.user.id, organizationId: session.user.organizationId, role: session.user.role ? { key: session.user.role as "SUPER_ADMIN" | "COMPANY_ADMIN" | "DEPARTMENT_ADMIN" | "MANAGER" | "EMPLOYEE" } : null };
   const { branchId } = await params;
   /* An unreachable store is not the same as an unauthorized branch, and the
      reader deserves to be told which one happened. */
   let branches: Awaited<ReturnType<typeof getVisibleBranches>>;
   try {
-    if (!(await canReadBranch(user, branchId))) notFound();
-    branches = await getVisibleBranches(user);
+    /* Same reason as /brain: authorize against the record, not the token. */
+    const account = await getCurrentUser();
+    if (!account || account.status !== "ACTIVE") redirect("/login");
+    if (!(await canReadBranch(account, branchId))) notFound();
+    branches = await getVisibleBranches(account);
   } catch (error) {
     if (error && typeof error === "object" && "digest" in error) throw error;
     return (
