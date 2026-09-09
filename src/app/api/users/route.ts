@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
 import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
+import { API_ERROR } from "@/lib/i18n/api";
 import { hashInviteSecret, inviteExpiry, inviteIdentifier, inviteUrl, newInviteSecret } from "@/lib/invitations/token";
 
 const userSchema = z.object({
@@ -33,18 +34,18 @@ export async function POST(request: Request) {
   try {
     const actor = await requirePermission("MANAGE_USERS");
     const organizationId = actor.organizationId;
-    if (!organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
+    if (!organizationId) return NextResponse.json({ error: API_ERROR.organizationRequired }, { status: 403 });
     const body = userSchema.parse(await request.json());
     const email = body.email.toLowerCase();
     const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) return NextResponse.json({ error: "A user with this email already exists" }, { status: 409 });
+    if (existing) return NextResponse.json({ error: API_ERROR.emailTaken }, { status: 409 });
     const role = await prisma.role.findUnique({ where: { organizationId_key: { organizationId, key: body.role } } });
-    if (!role) return NextResponse.json({ error: "Role not configured" }, { status: 409 });
+    if (!role) return NextResponse.json({ error: API_ERROR.roleMissing }, { status: 409 });
 
     const parent = body.parentBranchId
       ? await prisma.branch.findFirst({ where: { id: body.parentBranchId, organizationId } })
       : await prisma.branch.findFirst({ where: { organizationId, kind: "COMPANY", depth: 0 } });
-    if (!parent) return NextResponse.json({ error: "Parent branch not found" }, { status: 404 });
+    if (!parent) return NextResponse.json({ error: API_ERROR.parentBranchNotFound }, { status: 404 });
     const personalBranchId = randomUUID();
     /* An invited account has no password, so without a way to set one it can
        never sign in. The link is returned once and never again — only its hash

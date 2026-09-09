@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db/prisma";
 import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
+import { API_ERROR } from "@/lib/i18n/api";
 import type { PermissionKey, RoleKey } from "@prisma/client";
 import { PERMISSION_KEYS, ROLE_KEYS } from "@/lib/domain/enums";
 
@@ -51,19 +52,19 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user?.id) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
+    if (!session?.user?.id) return NextResponse.json({ error: API_ERROR.unauthenticated }, { status: 401 });
     /* session.user.organizationId is minted once at sign-in. Someone who signed
        in before being assigned an organization could otherwise create a second
        one and reassign themselves to it as its admin. */
     const account = await getCurrentUser();
-    if (!account) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
-    if (account.status !== "ACTIVE") return NextResponse.json({ error: "Account is not active" }, { status: 403 });
-    if (account.organizationId) return NextResponse.json({ error: "User already belongs to an organization" }, { status: 409 });
+    if (!account) return NextResponse.json({ error: API_ERROR.unauthenticated }, { status: 401 });
+    if (account.status !== "ACTIVE") return NextResponse.json({ error: API_ERROR.accountInactive }, { status: 403 });
+    if (account.organizationId) return NextResponse.json({ error: API_ERROR.alreadyInOrganization }, { status: 409 });
 
     const body = createOrganizationSchema.parse(await request.json());
     const slug = body.slug ?? slugify(body.name);
     const existing = await prisma.organization.findUnique({ where: { slug } });
-    if (existing) return NextResponse.json({ error: "Slug already exists" }, { status: 409 });
+    if (existing) return NextResponse.json({ error: API_ERROR.slugTaken }, { status: 409 });
 
     const result = await prisma.$transaction(async (tx) => {
       const organization = await tx.organization.create({ data: { name: body.name, slug } });

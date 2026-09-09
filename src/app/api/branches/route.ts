@@ -7,6 +7,7 @@ import { requirePermission } from "@/lib/auth/authorize";
 import { canAdministerBranch, getVisibleBranches } from "@/lib/branches/access";
 import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
+import { API_ERROR } from "@/lib/i18n/api";
 
 const branchSchema = z.object({
   name: z.string().trim().min(2).max(120),
@@ -29,16 +30,16 @@ export async function POST(request: Request) {
   try {
     const user = await requirePermission("MANAGE_BRANCH");
     const organizationId = user.organizationId;
-    if (!organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
+    if (!organizationId) return NextResponse.json({ error: API_ERROR.organizationRequired }, { status: 403 });
     const body = branchSchema.parse(await request.json());
     const parentId = body.parentId ?? null;
     let parent = null;
     if (parentId) {
       parent = await prisma.branch.findFirst({ where: { id: parentId, organizationId } });
-      if (!parent) return NextResponse.json({ error: "Parent branch not found" }, { status: 404 });
-      if (!(await canAdministerBranch(user, parentId))) return NextResponse.json({ error: "Parent branch not found" }, { status: 404 });
+      if (!parent) return NextResponse.json({ error: API_ERROR.parentBranchNotFound }, { status: 404 });
+      if (!(await canAdministerBranch(user, parentId))) return NextResponse.json({ error: API_ERROR.parentBranchNotFound }, { status: 404 });
     } else if (body.kind !== "COMPANY") {
-      return NextResponse.json({ error: "Non-company branches require a parent" }, { status: 422 });
+      return NextResponse.json({ error: API_ERROR.branchNeedsParent }, { status: 422 });
     }
 
     const id = randomUUID();

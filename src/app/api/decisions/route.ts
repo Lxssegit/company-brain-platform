@@ -8,6 +8,7 @@ import { visibleDecisionWhere } from "@/lib/decisions/access";
 import { effectiveDecisionState } from "@/lib/decisions/status";
 import { DECISION_STATUS_VALUES, SOURCE_TYPE_VALUES } from "@/lib/domain/enums";
 import { errorResponse } from "@/lib/http";
+import { API_ERROR } from "@/lib/i18n/api";
 
 const decisionSchema = z.object({
   title: z.string().trim().min(3).max(240),
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
     const statusParam = url.searchParams.get("status");
     const status = statusParam && DECISION_STATUS_VALUES.includes(statusParam as (typeof DECISION_STATUS_VALUES)[number]) ? statusParam : undefined;
     const where = await visibleDecisionWhere(user, branchId);
-    if (!where) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!where) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     const decisions = await prisma.decision.findMany({
       where: { ...where, ...(status ? { status: status as "ACTIVE" | "SUPERSEDED" | "EXPIRED" | "DRAFT" } : {}) },
       include: {
@@ -51,11 +52,11 @@ export async function POST(request: Request) {
   try {
     const user = await requirePermission("MANAGE_DECISIONS");
     const organizationId = user.organizationId;
-    if (!organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
+    if (!organizationId) return NextResponse.json({ error: API_ERROR.organizationRequired }, { status: 403 });
     const body = decisionSchema.parse(await request.json());
-    if (body.validUntil && body.validUntil <= body.validFrom) return NextResponse.json({ error: "validUntil must be after validFrom" }, { status: 422 });
+    if (body.validUntil && body.validUntil <= body.validFrom) return NextResponse.json({ error: API_ERROR.validUntilBeforeFrom }, { status: 422 });
     const branches = await getAdministrableBranches(user);
-    if (body.branchIds.some((branchId) => !branches.some((branch) => branch.id === branchId))) return NextResponse.json({ error: "Branch is outside the authorized context" }, { status: 403 });
+    if (body.branchIds.some((branchId) => !branches.some((branch) => branch.id === branchId))) return NextResponse.json({ error: API_ERROR.branchOutsideContext }, { status: 403 });
     const result = await prisma.$transaction(async (tx) => {
       const decision = await tx.decision.create({ data: { organizationId, title: body.title, description: body.description, reason: body.reason, department: body.department, createdById: user.id, validFrom: body.validFrom, validUntil: body.validUntil, exceptions: body.exceptions ?? undefined, affectedBranches: { create: body.branchIds.map((branchId) => ({ branchId })) } } });
       if (body.source) {

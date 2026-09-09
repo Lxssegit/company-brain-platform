@@ -5,6 +5,7 @@ import { requirePermission } from "@/lib/auth/authorize";
 import { canArchiveKnowledge, canManageKnowledge, editNeedsReapproval, visibleKnowledgeWhere } from "@/lib/knowledge/access";
 import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
+import { API_ERROR } from "@/lib/i18n/api";
 
 const updateSchema = z.object({ title: z.string().trim().min(3).max(180).optional(), content: z.string().trim().min(10).max(12000).optional() });
 
@@ -13,9 +14,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const user = await requirePermission("READ");
     const { id } = await params;
     const where = await visibleKnowledgeWhere(user);
-    if (!where) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!where) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     const knowledge = await prisma.knowledgeUnit.findFirst({ where: { AND: [where, { id }] }, include: { branch: true, sources: { include: { source: true } }, reviews: { orderBy: { createdAt: "desc" }, take: 1 } } });
-    return knowledge ? NextResponse.json({ knowledge }) : NextResponse.json({ error: "Not found" }, { status: 404 });
+    return knowledge ? NextResponse.json({ knowledge }) : NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
   } catch (error) {
     return errorResponse(error);
   }
@@ -25,12 +26,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   try {
     const user = await requirePermission("EDIT");
     const organizationId = user.organizationId;
-    if (!organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
+    if (!organizationId) return NextResponse.json({ error: API_ERROR.organizationRequired }, { status: 403 });
     const { id } = await params;
     const where = await visibleKnowledgeWhere(user);
-    if (!where) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!where) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     const existing = await prisma.knowledgeUnit.findFirst({ where: { AND: [where, { id }] } });
-    if (!existing || !canManageKnowledge(user, existing.createdById, "EDIT")) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!existing || !canManageKnowledge(user, existing.createdById, "EDIT")) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     const body = updateSchema.parse(await request.json());
     const changed = (body.title !== undefined && body.title !== existing.title) || (body.content !== undefined && body.content !== existing.content);
     /* An approval says somebody accountable read this exact text. Editing it in
@@ -61,12 +62,12 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   try {
     const user = await requirePermission("DELETE");
     const organizationId = user.organizationId;
-    if (!organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
+    if (!organizationId) return NextResponse.json({ error: API_ERROR.organizationRequired }, { status: 403 });
     const { id } = await params;
     const where = await visibleKnowledgeWhere(user);
-    if (!where) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!where) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     const existing = await prisma.knowledgeUnit.findFirst({ where: { AND: [where, { id }] } });
-    if (!existing || !canArchiveKnowledge(user, existing)) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!existing || !canArchiveKnowledge(user, existing)) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     await prisma.$transaction(async (tx) => {
       await tx.knowledgeUnit.update({ where: { id }, data: { status: "ARCHIVED" } });
       await auditEvent(tx, { organizationId, actorUserId: user.id, action: "KNOWLEDGE_ARCHIVED", entityType: "KnowledgeUnit", entityId: id, before: { status: existing.status }, after: { status: "ARCHIVED" } });
