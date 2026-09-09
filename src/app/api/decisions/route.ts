@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
-import { getVisibleBranches } from "@/lib/branches/access";
+import { getAdministrableBranches } from "@/lib/branches/access";
 import { auditEvent } from "@/lib/audit/write";
 import { visibleDecisionWhere } from "@/lib/decisions/access";
 import { effectiveDecisionState } from "@/lib/decisions/status";
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     if (!organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
     const body = decisionSchema.parse(await request.json());
     if (body.validUntil && body.validUntil <= body.validFrom) return NextResponse.json({ error: "validUntil must be after validFrom" }, { status: 422 });
-    const branches = await getVisibleBranches(user);
+    const branches = await getAdministrableBranches(user);
     if (body.branchIds.some((branchId) => !branches.some((branch) => branch.id === branchId))) return NextResponse.json({ error: "Branch is outside the authorized context" }, { status: 403 });
     const result = await prisma.$transaction(async (tx) => {
       const decision = await tx.decision.create({ data: { organizationId, title: body.title, description: body.description, reason: body.reason, department: body.department, createdById: user.id, validFrom: body.validFrom, validUntil: body.validUntil, exceptions: body.exceptions ?? undefined, affectedBranches: { create: body.branchIds.map((branchId) => ({ branchId })) } } });

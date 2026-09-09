@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db/prisma";
 import { errorResponse } from "@/lib/http";
 import type { PermissionKey, RoleKey } from "@prisma/client";
@@ -50,7 +51,13 @@ export async function POST(request: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
-    if (session.user.organizationId) return NextResponse.json({ error: "User already belongs to an organization" }, { status: 409 });
+    /* session.user.organizationId is minted once at sign-in. Someone who signed
+       in before being assigned an organization could otherwise create a second
+       one and reassign themselves to it as its admin. */
+    const account = await getCurrentUser();
+    if (!account) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
+    if (account.status !== "ACTIVE") return NextResponse.json({ error: "Account is not active" }, { status: 403 });
+    if (account.organizationId) return NextResponse.json({ error: "User already belongs to an organization" }, { status: 409 });
 
     const body = createOrganizationSchema.parse(await request.json());
     const slug = body.slug ?? slugify(body.name);

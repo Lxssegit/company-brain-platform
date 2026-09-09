@@ -4,7 +4,7 @@ import { z } from "zod";
 import { BRANCH_KIND_VALUES } from "@/lib/domain/enums";
 import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
-import { canReadBranch, getVisibleBranches } from "@/lib/branches/access";
+import { canAdministerBranch, getVisibleBranches } from "@/lib/branches/access";
 import { errorResponse } from "@/lib/http";
 
 const branchSchema = z.object({
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     if (parentId) {
       parent = await prisma.branch.findFirst({ where: { id: parentId, organizationId } });
       if (!parent) return NextResponse.json({ error: "Parent branch not found" }, { status: 404 });
-      if (!(await canReadBranch(user, parentId))) return NextResponse.json({ error: "Parent branch not found" }, { status: 404 });
+      if (!(await canAdministerBranch(user, parentId))) return NextResponse.json({ error: "Parent branch not found" }, { status: 404 });
     } else if (body.kind !== "COMPANY") {
       return NextResponse.json({ error: "Non-company branches require a parent" }, { status: 422 });
     }

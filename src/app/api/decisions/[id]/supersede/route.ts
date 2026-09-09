@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
-import { getVisibleBranches } from "@/lib/branches/access";
+import { getAdministrableBranches } from "@/lib/branches/access";
 import { auditEvent } from "@/lib/audit/write";
 import { visibleDecisionWhere } from "@/lib/decisions/access";
 import { SOURCE_TYPE_VALUES } from "@/lib/domain/enums";
@@ -20,14 +20,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (!where) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const oldDecision = await prisma.decision.findFirst({ where: { AND: [where, { id }] }, include: { affectedBranches: true } });
     if (!oldDecision) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    /* Superseding a SUPERSEDED row forks the history into several live
+       successors of the same decision. Only the current one can be replaced. */
+    if (oldDecision.status !== "ACTIVE") return NextResponse.json({ error: "Only an active decision can be superseded" }, { status: 409 });
     const body = supersedeSchema.parse(await request.json());
     if (body.validUntil && body.validUntil <= body.validFrom) return NextResponse.json({ error: "validUntil must be after validFrom" }, { status: 422 });
-    const branches = await getVisibleBranches(user);
+    const branches = await getAdministrableBranches(user);
     const branchIds = body.branchIds ?? oldDecision.affectedBranches.map((item) => item.branchId);
+    /* The replacement carries the department forward unless it is restated. */
     if (branchIds.some((branchId) => !branches.some((branch) => branch.id === branchId))) return NextResponse.json({ error: "Branch is outside the authorized context" }, { status: 403 });
     const result = await prisma.$transaction(async (tx) => {
       await tx.decision.update({ where: { id: oldDecision.id }, data: { status: "SUPERSEDED" } });
-      const replacement = await tx.decision.create({ data: { organizationId, title: body.title, description: body.description, reason: body.reason, createdById: user.id, validFrom: body.validFrom, validUntil: body.validUntil, status: "ACTIVE", exceptions: body.exceptions ?? undefined, supersedesDecisionId: oldDecision.id, affectedBranches: { create: branchIds.map((branchId) => ({ branchId })) } } });
+      const replacement = await tx.decision.create({ data: { organizationId, title: body.title, description: body.description, reason: body.reason, department: oldDecision.department, createdById: user.id, validFrom: body.validFrom, validUntil: body.validUntil, status: "ACTIVE", exceptions: body.exceptions ?? undefined, supersedesDecisionId: oldDecision.id, affectedBranches: { create: branchIds.map((branchId) => ({ branchId })) } } });
       if (body.source) {
         const source = await tx.source.create({ data: { organizationId, type: body.source.type, title: body.source.title, externalUrl: body.source.externalUrl, externalId: body.source.externalId } });
         await tx.decisionSource.create({ data: { decisionId: replacement.id, sourceId: source.id } });

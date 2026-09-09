@@ -3,6 +3,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
+import { getAdministrableBranches } from "@/lib/branches/access";
 import { auditEvent } from "@/lib/audit/write";
 import { visibleDecisionWhere } from "@/lib/decisions/access";
 import { effectiveDecisionState } from "@/lib/decisions/status";
@@ -31,8 +32,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const { id } = await params;
     const where = await visibleDecisionWhere(user);
     if (!where) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    const existing = await prisma.decision.findFirst({ where: { AND: [where, { id }] } });
+    const existing = await prisma.decision.findFirst({ where: { AND: [where, { id }] }, include: { affectedBranches: true } });
     if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    /* Reading a decision because one of its branches is above you is not the
+       same as being allowed to rewrite it. */
+    const administrable = await getAdministrableBranches(user);
+    if (!existing.affectedBranches.some((link) => administrable.some((branch) => branch.id === link.branchId))) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const body = updateSchema.parse(await request.json());
     if (body.validUntil && body.validUntil <= existing.validFrom) return NextResponse.json({ error: "validUntil must be after validFrom" }, { status: 422 });
     const { exceptions, ...scalarFields } = body;

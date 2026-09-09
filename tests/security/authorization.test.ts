@@ -63,3 +63,51 @@ describe("who may change somebody else's knowledge", () => {
     expect(canManageKnowledge({ id: "me", role: null }, "someone-else", "EDIT")).toBe(false);
   });
 });
+
+import { resolveAdministrableBranchIds, resolveVisibleBranchIds } from "@/lib/branches/tree";
+
+/* Company -> Technical -> Service, plus a sibling department. */
+const tree = [
+  { id: "company", parentId: null, path: "company", depth: 0 },
+  { id: "technical", parentId: "company", path: "company/technical", depth: 1 },
+  { id: "service", parentId: "technical", path: "company/technical/service", depth: 2 },
+  { id: "finance", parentId: "company", path: "company/finance", depth: 1 },
+];
+
+describe("reading inherits upward, administering does not", () => {
+  const teamGrant = [{ branchId: "service", access: "READ" as const }];
+
+  it("still lets a team member read the context above them", () => {
+    const visible = resolveVisibleBranchIds(tree, teamGrant);
+    expect([...visible].sort()).toEqual(["company", "service", "technical"]);
+  });
+
+  it("does not let that same grant administer anything above the team", () => {
+    const administrable = resolveAdministrableBranchIds(tree, teamGrant);
+    expect([...administrable]).toEqual(["service"]);
+    expect(administrable.has("technical")).toBe(false);
+    expect(administrable.has("company")).toBe(false);
+  });
+
+  it("lets a department grant administer the teams nested under it", () => {
+    const administrable = resolveAdministrableBranchIds(tree, [{ branchId: "technical", access: "READ" }]);
+    expect([...administrable].sort()).toEqual(["service", "technical"]);
+    expect(administrable.has("company")).toBe(false);
+    expect(administrable.has("finance")).toBe(false);
+  });
+
+  it("lets an explicit deny beat an inherited administration grant", () => {
+    const administrable = resolveAdministrableBranchIds(tree, [
+      { branchId: "company", access: "READ" },
+      { branchId: "technical", access: "DENY" },
+    ]);
+    expect(administrable.has("company")).toBe(true);
+    expect(administrable.has("finance")).toBe(true);
+    expect(administrable.has("technical")).toBe(false);
+    expect(administrable.has("service")).toBe(false);
+  });
+
+  it("gives an elevated role the whole organization", () => {
+    expect(resolveAdministrableBranchIds(tree, [], true).size).toBe(4);
+  });
+});
