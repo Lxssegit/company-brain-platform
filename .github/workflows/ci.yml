@@ -92,3 +92,11 @@ jobs:
             RAISE NOTICE 'hnsw and full-text indexes present, embedding is vector(1536)';
           END $$;
           SQL
+
+      # Every retrieval test outside this job runs on a database without
+      # pgvector, so the vector half has never executed there — which is how a
+      # dimension bug reached CI once already. These run the real
+      # retrieveAuthorizedContext against the real index, with a deterministic
+      # stand-in for the embedding provider so no API key is needed.
+      - name: Vector retrieval and its permission boundary
+        run: pnpm test:integration

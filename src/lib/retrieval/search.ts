@@ -27,7 +27,18 @@ function readableSql(organizationId: string, userId: string, branchIds: string[]
   return Prisma.sql`ku."organizationId" = ${organizationId} AND ku."branchId" IN (${Prisma.join(branchIds)}) AND ((ku."status" = 'APPROVED' AND ku."scope" <> 'PERSONAL') OR (ku."scope" = 'PERSONAL' AND ku."createdById" = ${userId}))`;
 }
 
-async function vectorCandidates(organizationId: string, userId: string, branchIds: string[], embedding: number[]) {
+/**
+ * The candidate queries carry the permission predicate themselves, before the
+ * index is consulted. Two later layers repeat the boundary — the Prisma fetch
+ * that hydrates the candidates, and filterAuthorizedContext — so removing this
+ * one leaks nothing to a caller. What it costs is everything else: without it
+ * the database ranks and returns the whole organization's rows on every query,
+ * and the process holds knowledge in memory that the asker may not read.
+ *
+ * Exported so that layer can be tested on its own; the two behind it would
+ * otherwise mask a regression here.
+ */
+export async function vectorCandidates(organizationId: string, userId: string, branchIds: string[], embedding: number[]) {
   const literal = vectorLiteral(embedding);
   const rows = await prisma.$queryRaw<Array<{ id: string; score: number }>>(Prisma.sql`
     SELECT ku.id, (1 - (ku.embedding <=> ${literal}::vector))::float8 AS score
@@ -45,7 +56,7 @@ async function vectorCandidates(organizationId: string, userId: string, branchId
  * result was a sample, and that a vector hit outside the sample was computed
  * and then silently discarded.
  */
-async function lexicalCandidateIds(organizationId: string, userId: string, branchIds: string[], query: string) {
+export async function lexicalCandidateIds(organizationId: string, userId: string, branchIds: string[], query: string) {
   /* plainto_tsquery joins every term with AND, so one incidental word in a
      natural question ("Wie genau laeuft ... ab") was enough to match nothing at
      all. The terms are OR-ed and ts_rank decides how much coverage is worth.

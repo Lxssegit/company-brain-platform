@@ -12,7 +12,8 @@
     "test": "vitest run",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "test:integration": "vitest run --dir tests/integration --exclude ''"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",

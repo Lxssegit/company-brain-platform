@@ -192,11 +192,18 @@ Die Extension und der HNSW-Index werden von der ersten Migration selbst angelegt
 ## Prüfen
 
 ```bash
-pnpm typecheck   # TypeScript, inklusive tests/
-pnpm lint        # ESLint (Flat Config)
-pnpm test        # Vitest
-pnpm build       # Produktionsbuild
+pnpm typecheck        # TypeScript, inklusive tests/
+pnpm lint             # ESLint (Flat Config)
+pnpm test             # Vitest, ohne Datenbank
+pnpm test:integration # braucht eine Datenbank mit pgvector
+pnpm build            # Produktionsbuild
 ```
+
+`pnpm test` lässt `tests/integration/` bewusst aus: dort läuft die Vektorsuche
+gegen einen echten HNSW-Index, den keine Entwicklungsmaschine ohne pgvector hat.
+Der Einbettungsdienst ist dabei ein deterministisches Testdouble — geprüft wird
+das SQL dieses Projekts, seine Rechteprüfung und die Verschmelzung beider
+Trefferlisten, nicht OpenAI. Ein API-Schlüssel ist nicht nötig.
 
 Dieselben Schritte laufen in `.github/workflows/ci.yml`, dazu ein zweiter Job, der Migration und Seed gegen eine echte pgvector-Datenbank ausführt und den Seed zweimal startet, um Idempotenz zu prüfen.
 
