@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { canManageKnowledge } from "@/lib/knowledge/access";
+import { canArchiveKnowledge, canManageKnowledge } from "@/lib/knowledge/access";
 
 /* getVisibleBranches talks to PostgreSQL; the predicate it feeds is what these
    tests are about, so the branch lookup is stubbed and the shape is asserted. */
@@ -43,24 +43,28 @@ describe("knowledge visibility predicate", () => {
 });
 
 describe("who may change somebody else's knowledge", () => {
-  it("always lets the author manage their own unit", () => {
-    expect(canManageKnowledge(employee, "me", "EDIT")).toBe(true);
-    expect(canManageKnowledge(employee, "me", "DELETE")).toBe(true);
+  it("lets the author edit their own unit", () => {
+    expect(canManageKnowledge(employee, "me")).toBe(true);
   });
 
-  it("separates EDIT from DELETE instead of answering both the same", () => {
-    expect(canManageKnowledge(manager, "someone-else", "EDIT")).toBe(true);
-    expect(canManageKnowledge(manager, "someone-else", "DELETE")).toBe(false);
-    expect(canManageKnowledge(admin, "someone-else", "DELETE")).toBe(true);
+  /* Archiving used to be answered here too, by a shortcut that returned true
+     for the author before reading the permission it was asked about. It has its
+     own rule now, in canArchiveKnowledge, because the answer depends on the
+     unit's state and not only on who wrote it. */
+
+  it("separates editing from archiving instead of answering both the same", () => {
+    expect(canManageKnowledge(manager, "someone-else")).toBe(true);
+    expect(canArchiveKnowledge(manager, { createdById: "someone-else", status: "APPROVED", scope: "TEAM" })).toBe(false);
+    expect(canArchiveKnowledge(admin, { createdById: "someone-else", status: "APPROVED", scope: "TEAM" })).toBe(true);
   });
 
   it("gives an employee no authority over another author's unit", () => {
-    expect(canManageKnowledge(employee, "someone-else", "EDIT")).toBe(false);
-    expect(canManageKnowledge(employee, "someone-else", "DELETE")).toBe(false);
+    expect(canManageKnowledge(employee, "someone-else")).toBe(false);
+    expect(canArchiveKnowledge(employee, { createdById: "someone-else", status: "DRAFT", scope: "TEAM" })).toBe(false);
   });
 
   it("refuses when the account carries no role at all", () => {
-    expect(canManageKnowledge({ id: "me", role: null }, "someone-else", "EDIT")).toBe(false);
+    expect(canManageKnowledge({ id: "me", role: null }, "someone-else")).toBe(false);
   });
 });
 

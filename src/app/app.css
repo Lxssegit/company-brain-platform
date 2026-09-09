@@ -305,6 +305,10 @@
 .check-list input { width: 1.05rem; height: 1.05rem; accent-color: var(--gold); cursor: pointer; }
 .check-list input:disabled, .check-list input:disabled + span { cursor: not-allowed; color: var(--on-night-subtle); }
 
+/* Editing happens where the entry is, so the form opens inside its row rather
+   than in a modal that hides what is being changed. */
+.edit-form { margin-top: 12px; }
+
 /* A link that has to be copied is not code to skim: it wraps rather than
    scrolling out of sight, because a truncated one looks like the whole one. */
 .invite-link .code-block { overflow-x: visible; white-space: pre-wrap; word-break: break-all; line-height: 1.6; }

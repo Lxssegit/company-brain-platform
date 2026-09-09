@@ -49,6 +49,22 @@ das Paket `pgvector`.
 | `/team` | Wer mitarbeitet, und wen man einlädt |
 | `/einladung/<token>` | Wo eine eingeladene Person ihr Passwort vergibt |
 
+## Wer was ändern darf
+
+Freigabe heißt: jemand Zuständiges hat **diesen Text** gelesen. Daraus folgen
+zwei Regeln, die im Code stehen und getestet sind:
+
+- **Ändern.** Wer etwas geschrieben hat, darf es korrigieren — auch als
+  Mitarbeitend, sonst bliebe der eigene Tippfehler für immer stehen. Ist der
+  Eintrag aber freigegeben und über den persönlichen Zweig hinaus sichtbar,
+  geht er durch die Änderung zurück in die Warteschlange und verliert seine
+  Freigabe. Wessen Rolle ohne Freigabe veröffentlichen darf, ändert direkt.
+- **Archivieren.** Dafür gibt es keine Wiedervorlage — nichts holt den Eintrag
+  auf fremden Beschluss zurück. Autorinnen und Autoren nehmen deshalb nur
+  zurück, was noch ihnen allein gehört: eine persönliche Notiz, ein Entwurf,
+  etwas noch nicht Freigegebenes. Vereinbartes Wissen entfernt nur eine
+  erhöhte Rolle.
+
 ## Einladungen
 
 Eingeladene Konten haben kein Passwort und könnten sich sonst nie anmelden.

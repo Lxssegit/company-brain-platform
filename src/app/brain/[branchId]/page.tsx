@@ -6,6 +6,9 @@ import { canReadBranch, getVisibleBranches } from "@/lib/branches/access";
 import { getInheritancePath } from "@/lib/branches/tree";
 import { AppBar } from "@/components/AppBar";
 import { BRANCH_KIND_LABEL } from "@/lib/i18n/de";
+import { prisma } from "@/lib/db/prisma";
+import { canArchiveKnowledge, canManageKnowledge, editNeedsReapproval, visibleKnowledgeWhere } from "@/lib/knowledge/access";
+import { BranchKnowledge, type Unit } from "@/app/brain/[branchId]/BranchKnowledge";
 
 export default async function BranchPage({ params }: { params: Promise<{ branchId: string }> }) {
   const session = await auth();
@@ -14,12 +17,39 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
   /* An unreachable store is not the same as an unauthorized branch, and the
      reader deserves to be told which one happened. */
   let branches: Awaited<ReturnType<typeof getVisibleBranches>>;
+  let units: Unit[] = [];
   try {
     /* Same reason as /brain: authorize against the record, not the token. */
     const account = await getCurrentUser();
     if (!account || account.status !== "ACTIVE") redirect("/login");
     if (!(await canReadBranch(account, branchId))) notFound();
     branches = await getVisibleBranches(account);
+
+    /* The tree showed structure and no knowledge, which is most of the reason
+       to open a branch in the first place. The same predicate that guards the
+       API guards this list. */
+    const where = await visibleKnowledgeWhere(account, branchId);
+    if (where) {
+      const rows = await prisma.knowledgeUnit.findMany({
+        where: { ...where, status: { not: "ARCHIVED" } },
+        include: { sources: { include: { source: { select: { title: true } } } }, createdBy: { select: { name: true, email: true } } },
+        orderBy: { updatedAt: "desc" },
+      });
+      units = rows.map((row) => ({
+        id: row.id,
+        title: row.title,
+        content: row.content,
+        type: row.type,
+        scope: row.scope,
+        status: row.status,
+        author: row.createdBy?.name ?? row.createdBy?.email ?? "unbekannt",
+        sources: row.sources.map((link) => link.source.title),
+        updatedAt: row.updatedAt.toISOString(),
+        mayEdit: canManageKnowledge(account, row.createdById, "EDIT"),
+        mayArchive: canArchiveKnowledge(account, row),
+        editReturnsToReview: editNeedsReapproval(row, account.role?.key),
+      }));
+    }
   } catch (error) {
     if (error && typeof error === "object" && "digest" in error) throw error;
     return (
@@ -87,6 +117,16 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="panel">
+          <div className="panel-head">
+            <div>
+              <h2>Was in {branch.name} liegt</h2>
+              <p>Nur was Sie lesen dürfen: Freigegebenes aus diesem Zweig, dazu Ihre eigenen Einträge.</p>
+            </div>
+          </div>
+          <BranchKnowledge initial={units} branchName={branch.name} />
         </section>
 
         <section className="panel">
