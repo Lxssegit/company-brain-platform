@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
 import { canAdministerBranch, canReadBranch } from "@/lib/branches/access";
+import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
 
 const updateSchema = z.object({ name: z.string().trim().min(2).max(120).optional(), description: z.string().trim().max(500).nullable().optional() });
@@ -31,7 +32,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const body = updateSchema.parse(await request.json());
     const branch = await prisma.branch.findFirst({ where: { id, organizationId } });
     if (!branch) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    const updated = await prisma.branch.update({ where: { id }, data: body });
+    const updated = await prisma.$transaction(async (tx) => {
+      const next = await tx.branch.update({ where: { id }, data: body });
+      await auditEvent(tx, { organizationId, actorUserId: user.id, action: "BRANCH_UPDATED", entityType: "Branch", entityId: id, before: { name: branch.name, description: branch.description }, after: { name: next.name, description: next.description } });
+      return next;
+    });
     return NextResponse.json({ branch: updated });
   } catch (error) {
     return errorResponse(error);
@@ -62,7 +67,10 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     if (knowledge) return NextResponse.json({ error: `Branch still holds ${knowledge} knowledge unit(s). Move or archive them first.` }, { status: 409 });
     if (decisions) return NextResponse.json({ error: `Branch is still bound to ${decisions} decision(s). Detach them first.` }, { status: 409 });
 
-    await prisma.branch.delete({ where: { id } });
+    await prisma.$transaction(async (tx) => {
+      await tx.branch.delete({ where: { id } });
+      await auditEvent(tx, { organizationId, actorUserId: user.id, action: "BRANCH_DELETED", entityType: "Branch", entityId: id, before: { name: branch.name, kind: branch.kind, parentId: branch.parentId } });
+    });
     return NextResponse.json({ deleted: true });
   } catch (error) {
     return errorResponse(error);

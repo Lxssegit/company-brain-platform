@@ -5,6 +5,7 @@ import { BRANCH_KIND_VALUES } from "@/lib/domain/enums";
 import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
 import { canAdministerBranch, getVisibleBranches } from "@/lib/branches/access";
+import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
 
 const branchSchema = z.object({
@@ -41,8 +42,14 @@ export async function POST(request: Request) {
     }
 
     const id = randomUUID();
-    const branch = await prisma.branch.create({
-      data: { id, organizationId, parentId, kind: body.kind, name: body.name, description: body.description, path: parent ? `${parent.path}/${id}` : id, depth: parent ? parent.depth + 1 : 0 },
+    /* Creating a branch changes who can see what, so it belongs in the audit
+       trail as much as editing a knowledge unit does. */
+    const branch = await prisma.$transaction(async (tx) => {
+      const created = await tx.branch.create({
+        data: { id, organizationId, parentId, kind: body.kind, name: body.name, description: body.description, path: parent ? `${parent.path}/${id}` : id, depth: parent ? parent.depth + 1 : 0 },
+      });
+      await auditEvent(tx, { organizationId, actorUserId: user.id, action: "BRANCH_CREATED", entityType: "Branch", entityId: created.id, after: { name: created.name, kind: created.kind, parentId: created.parentId } });
+      return created;
     });
     return NextResponse.json({ branch }, { status: 201 });
   } catch (error) {

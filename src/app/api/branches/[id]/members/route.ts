@@ -4,6 +4,7 @@ import { BRANCH_ACCESS_VALUES } from "@/lib/domain/enums";
 import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
 import { canAdministerBranch } from "@/lib/branches/access";
+import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
 
 const memberSchema = z.object({ userId: z.string().min(1), access: z.enum(BRANCH_ACCESS_VALUES) });
@@ -21,7 +22,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       prisma.user.findFirst({ where: { id: body.userId, organizationId } }),
     ]);
     if (!branch || !user) return NextResponse.json({ error: "Branch or user not found" }, { status: 404 });
-    const membership = await prisma.branchMember.upsert({ where: { branchId_userId: { branchId, userId: body.userId } }, update: { access: body.access, grantedBy: actor.id }, create: { branchId, userId: body.userId, access: body.access, grantedBy: actor.id } });
+    const previous = await prisma.branchMember.findUnique({ where: { branchId_userId: { branchId, userId: body.userId } } });
+    const membership = await prisma.$transaction(async (tx) => {
+      const next = await tx.branchMember.upsert({ where: { branchId_userId: { branchId, userId: body.userId } }, update: { access: body.access, grantedBy: actor.id }, create: { branchId, userId: body.userId, access: body.access, grantedBy: actor.id } });
+      await auditEvent(tx, { organizationId, actorUserId: actor.id, action: previous ? "BRANCH_ACCESS_CHANGED" : "BRANCH_ACCESS_GRANTED", entityType: "BranchMember", entityId: `${branchId}:${body.userId}`, before: previous ? { access: previous.access } : undefined, after: { branchId, userId: body.userId, access: next.access } });
+      return next;
+    });
     return NextResponse.json({ membership }, { status: 201 });
   } catch (error) {
     return errorResponse(error);

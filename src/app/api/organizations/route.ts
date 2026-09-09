@@ -4,6 +4,7 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db/prisma";
+import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
 import type { PermissionKey, RoleKey } from "@prisma/client";
 import { PERMISSION_KEYS, ROLE_KEYS } from "@/lib/domain/enums";
@@ -76,6 +77,7 @@ export async function POST(request: Request) {
       }
       const adminRole = roles.find((role) => role.key === "COMPANY_ADMIN");
       await tx.user.update({ where: { id: session.user.id }, data: { organizationId: organization.id, roleId: adminRole?.id, status: "ACTIVE" } });
+      await auditEvent(tx, { organizationId: organization.id, actorUserId: session.user.id, action: "ORGANIZATION_CREATED", entityType: "Organization", entityId: organization.id, after: { name: organization.name, slug: organization.slug, founderUserId: session.user.id } });
       return organization;
     });
 
