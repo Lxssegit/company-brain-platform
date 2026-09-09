@@ -132,7 +132,7 @@ CREATE TABLE "KnowledgeUnit" (
     "approvedById" TEXT,
     "confidence" DOUBLE PRECISION,
     "verifiedAt" TIMESTAMP(3),
-    "embedding" vector,
+    "embedding" vector(1536),
     "embeddingModel" TEXT,
     "embeddedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -434,7 +434,8 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
--- Vector search would otherwise sequentially scan the table. The index is
+-- Vector search would otherwise sequentially scan the table. HNSW requires a
+-- fixed dimension, which is why the column above is vector(1536). The index is
 -- only consulted after the organization and branch predicate has been
 -- applied, which is the order src/lib/retrieval/search.ts enforces.
 CREATE INDEX IF NOT EXISTS "KnowledgeUnit_embedding_hnsw_idx"
