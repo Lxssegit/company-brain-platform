@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-09T04:04:54Z",
+  "title": "Design System: Company Brain",
+  "extensions": {
+    "colorMeta": {
+      "gold": {
+        "role": "primary",
+        "displayName": "Ember Gold",
+        "canonical": "#ffb45a",
+        "tonalRamp": [
+          "#4c2a00",
+          "#804600",
+          "#b26100",
+          "#e67d00",
+          "#ff971a",
+          "#ffb55c",
+          "#ffd199",
+          "#ffefdb"
+        ]
+      },
+      "ember": {
+        "role": "primary",
+        "displayName": "Live Ember",
+        "canonical": "#ff8d38",
+        "tonalRamp": [
+          "#4c2100",
+          "#803600",
+          "#b24c00",
+          "#e66200",
+          "#ff7c1a",
+          "#ffa25c",
+          "#ffc599",
+          "#ffebdb"
+        ]
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Deep Ember Black",
+        "canonical": "#170d09",
+        "tonalRamp": [
+          "#371f16",
+          "#5c3424",
+          "#804932",
+          "#a55d41",
+          "#be775a",
+          "#d19e8a",
+          "#e2c2b6",
+          "#f5eae5"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Raised Ember Black",
+        "canonical": "#1e120c",
+        "tonalRamp": [
+          "#372116",
+          "#5b3724",
+          "#804c33",
+          "#a46242",
+          "#bd7c5b",
+          "#d0a28a",
+          "#e2c5b6",
+          "#f5ebe6"
+        ]
+      },
+      "panel-raised": {
+        "role": "neutral",
+        "displayName": "Panel Ember Black",
+        "canonical": "#251710",
+        "tonalRamp": [
+          "#352117",
+          "#593726",
+          "#7d4d36",
+          "#a06445",
+          "#ba7d5f",
+          "#cea38d",
+          "#e0c5b8",
+          "#f4ebe6"
+        ]
+      },
+      "cream": {
+        "role": "neutral",
+        "displayName": "Warm Cream",
+        "canonical": "#fff5e5",
+        "tonalRamp": [
+          "#4c2f00",
+          "#804e00",
+          "#b26e00",
+          "#e68d00",
+          "#ffa71a",
+          "#ffc05c",
+          "#ffd899",
+          "#fff1db"
+        ]
+      },
+      "day": {
+        "role": "tertiary",
+        "displayName": "Daylight Cream",
+        "canonical": "#f7eee2",
+        "tonalRamp": [
+          "#3c2911",
+          "#64451c",
+          "#8c6027",
+          "#b47c32",
+          "#cd964b",
+          "#dcb47f",
+          "#e9d0af",
+          "#f7efe3"
+        ]
+      },
+      "day-ink": {
+        "role": "tertiary",
+        "displayName": "Bark Ink",
+        "canonical": "#29150d",
+        "tonalRamp": [
+          "#3a1e12",
+          "#61321f",
+          "#88452b",
+          "#ae5937",
+          "#c87351",
+          "#d89b83",
+          "#e6c1b2",
+          "#f6e9e4"
+        ]
+      },
+      "day-accent": {
+        "role": "tertiary",
+        "displayName": "Kiln Rust",
+        "canonical": "#a8481a",
+        "tonalRamp": [
+          "#421c0a",
+          "#6e2f11",
+          "#9b4218",
+          "#c7551f",
+          "#e06f38",
+          "#e99872",
+          "#f1bfa7",
+          "#fae9e0"
+        ]
+      },
+      "ok": {
+        "role": "secondary",
+        "displayName": "Sage Confirm",
+        "canonical": "#74c49b",
+        "tonalRamp": [
+          "#173626",
+          "#265a3f",
+          "#357d58",
+          "#44a172",
+          "#5ebb8b",
+          "#8ccead",
+          "#b7e1cb",
+          "#e6f4ed"
+        ]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "Warm Alarm",
+        "canonical": "#ff8a75",
+        "tonalRamp": [
+          "#4c0c00",
+          "#801300",
+          "#b21b00",
+          "#e62300",
+          "#ff3c1a",
+          "#ff755c",
+          "#ffa999",
+          "#ffe1db"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Marketing headlines only. Capped at 6rem; emphasised clause in italic gold."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The single serif moment on an authenticated screen: its page title."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel and section headings inside the app. Grotesk, never the serif."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text, held to roughly 62ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, navigation and metadata. Never below 0.8125rem."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ember-bloom",
+        "value": "0 10px 30px -12px rgba(255, 137, 47, .75)",
+        "purpose": "Emitted light under a primary button. Not a depth cue."
+      },
+      {
+        "name": "ember-bloom-hover",
+        "value": "0 16px 38px -14px rgba(255, 137, 47, .9)",
+        "purpose": "The same bloom, opened up on hover."
+      },
+      {
+        "name": "limb-glow",
+        "value": "0 0 12px rgba(255, 180, 90, .8)",
+        "purpose": "A lit branch tip or the scroll progress fill."
+      },
+      {
+        "name": "none",
+        "value": "none",
+        "purpose": "Every panel, card and container. Depth is tonal in this system."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Exponential ease-out for every state transition in the system."
+      },
+      {
+        "name": "duration-state",
+        "value": "200ms",
+        "purpose": "App state transitions: hover, focus, selection."
+      },
+      {
+        "name": "duration-surface",
+        "value": "300ms",
+        "purpose": "Marketing surface transitions and button lifts."
+      },
+      {
+        "name": "core-breath",
+        "value": "3.6s ease-in-out infinite",
+        "purpose": "The one ambient loop in the system: the heart of the tree."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "app-compact",
+        "value": "640px"
+      },
+      {
+        "name": "tree-compact",
+        "value": "760px"
+      },
+      {
+        "name": "hero-stack",
+        "value": "1100px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled control. Ember Gold with near-black text.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Company Brain öffnen</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:10px 16px;border:1px solid transparent;border-radius:99px;background:transparent;font:600 .9375rem/1.4 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;white-space:nowrap;cursor:pointer;transition:background 200ms cubic-bezier(.16,1,.3,1),border-color 200ms cubic-bezier(.16,1,.3,1)}.ds-btn-primary{background:#ffb45a;color:#241109;box-shadow:0 10px 30px -12px rgba(255,137,47,.75)}.ds-btn-primary:hover{background:#ffc47a;box-shadow:0 16px 38px -14px rgba(255,137,47,.9)}.ds-btn-primary:focus-visible{outline:2px solid #ffb45a;outline-offset:3px}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:disabled{opacity:.5;cursor:not-allowed}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "The default secondary control: hairline border, no fill.",
+      "html": "<button class=\"ds-btn ds-btn-quiet\">Baum öffnen</button>",
+      "css": ".ds-btn-quiet{display:inline-flex;align-items:center;gap:.5em;padding:10px 16px;border:1px solid rgba(255,225,178,.16);border-radius:99px;background:transparent;color:#fff5e5;font:600 .9375rem/1.4 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;cursor:pointer;white-space:nowrap;transition:background 200ms cubic-bezier(.16,1,.3,1),border-color 200ms cubic-bezier(.16,1,.3,1)}.ds-btn-quiet:hover{border-color:rgba(255,225,178,.3);background:rgba(255,233,205,.06)}.ds-btn-quiet:focus-visible{outline:2px solid #ffb45a;outline-offset:3px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Sunk one tone below the panel it sits on; focus shifts the border to gold.",
+      "html": "<div class=\"ds-field\"><label for=\"ds-f1\">E-Mail</label><input id=\"ds-f1\" type=\"email\" placeholder=\"du@firma.example\"><span class=\"ds-hint\">Wird serverseitig geprüft.</span></div>",
+      "css": ".ds-field{display:grid;gap:7px;font-family:'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif}.ds-field label{color:rgba(255,245,229,.68);font-size:.875rem;font-weight:500}.ds-field input{width:100%;padding:11px 13px;border:1px solid rgba(255,225,178,.16);border-radius:7px;background:#251710;color:#fff5e5;font:400 .9375rem/1.5 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;transition:border-color 200ms cubic-bezier(.16,1,.3,1)}.ds-field input::placeholder{color:rgba(255,245,229,.5)}.ds-field input:hover{border-color:rgba(255,225,178,.3)}.ds-field input:focus-visible{border-color:#ffb45a;outline:2px solid rgba(255,180,90,.35);outline-offset:0}.ds-field input[aria-invalid=\"true\"]{border-color:#ff8a75}.ds-hint{color:rgba(255,245,229,.54);font-size:.8125rem}"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The container. A lighter tone plus a hairline; never a shadow.",
+      "html": "<section class=\"ds-panel\"><h2>Zwei-Faktor-Anmeldung</h2><p>Ein zeitbasierter Code aus einer Authenticator-App, serverseitig geprüft.</p></section>",
+      "css": ".ds-panel{padding:30px;border:1px solid rgba(255,225,178,.16);border-radius:10px;background:#1e120c;font-family:'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif}.ds-panel h2{margin:0;color:#fff5e5;font-size:1.375rem;font-weight:600;letter-spacing:-.01em}.ds-panel p{margin:8px 0 0;max-width:62ch;color:rgba(255,245,229,.68);font-size:.9375rem;line-height:1.6}"
+    },
+    {
+      "name": "Status Pill",
+      "kind": "chip",
+      "refersTo": "pill-status",
+      "description": "State, never an action. Sage Confirm when on, tinted foreground when off.",
+      "html": "<span class=\"ds-pill ds-pill-on\">An</span> <span class=\"ds-pill ds-pill-off\">Aus</span>",
+      "css": ".ds-pill{display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border:1px solid rgba(255,225,178,.16);border-radius:99px;font:400 .8125rem/1.4 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;white-space:nowrap}.ds-pill::before{width:7px;height:7px;border-radius:50%;background:currentColor;content:\"\"}.ds-pill-on{border-color:rgba(116,196,155,.4);color:#74c49b}.ds-pill-off{color:rgba(255,245,229,.54)}"
+    },
+    {
+      "name": "Branch Tree Row",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "One row of the knowledge tree: kind dot, name, kind label, and a hairline rail for nesting.",
+      "html": "<ul class=\"ds-tree\"><li><a class=\"ds-tree-link\" href=\"#\" style=\"--kind:#ffb45a\"><span class=\"ds-tree-dot\"></span><span>Northstar GmbH</span><span class=\"ds-tree-kind\">unternehmen</span></a><ul class=\"ds-tree ds-tree-nested\"><li><a class=\"ds-tree-link\" href=\"#\" style=\"--kind:#ff8c3d\" aria-current=\"page\"><span class=\"ds-tree-dot\"></span><span>Produkt &amp; Technik</span><span class=\"ds-tree-kind\">abteilung</span></a></li></ul></li></ul>",
+      "css": ".ds-tree{margin:0;padding:0;list-style:none;font-family:'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif}.ds-tree-nested{margin-left:11px;padding-left:17px;border-left:1px solid rgba(255,225,178,.16)}.ds-tree li{position:relative}.ds-tree-nested>li::before{position:absolute;top:20px;left:-17px;width:13px;height:1px;background:rgba(255,225,178,.16);content:\"\"}.ds-tree-link{display:inline-flex;align-items:center;gap:11px;padding:9px 11px;border-radius:7px;color:#fff5e5;font-size:.9375rem;text-decoration:none;transition:background 200ms cubic-bezier(.16,1,.3,1)}.ds-tree-link:hover{background:rgba(255,233,205,.06)}.ds-tree-link[aria-current=\"page\"]{background:rgba(255,180,90,.13);color:#ffb45a}.ds-tree-dot{width:9px;height:9px;flex:none;border-radius:50%;background:var(--kind,rgba(255,225,178,.3))}.ds-tree-kind{margin-left:6px;color:rgba(255,245,229,.54);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Ember in the Dark Room",
+    "overview": "The system behaves like a single warm light in an unlit room. The ground is near-black with red in it, not neutral grey, and every accent sits on one warm ramp running from deep rust through ember orange to pale gold. Colour is not decoration here: it is the signal that something is alive, permitted, or currently selected.\n\nThe product's own metaphor drives the visual one. A company brain is a tree that grows from a root, and the marketing surface renders that literally as a glowing tree drawn limb by limb as the reader scrolls. The authenticated surface then deliberately turns the light down: the same palette, the same faces, but colour withdrawn to actions, selection and state.\n\nThe result is two registers of one world. Marketing is allowed to be scenic. The app is restrained. The serif crosses that border exactly once per screen, on the page title, and never touches a label, a control or a value.",
+    "keyCharacteristics": [
+      "One warm ramp; no cool hue anywhere in the system.",
+      "Light-as-material: glow means emission, not depth. Depth is tonal.",
+      "Two registers, one palette: scenic marketing, restrained product.",
+      "Text tints are the foreground at lower opacity, never grey.",
+      "Motion earns its place once per surface, then stops."
+    ],
+    "rules": [
+      {
+        "name": "The One Ramp Rule",
+        "body": "Every colour in the system is a step on the rust to ember to gold ramp, plus the two semantic signals. There is no blue, no violet, no grey. A proposed colour that cannot be placed on that ramp does not belong to this system.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tinted Text Rule",
+        "body": "Secondary and tertiary text is the cream foreground at reduced opacity, never a grey. The alpha floor is .52; below that, 4.5:1 against the ground gives out.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Distance Rule",
+        "body": "Only two semantic colours exist, and both are deliberately far enough from the accent that a status pill can never be mistaken for a button.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Serif Per Screen Rule",
+        "body": "The display serif appears once on an authenticated screen, as its title. A serif label, a serif button, or a serif value is always wrong.",
+        "section": "typography"
+      },
+      {
+        "name": "The -0.02em Floor Rule",
+        "body": "Display tracking never goes tighter than -0.02em. The system previously ran -0.059em at 118px and the letterforms collided.",
+        "section": "typography"
+      },
+      {
+        "name": "The 13px Floor Rule",
+        "body": "No real text renders below 0.8125rem. Metadata that will not fit at that size is metadata the screen does not need.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glow-Is-Light Rule",
+        "body": "A zero-offset coloured shadow is only permitted on an element that is supposed to be emitting light. Everything else uses tone and a hairline. A glowing card is a category error.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do place every new colour on the rust to ember to gold ramp, or justify it as one of the two semantic signals.",
+      "Do convey depth with the three ground tones and a hairline.",
+      "Do tint secondary text from the cream foreground, never toward grey, and never below .52 alpha.",
+      "Do reset background: transparent on any button base class.",
+      "Do give every interactive element hover, focus-visible, active, disabled and busy before shipping it.",
+      "Do keep one authored motion moment per surface and use cubic-bezier(.16, 1, .3, 1) at 200-300ms for everything else."
+    ],
+    "donts": [
+      "Don't put an eyebrow or kicker label above a heading. The heading carries its own weight.",
+      "Don't number sections (01 / 02 / 03) unless the sequence itself is information the reader needs.",
+      "Don't use monospace as a costume for technical. It is for keys, commands and code.",
+      "Don't build a page out of same-size cards of dot plus heading plus text.",
+      "Don't stand a Unicode glyph in for an icon. Icons are drawn SVG at a single 1.5 stroke.",
+      "Don't ramp a gradient from the night ground to the daylight cream. Every such interpolation passes through mud.",
+      "Don't animate padding, width, height or margin. Transform and opacity only.",
+      "Don't let the display serif touch a label, a control, or a value."
+    ]
+  }
+}
