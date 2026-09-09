@@ -24,7 +24,7 @@
 .icon { width: 1em; height: 1em; margin-left: .55em; vertical-align: -.09em; }
 .brand-mark { width: 22px; height: 22px; color: var(--gold); }
 
-/* Display voice. Capped at 6rem, tracking never tighter than -.02em: an
+/* Display voice. Capped at 4.5rem, tracking never tighter than -.02em: an
    editorial serif loses its joins long before a grotesk does. */
 .landing-page :where(h1, h2) {
   margin: 0;

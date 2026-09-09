@@ -173,7 +173,7 @@
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Marketing headlines only. Capped at 6rem; emphasised clause in italic gold."
+        "purpose": "Marketing headlines only, capped at 4.5rem — the cap is set by the longest headline on the page, not by the face. Emphasised clause in italic gold."
       },
       "headline": {
         "displayName": "Headline",

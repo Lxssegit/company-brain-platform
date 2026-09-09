@@ -8,7 +8,7 @@ const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta
  *  which meant `pnpm lint` could never run unattended. This is the ESLint CLI
  *  path Next recommends instead. */
 const config = [
-  { ignores: [".next/**", "node_modules/**", "prisma/migrations/**", "app.js", "index.html", "next-env.d.ts"] },
+  { ignores: [".next/**", "node_modules/**", "prisma/migrations/**", "next-env.d.ts"] },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {

@@ -44,7 +44,7 @@ colors:
 typography:
   display:
     fontFamily: "Instrument Serif, ui-serif, Georgia, serif"
-    fontSize: "clamp(2.9rem, 7.4vw, 6rem)"
+    fontSize: "clamp(2.6rem, 5.6vw, 4.5rem)"
     fontWeight: 400
     lineHeight: 0.99
     letterSpacing: "-0.02em"
@@ -263,8 +263,11 @@ Font License, so the pages ship no third-party request.
 
 ### Hierarchy
 
-- **Display** (400, `clamp(2.9rem, 7.4vw, 6rem)`, 0.99, -0.02em): Marketing
-  headlines only. Capped at 6rem; the emphasised clause is set in italic gold.
+- **Display** (400, `clamp(2.6rem, 5.6vw, 4.5rem)`, 0.99, -0.02em): Marketing
+  headlines only, capped at 4.5rem. The cap is set by the longest headline the
+  page carries, not by how large the face can go: a full sentence at 6rem took a
+  third of the viewport and left nothing above the fold. The emphasised clause is
+  set in italic gold.
 - **Headline** (400, 2.25rem, -0.02em): The single serif moment on an
   authenticated screen — the page title, nothing else.
 - **Title** (600, 1.375rem, grotesk): Panel and section headings inside the app.

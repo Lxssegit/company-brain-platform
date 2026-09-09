@@ -108,13 +108,9 @@ Three mechanisms, all implemented in the codebase rather than aspirational:
 - `README.md` — setup and the API surface.
 - Working implementation: 22 routes, the permission policy, the retrieval
   pipeline, and `tests/security/permissions.test.ts` (13 passing unit tests).
-- `index.html`, `app.js`, `styles.css` — the original static prototype, kept as a
-  reference. Its demo company is "Northstar Co." with Sales, Product & Tech,
-  Service, Finance and Leadership.
 - **Absences future work must not fill in:** there are no customers, testimonials,
-  case studies, benchmarks, pricing, press or usage numbers. There are also no
-  committed database migrations (`prisma/migrations/` does not exist), despite
-  the README instructing `pnpm db:migrate`.
+  case studies, benchmarks, pricing, press or usage numbers. Naming any would be
+  invention, not documentation.
 
 ## Product Principles
 
