@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { hasRolePermission } from "@/lib/permissions/policy";
 import { AppBar } from "@/components/AppBar";
 import { ROLE_LABEL } from "@/lib/i18n/de";
 import { ArrowUpRight } from "@/components/icons";
@@ -21,7 +22,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="app">
-      <AppBar context="Übersicht" user={session.user.email} />
+      <AppBar context="Übersicht" user={session.user.email} canApprove={hasRolePermission(account?.role?.key, "APPROVE")} />
       <main className="app-main">
         <div className="app-head">
           <div>

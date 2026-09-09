@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { canReadBranch, getVisibleBranches } from "@/lib/branches/access";
 import { getInheritancePath } from "@/lib/branches/tree";
+import { hasRolePermission } from "@/lib/permissions/policy";
 import { AppBar } from "@/components/AppBar";
 import { BRANCH_KIND_LABEL } from "@/lib/i18n/de";
 
@@ -14,10 +15,12 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
   /* An unreachable store is not the same as an unauthorized branch, and the
      reader deserves to be told which one happened. */
   let branches: Awaited<ReturnType<typeof getVisibleBranches>>;
+  let canApprove = false;
   try {
     /* Same reason as /brain: authorize against the record, not the token. */
     const account = await getCurrentUser();
     if (!account || account.status !== "ACTIVE") redirect("/login");
+    canApprove = hasRolePermission(account.role?.key, "APPROVE");
     if (!(await canReadBranch(account, branchId))) notFound();
     branches = await getVisibleBranches(account);
   } catch (error) {
@@ -45,7 +48,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
 
   return (
     <div className="app">
-      <AppBar context={branch.name} user={session.user.email} />
+      <AppBar context={branch.name} user={session.user.email} canApprove={canApprove} />
       <main className="app-main">
         <nav aria-label="Pfad des Zweigs">
           <ol className="crumbs">

@@ -69,6 +69,10 @@
 .btn-primary:not(:disabled):hover { background: #ffc47a; }
 .btn-quiet { border-color: var(--hairline); color: var(--on-night); }
 .btn-quiet:not(:disabled):hover { border-color: var(--hairline-strong); background: var(--night-raised); }
+/* Refusing is not the affirming act, so it does not wear the ember. It carries
+   the one cool tint the ramp allows and stays outlined. */
+.btn-danger { border-color: rgba(255, 138, 117, .45); color: var(--danger); }
+.btn-danger:not(:disabled):hover { border-color: var(--danger); background: rgba(255, 138, 117, .1); }
 .btn-ghost { padding: 8px 12px; color: var(--on-night-muted); font-weight: 500; }
 .btn-ghost:not(:disabled):hover { color: var(--on-night); background: var(--night-raised); }
 .btn-block { width: 100%; }
@@ -225,6 +229,19 @@
 .hit-meta { margin-top: 4px; color: var(--on-night-subtle); font-size: .8125rem; }
 .hit-content { max-width: var(--measure); margin-top: 8px; color: var(--on-night-muted); font-size: .9375rem; }
 .hit-foot { margin-top: 10px; color: var(--on-night-subtle); font-size: .8125rem; }
+/* A queue of decisions is read one item at a time, so the column is the
+   reading measure and not the page. A full-width card around 62ch of prose is
+   mostly empty card. */
+.app-main-narrow { max-width: 720px; }
+
+.review-list { margin: 0; padding: 0; list-style: none; }
+.review-list li + li { margin-top: 18px; }
+.review-actions { display: flex; flex-wrap: wrap; margin-top: 20px; gap: 10px; }
+.optional { color: var(--on-night-subtle); font-weight: 400; }
+/* Rejecting opens a second act inside the card; the rule says so. */
+.review-reject { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--hairline); }
+.review-count { margin: -12px 0 16px; color: var(--on-night-subtle); font-size: .8125rem; }
+
 .hit-group-title { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 1.125rem; }
 
 @media (max-width: 640px) {
