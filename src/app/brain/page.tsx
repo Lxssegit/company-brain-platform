@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getVisibleBranches } from "@/lib/branches/access";
 import { AppBar } from "@/components/AppBar";
+import { BRANCH_KIND_LABEL, branchCount } from "@/lib/i18n/de";
 
 type Branches = Awaited<ReturnType<typeof getVisibleBranches>>;
 
@@ -16,7 +17,7 @@ function Tree({ branches, parentId = null }: { branches: Branches; parentId?: st
           <Link className={`tree-link kind-${branch.kind.toLowerCase()}`} href={`/brain/${branch.id}`}>
             <span className="tree-dot" aria-hidden="true" />
             <span>{branch.name}</span>
-            <span className="tree-kind">{branch.kind.toLowerCase()}</span>
+            <span className="tree-kind">{BRANCH_KIND_LABEL[branch.kind]}</span>
           </Link>
           <Tree branches={branches} parentId={branch.id} />
         </li>
@@ -41,28 +42,26 @@ export default async function BrainPage() {
 
   return (
     <div className="app">
-      <AppBar context="Knowledge tree" user={session.user.email} />
+      <AppBar context="Wissensbaum" user={session.user.email} />
       <main className="app-main">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Your authorized context.</h1>
-            <p>Every branch below was filtered on the server against your organization, your role and the grants made to you. A branch you cannot read is not rendered here at all.</p>
+            <h1 className="page-title">Ihr berechtigter Kontext.</h1>
+            <p>Jeder Zweig hier unten wurde auf dem Server gegen Ihre Organisation, Ihre Rolle und Ihre Freigaben gefiltert. Einen Zweig, den Sie nicht lesen dürfen, gibt es auf dieser Seite gar nicht.</p>
           </div>
         </div>
 
         <section className="panel">
           <div className="tree-panel-head">
-            <h2>{unreachable ? "Branches" : `${branches.length} ${branches.length === 1 ? "branch" : "branches"}`}</h2>
-            <span className={`pill ${unreachable ? "pill-off" : "pill-on"}`}>{unreachable ? "Unavailable" : "Permission filtered"}</span>
+            <h2>{unreachable ? "Zweige" : branchCount(branches.length)}</h2>
+            <span className={`pill ${unreachable ? "pill-off" : "pill-on"}`}>{unreachable ? "Nicht erreichbar" : "Berechtigungsgefiltert"}</span>
           </div>
           {unreachable ? (
             <div className="state">
-              <h3>The knowledge tree is unreachable</h3>
-              <p>The branch store did not answer. In local development this usually means PostgreSQL is not running yet:</p>
-              <code className="code-block">docker compose up -d db
-pnpm db:migrate
-pnpm db:seed</code>
-              <Link className="btn btn-quiet" href="/dashboard">Back to overview</Link>
+              <h3>Der Wissensbaum ist nicht erreichbar</h3>
+              <p>Der Zweig-Speicher hat nicht geantwortet. Lokal heißt das meistens, dass PostgreSQL noch nicht läuft:</p>
+              <code className="code-block">{"docker compose up -d db\npnpm db:migrate\npnpm db:seed"}</code>
+              <Link className="btn btn-quiet" href="/dashboard">Zurück zur Übersicht</Link>
             </div>
           ) : branches.length ? (
             <Tree branches={branches} />
@@ -70,9 +69,9 @@ pnpm db:seed</code>
             /* An empty tree is almost always a missing grant, not an empty
                company, so the state says what to do about it. */
             <div className="state">
-              <h3>No branches are readable for you yet</h3>
-              <p>Your account is signed in, but no branch has been granted to it. Someone with the branch-management permission can add you through <code>POST /api/branches/:id/members</code>, or assign you a personal branch when your user is created.</p>
-              <Link className="btn btn-quiet" href="/dashboard">Back to overview</Link>
+              <h3>Für Sie ist noch kein Zweig lesbar</h3>
+              <p>Ihr Konto ist angemeldet, aber ihm wurde noch kein Zweig freigegeben. Wer die Berechtigung zur Zweigverwaltung hat, kann Sie über <code>POST /api/branches/:id/members</code> hinzufügen oder Ihnen beim Anlegen des Kontos einen persönlichen Zweig zuweisen.</p>
+              <Link className="btn btn-quiet" href="/dashboard">Zurück zur Übersicht</Link>
             </div>
           )}
         </section>

@@ -26,13 +26,13 @@ const TRUNK = "M500 735 C472 643 516 562 492 490 C474 434 500 367 505 294 C510 2
 const ROOTS = "M501 681 C450 704 415 725 365 746 M505 689 C553 710 600 725 652 743 M481 700 C447 738 432 753 412 758 M524 698 C558 732 580 747 606 758";
 
 const branches: Branch[] = [
-  { id: "strategy", label: "Strategy", copy: "The company-wide context that keeps every decision pointed at the same horizon.", d: "M502 350 C451 316 403 285 330 241 C294 219 253 208 203 202", tip: [203, 202], start: 0.26, span: 0.16, accent: "#ffb45a" },
-  { id: "customers", label: "Customers", copy: "Customer needs and market signals become useful context instead of scattered notes.", d: "M507 273 C556 238 613 209 681 185 C737 165 787 158 845 170", tip: [845, 170], start: 0.30, span: 0.16, accent: "#ffe0a8" },
-  { id: "people", label: "People", copy: "Roles, expertise and the living context behind the people who move the company forward.", d: "M497 447 C438 416 381 393 302 371 C250 357 201 359 145 380", tip: [145, 380], start: 0.36, span: 0.16, accent: "#ffd18a" },
-  { id: "decisions", label: "Decisions", copy: "The why behind important choices stays visible, connected and easy to revisit.", d: "M506 385 C553 349 607 315 680 286 C737 263 773 255 812 257", tip: [812, 257], start: 0.42, span: 0.16, accent: "#ff9c4d" },
-  { id: "knowledge", label: "Knowledge", copy: "Verified knowledge grows into a permission-aware source of truth for the whole team.", d: "M501 506 C568 476 634 454 710 430 C771 411 827 405 885 421", tip: [885, 421], start: 0.48, span: 0.16, accent: "#ffc16d" },
-  { id: "operations", label: "Operations", copy: "The small signals, rituals and workflows that make the organization feel alive.", d: "M503 566 C556 549 614 543 690 550 C748 556 792 566 830 583", tip: [830, 583], start: 0.54, span: 0.16, accent: "#ff7b2d" },
-  { id: "product", label: "Product & Tech", copy: "The shared memory of what is being built, why it matters and how it works.", d: "M499 604 C444 590 390 587 322 596 C266 604 224 615 188 632", tip: [188, 632], start: 0.60, span: 0.16, accent: "#ff8c3d" },
+  { id: "strategy", label: "Strategie", copy: "Der unternehmensweite Kontext, der jede Entscheidung auf denselben Horizont ausrichtet.", d: "M502 350 C451 316 403 285 330 241 C294 219 253 208 203 202", tip: [203, 202], start: 0.26, span: 0.16, accent: "#ffb45a" },
+  { id: "customers", label: "Kunden", copy: "Aus Kundenbedürfnissen und Marktsignalen wird nutzbarer Kontext statt verstreuter Notizen.", d: "M507 273 C556 238 613 209 681 185 C737 165 787 158 845 170", tip: [845, 170], start: 0.30, span: 0.16, accent: "#ffe0a8" },
+  { id: "people", label: "Menschen", copy: "Rollen, Fachwissen und der lebendige Kontext hinter den Menschen, die das Unternehmen tragen.", d: "M497 447 C438 416 381 393 302 371 C250 357 201 359 145 380", tip: [145, 380], start: 0.36, span: 0.16, accent: "#ffd18a" },
+  { id: "decisions", label: "Entscheidungen", copy: "Das Warum hinter wichtigen Entscheidungen bleibt sichtbar, verknüpft und nachlesbar.", d: "M506 385 C553 349 607 315 680 286 C737 263 773 255 812 257", tip: [812, 257], start: 0.42, span: 0.16, accent: "#ff9c4d" },
+  { id: "knowledge", label: "Wissen", copy: "Geprüftes Wissen wächst zu einer berechtigungsbewussten Quelle der Wahrheit für das ganze Team.", d: "M501 506 C568 476 634 454 710 430 C771 411 827 405 885 421", tip: [885, 421], start: 0.48, span: 0.16, accent: "#ffc16d" },
+  { id: "operations", label: "Betrieb", copy: "Die kleinen Signale, Rituale und Abläufe, die eine Organisation lebendig machen.", d: "M503 566 C556 549 614 543 690 550 C748 556 792 566 830 583", tip: [830, 583], start: 0.54, span: 0.16, accent: "#ff7b2d" },
+  { id: "product", label: "Produkt & Technik", copy: "Das gemeinsame Gedächtnis dafür, was gebaut wird, warum es zählt und wie es funktioniert.", d: "M499 604 C444 590 390 587 322 596 C266 604 224 615 188 632", tip: [188, 632], start: 0.60, span: 0.16, accent: "#ff8c3d" },
 ];
 
 const limbStyle = (branch: Branch) => ({ "--limb-start": branch.start, "--limb-span": branch.span, "--limb-accent": branch.accent }) as CSSProperties;
@@ -117,7 +117,7 @@ export default function HomePage() {
       if (caption) {
         const reached = branches.filter((branch) => value >= branch.start + branch.span * 0.8);
         const current = reached[reached.length - 1];
-        caption.textContent = current ? current.label : "Taking root";
+        caption.textContent = current ? current.label : "Schlägt Wurzeln";
         caption.style.setProperty("--limb-accent", current ? current.accent : "var(--gold)");
       }
     };
@@ -154,23 +154,23 @@ export default function HomePage() {
 
   return (
     <main className="landing-page">
-      <nav className="landing-nav" aria-label="Primary">
+      <nav className="landing-nav" aria-label="Hauptnavigation">
         <Link className="landing-brand" href="/"><BrandMark /><span>Company Brain</span></Link>
         <div className="landing-nav-actions">
-          <a href="#branches">Explore the branches</a>
-          <Link className="nav-signin" href="/login">Sign in <ArrowUpRight /></Link>
+          <a href="#branches">Zweige entdecken</a>
+          <Link className="nav-signin" href="/login">Anmelden <ArrowUpRight /></Link>
         </div>
       </nav>
 
       <section className="landing-hero">
         <div className="hero-copy">
-          <h1>Everything your company knows, <em>alive.</em></h1>
-          <p className="hero-description">Company Brain turns scattered knowledge, decisions and context into one living system your whole team can grow together. The operating memory for your company.</p>
+          <h1>Alles, was Ihr Unternehmen weiß. <em>Lebendig.</em></h1>
+          <p className="hero-description">Company Brain macht aus verstreutem Wissen, Entscheidungen und Kontext ein lebendiges System, das Ihr ganzes Team gemeinsam wachsen lässt. Das Betriebsgedächtnis Ihres Unternehmens.</p>
           <div className="hero-actions">
-            <a className="hero-button hero-button-primary" href="#branches">See how it grows <ArrowDown /></a>
-            <Link className="hero-button hero-button-quiet" href="/login">Enter your brain <ArrowUpRight /></Link>
+            <a className="hero-button hero-button-primary" href="#branches">Sehen, wie es wächst <ArrowDown /></a>
+            <Link className="hero-button hero-button-quiet" href="/login">Zum Company Brain <ArrowUpRight /></Link>
           </div>
-          <p className="hero-proof">One connected source of truth.</p>
+          <p className="hero-proof">Eine einzige verbundene Quelle der Wahrheit.</p>
         </div>
         <div className="hero-ember"><HeroSeed /></div>
       </section>
@@ -178,12 +178,12 @@ export default function HomePage() {
       <section className="brain-story" id="branches" ref={storyRef}>
         <div className="story-sticky">
           <div className="story-intro">
-            <h2>From one root, <span>many minds.</span></h2>
-            <p>Scroll, and the tree grows. Every limb carries a layer of company context out to the place where your team needs it.</p>
+            <h2>Aus einer Wurzel, <span>viele Köpfe.</span></h2>
+            <p>Scrollen Sie – der Baum wächst. Jeder Ast trägt eine Ebene Unternehmenskontext dorthin, wo Ihr Team sie braucht.</p>
           </div>
 
           <div className="brain-tree-scene" ref={sceneRef}>
-            <svg className="brain-tree-svg" ref={svgRef} viewBox={compact ? "112 26 796 774" : "-60 -20 1140 810"} role="img" aria-label="A glowing tree whose seven limbs each carry one layer of company context" preserveAspectRatio="xMidYMid meet">
+            <svg className="brain-tree-svg" ref={svgRef} viewBox={compact ? "112 26 796 774" : "-60 -20 1140 810"} role="img" aria-label="Ein leuchtender Baum, dessen sieben Äste je eine Ebene Unternehmenskontext tragen" preserveAspectRatio="xMidYMid meet">
               <defs>
                 <linearGradient id="trunkGradient" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stopColor="#8c3f1d" /><stop offset=".38" stopColor="#d96928" /><stop offset=".72" stopColor="#ffc56c" /><stop offset="1" stopColor="#fff0bb" /></linearGradient>
                 <linearGradient id="branchGradient" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stopColor="#b84a20" /><stop offset=".55" stopColor="#ff963e" /><stop offset="1" stopColor="#ffe2a0" /></linearGradient>
@@ -227,16 +227,16 @@ export default function HomePage() {
                 ))}
               </div>
             ) : null}
-            <p className="tree-caption" ref={captionRef} aria-hidden="true">Taking root</p>
+            <p className="tree-caption" ref={captionRef} aria-hidden="true">Schlägt Wurzeln</p>
           </div>
 
           <div className="story-progress"><span className="story-progress-track" aria-hidden="true"><i /></span><span className="story-progress-count" ref={counterRef}>0%</span></div>
         </div>
       </section>
 
-      <section className="branch-index" aria-label="Company Brain branches">
+      <section className="branch-index" aria-label="Die Zweige von Company Brain">
         <div className="index-inner">
-          <h2>Every branch has a place.<br /><span>Every place has a story.</span></h2>
+          <h2>Jeder Zweig hat seinen Platz.<br /><span>Jeder Platz hat seine Geschichte.</span></h2>
           <ul className="index-list">
             {branches.map((branch) => (
               <li key={branch.id} id={`branch-${branch.id}`}>
@@ -252,14 +252,14 @@ export default function HomePage() {
       </section>
 
       <section className="landing-cta">
-        <h2>Give your company<br /><em>a memory that moves.</em></h2>
-        <Link className="hero-button hero-button-primary" href="/login">Enter Company Brain <ArrowUpRight /></Link>
+        <h2>Geben Sie Ihrem Unternehmen<br /><em>ein Gedächtnis, das mitgeht.</em></h2>
+        <Link className="hero-button hero-button-primary" href="/login">Company Brain öffnen <ArrowUpRight /></Link>
       </section>
 
       <footer className="landing-footer">
         <span>&copy; 2026 Company Brain</span>
-        <span>Built for the context between the lines.</span>
-        <Link href="/login">Sign in <ArrowUpRight /></Link>
+        <span>Gebaut für den Kontext zwischen den Zeilen.</span>
+        <Link href="/login">Anmelden <ArrowUpRight /></Link>
       </footer>
     </main>
   );

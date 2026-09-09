@@ -67,12 +67,16 @@ Three mechanisms, all implemented in the codebase rather than aspirational:
 
 ## Capabilities and Constraints
 
-- **Product language is German.** Confirmed. The current interface copy on the
-  landing page and the authenticated screens is English and is technical debt to
-  be translated, not a finished state. Domain identifiers in code are English
-  (`Branch`, `KnowledgeUnit`, `Decision`, `Review`, `Source`); whether the
-  surfaces keep those words or take German equivalents is **undecided** and needs
-  a glossary decision before the translation.
+- **Product language is German.** Confirmed, and the interface is translated.
+  Domain identifiers stay English in code (`Branch`, `KnowledgeUnit`, `Decision`,
+  `Review`, `Source`); the words a user reads are German, held in one glossary at
+  `src/lib/i18n/de.ts`. The mapping — Branch → *Zweig*, knowledge tree →
+  *Wissensbaum*, Decision → *Entscheidung*, Review → *Freigabe*, Source →
+  *Quelle* — was chosen to keep the product's tree metaphor intact and is
+  **proposed, not confirmed by the owner**.
+- **Form of address: Sie.** Chosen for the KMU target market. The repository's
+  earlier German strings were developer-facing and informal, so there was no
+  product precedent to follow. Also **proposed, not confirmed**.
 - Multi-tenant. Every tenant-owned row carries `organizationId`, enforced in the
   query layer.
 - Knowledge types: `FACT`, `PROCESS`, `RULE`, `DECISION`, `CUSTOMER`, `PRODUCT`,
@@ -86,8 +90,8 @@ Three mechanisms, all implemented in the codebase rather than aspirational:
 - Planned but not built: integrations with an encrypted-token boundary, an
   outbox for reliable background work and n8n hooks, onboarding plans. No
   "connected" state may be shown for an integration that does not exist.
-- **Undecided:** accessibility standard; German glossary for the domain terms;
-  where inside KMU the size band sits.
+- **Undecided:** accessibility standard; where inside KMU the size band sits;
+  owner confirmation of the glossary and the Sie/du decision above.
 
 ## Brand Commitments
 

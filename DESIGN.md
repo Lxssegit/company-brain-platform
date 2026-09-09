@@ -7,17 +7,40 @@ colors:
   panel-raised: "#251710"
   ember: "#ff8d38"
   gold: "#ffb45a"
+  gold-hover: "#ffc47a"
+  selection: "#ffc985"
+  root: "#d66527"
+  core-light: "#fff1b9"
+  spark: "#ffe0a2"
   cream: "#fff5e5"
   on-night-muted: "rgba(255, 245, 229, .68)"
   on-night-subtle: "rgba(255, 245, 229, .54)"
   hairline: "rgba(255, 225, 178, .16)"
   hairline-strong: "rgba(255, 225, 178, .3)"
   day: "#f7eee2"
+  day-raised: "#fffaf2"
   day-ink: "#29150d"
+  day-ink-strong: "#543c2e"
   day-ink-muted: "#6a5041"
   day-accent: "#a8481a"
   ok: "#74c49b"
+  ok-text: "#bfe6d1"
   danger: "#ff8a75"
+  danger-text: "#ffc9bf"
+  code-ground: "#100906"
+  code-text: "#ffd9a4"
+  ember-bloom: "rgba(255, 137, 47, .75)"
+  ember-bloom-strong: "rgba(255, 137, 47, .9)"
+  story-wash: "rgba(130, 47, 18, .3)"
+  dawn-wash: "rgba(255, 170, 92, .2)"
+  horizon-rule: "rgba(255, 168, 84, .55)"
+  ramp-1: "#ff7b2d"
+  ramp-2: "#ff8c3d"
+  ramp-3: "#ff9c4d"
+  ramp-4: "#ffb45a"
+  ramp-5: "#ffc16d"
+  ramp-6: "#ffd18a"
+  ramp-7: "#ffe0a8"
 typography:
   display:
     fontFamily: "Instrument Serif, ui-serif, Georgia, serif"
@@ -47,7 +70,58 @@ typography:
     fontSize: "0.875rem"
     fontWeight: 500
     lineHeight: 1.4
+  display-section:
+    fontFamily: "Instrument Serif, ui-serif, Georgia, serif"
+    fontSize: "clamp(2.1rem, 4.2vw, 3.6rem)"
+    fontWeight: 400
+    lineHeight: 0.99
+    letterSpacing: "-0.02em"
+  page:
+    fontFamily: "Instrument Serif, ui-serif, Georgia, serif"
+    fontSize: "2.25rem"
+    fontWeight: 400
+    lineHeight: 1.15
+    letterSpacing: "-0.02em"
+  page-compact:
+    fontFamily: "Instrument Serif, ui-serif, Georgia, serif"
+    fontSize: "1.75rem"
+    fontWeight: 400
+    lineHeight: 1.15
+    letterSpacing: "-0.02em"
+  section:
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.75rem"
+    fontWeight: 600
+    lineHeight: 1.2
+  lead:
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.125rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  ui:
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.9375rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  small:
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.8125rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  micro:
+    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 400
+    lineHeight: 1.4
+    letterSpacing: "0.06em"
+  code:
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "0.8125rem"
+    fontWeight: 400
+    lineHeight: 1.75
 rounded:
+  xs: "2px"
+  code: "6px"
   sm: "7px"
   md: "10px"
   pill: "99px"
@@ -207,8 +281,13 @@ value is always wrong; product UI reads in the grotesk.
 **The -0.02em Floor Rule.** Display tracking never goes tighter than -0.02em. The
 system previously ran -0.059em at 118px and the letterforms collided.
 
-**The 13px Floor Rule.** No real text renders below 0.8125rem. Metadata that will
-not fit at that size is metadata the screen does not need.
+**The 13px Floor Rule.** No real text renders below 0.8125rem, and 0.75rem is
+reserved for the uppercase branch-kind label alone. Metadata that will not fit at
+0.8125rem is metadata the screen does not need.
+
+**The Ten Steps Rule.** The whole system runs on ten sizes — 0.75, 0.8125, 0.875,
+0.9375, 1, 1.125, 1.375, 1.75, 2, 2.25rem — plus two display clamps. An
+eleventh step is drift, not a design decision; snap to the nearest existing step.
 
 ## Layout
 

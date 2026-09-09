@@ -10,29 +10,27 @@ export default function LoginPage() {
   return (
     <main className="app auth-shell">
       <div className="auth-card">
-        <Link className="auth-back" href="/"><ArrowLeft /> Back to Company Brain</Link>
+        <Link className="auth-back" href="/"><ArrowLeft /> Zurück zu Company Brain</Link>
         <BrandMark />
-        <h1 className="page-title">Sign in.</h1>
-        <p className="auth-lede">Your organization and role are resolved on the server. The browser never gets to claim them.</p>
+        <h1 className="page-title">Anmelden.</h1>
+        <p className="auth-lede">Organisation und Rolle werden auf dem Server aufgelöst. Der Browser darf sie nie behaupten.</p>
 
         {localConfigured ? <LocalLoginForm /> : null}
-        {localConfigured && googleConfigured ? <p className="auth-divider">or</p> : null}
-        {googleConfigured ? <a className="btn btn-quiet btn-block" href="/api/auth/signin/google">Continue with Google <ArrowUpRight /></a> : null}
+        {localConfigured && googleConfigured ? <p className="auth-divider">oder</p> : null}
+        {googleConfigured ? <a className="btn btn-quiet btn-block" href="/api/auth/signin/google">Mit Google fortfahren <ArrowUpRight /></a> : null}
 
-        {/* A first clone lands here with nothing configured, so this state
-            teaches the two commands instead of only naming the problem. */}
+        {/* Nach einem frischen Clone landet man genau hier. Dieser Zustand zeigt
+            die zwei Befehle, statt das Problem nur zu benennen. */}
         {nothingConfigured ? (
           <div className="state">
-            <h3>No sign-in method is configured yet</h3>
-            <p>Local development sign-in needs an <code>.env</code> file. From the project root:</p>
-            <code className="code-block">cp .env.example .env
-pnpm db:generate
-pnpm dev</code>
-            <p>That enables the local credentials provider with the demo account from <code>.env</code>. Google sign-in stays optional and needs real values for <code>AUTH_GOOGLE_ID</code> and <code>AUTH_GOOGLE_SECRET</code>.</p>
+            <h3>Es ist noch kein Anmeldeweg eingerichtet</h3>
+            <p>Die lokale Anmeldung braucht eine Datei namens <code>.env</code> im Projektordner:</p>
+            <code className="code-block">{"cp .env.example .env\npnpm db:generate\npnpm dev"}</code>
+            <p>Damit ist der lokale Zugang mit dem Demo-Konto aus der <code>.env</code> aktiv. Für die Google-Anmeldung braucht es zusätzlich echte Werte für <code>AUTH_GOOGLE_ID</code> und <code>AUTH_GOOGLE_SECRET</code> — beides optional.</p>
           </div>
         ) : null}
 
-        <p className="auth-foot">Passwords are stored as scrypt hashes. Two-step codes are verified server-side.</p>
+        <p className="auth-foot">Passwörter werden als scrypt-Hash gespeichert. Zwei-Faktor-Codes prüft der Server.</p>
       </div>
     </main>
   );

@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { canReadBranch, getVisibleBranches } from "@/lib/branches/access";
 import { getInheritancePath } from "@/lib/branches/tree";
 import { AppBar } from "@/components/AppBar";
+import { BRANCH_KIND_LABEL } from "@/lib/i18n/de";
 
 export default async function BranchPage({ params }: { params: Promise<{ branchId: string }> }) {
   const session = await auth();
@@ -20,13 +21,13 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
     if (error && typeof error === "object" && "digest" in error) throw error;
     return (
       <div className="app">
-        <AppBar context="Branch" user={session.user.email} />
+        <AppBar context="Zweig" user={session.user.email} />
         <main className="app-main">
           <section className="panel">
             <div className="state">
-              <h3>This branch is unreachable</h3>
-              <p>The branch store did not answer, so nothing about this branch can be shown. In local development, start PostgreSQL and run the migrations, then reload.</p>
-              <Link className="btn btn-quiet" href="/brain">Back to the tree</Link>
+              <h3>Dieser Zweig ist nicht erreichbar</h3>
+              <p>Der Zweig-Speicher hat nicht geantwortet, deshalb lässt sich zu diesem Zweig nichts anzeigen. Lokal: PostgreSQL starten, Migrationen ausführen, neu laden.</p>
+              <Link className="btn btn-quiet" href="/brain">Zurück zum Baum</Link>
             </div>
           </section>
         </main>
@@ -43,9 +44,9 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
     <div className="app">
       <AppBar context={branch.name} user={session.user.email} />
       <main className="app-main">
-        <nav aria-label="Branch path">
+        <nav aria-label="Pfad des Zweigs">
           <ol className="crumbs">
-            <li><Link href="/brain">Knowledge tree</Link></li>
+            <li><Link href="/brain">Wissensbaum</Link></li>
             {inheritance.map((node) => (
               <li key={node.id}>
                 {node.id === branch.id ? <span aria-current="page">{node.name}</span> : <Link href={`/brain/${node.id}`}>{node.name}</Link>}
@@ -58,9 +59,9 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
           <div className={`branch-head kind-${branch.kind.toLowerCase()}`}>
             <span className="tree-dot" aria-hidden="true" />
             <div>
-              <p className="branch-kind-label">{branch.kind.toLowerCase()} branch</p>
+              <p className="branch-kind-label">Zweig · {BRANCH_KIND_LABEL[branch.kind]}</p>
               <h1 className="page-title">{branch.name}</h1>
-              <p>{branch.description ?? "No description has been written for this branch yet."}</p>
+              <p>{branch.description ?? "Für diesen Zweig wurde noch keine Beschreibung hinterlegt."}</p>
             </div>
           </div>
         </div>
@@ -68,8 +69,8 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
         <section className="panel">
           <div className="panel-head">
             <div>
-              <h2>Inherited context</h2>
-              <p>This branch reads everything approved above it in the chain. Context flows down; it is never copied.</p>
+              <h2>Geerbter Kontext</h2>
+              <p>Dieser Zweig liest alles, was in der Kette über ihm freigegeben ist. Kontext fließt nach unten – kopiert wird er nie.</p>
             </div>
           </div>
           <ul className="tree">
@@ -78,7 +79,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
                 <Link className={`tree-link kind-${node.kind.toLowerCase()}`} href={`/brain/${node.id}`} aria-current={node.id === branch.id ? "page" : undefined}>
                   <span className="tree-dot" aria-hidden="true" />
                   <span>{node.name}</span>
-                  <span className="tree-kind">{node.id === branch.id ? "current" : node.kind.toLowerCase()}</span>
+                  <span className="tree-kind">{node.id === branch.id ? "aktuell" : BRANCH_KIND_LABEL[node.kind]}</span>
                 </Link>
               </li>
             ))}
@@ -88,8 +89,8 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
         <section className="panel">
           <div className="panel-head">
             <div>
-              <h2>Below this branch</h2>
-              <p>Branches nested directly under {branch.name} that you are allowed to read.</p>
+              <h2>Unter diesem Zweig</h2>
+              <p>Zweige direkt unter {branch.name}, die Sie lesen dürfen.</p>
             </div>
           </div>
           {children.length ? (
@@ -99,15 +100,15 @@ export default async function BranchPage({ params }: { params: Promise<{ branchI
                   <Link className={`tree-link kind-${child.kind.toLowerCase()}`} href={`/brain/${child.id}`}>
                     <span className="tree-dot" aria-hidden="true" />
                     <span>{child.name}</span>
-                    <span className="tree-kind">{child.kind.toLowerCase()}</span>
+                    <span className="tree-kind">{BRANCH_KIND_LABEL[child.kind]}</span>
                   </Link>
                 </li>
               ))}
             </ul>
           ) : (
             <div className="state">
-              <h3>Nothing nested here</h3>
-              <p>{branch.name} has no readable branches under it. That either means it is a leaf of the tree, or the branches below it have not been granted to you.</p>
+              <h3>Hier ist nichts eingehängt</h3>
+              <p>Unter {branch.name} liegt kein lesbarer Zweig. Entweder ist das ein Blatt des Baums – oder die Zweige darunter sind Ihnen nicht freigegeben.</p>
             </div>
           )}
         </section>

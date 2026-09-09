@@ -20,12 +20,12 @@ export function TwoFactorPanel({ enabled }: { enabled: boolean }) {
     setPending(false);
     if (!response.ok) {
       setFailed(true);
-      setNote(data.error ?? "The setup request did not go through. Try again.");
+      setNote(data.error ?? "Die Einrichtung ist nicht durchgegangen. Bitte erneut versuchen.");
       return;
     }
     setSecret(data.secret ?? "");
     setOtpauthUrl(data.otpauthUrl ?? "");
-    setNote("Add the key below to an authenticator app, then confirm with the six-digit code it shows.");
+    setNote("Tragen Sie den Schlüssel unten in eine Authenticator-App ein und bestätigen Sie mit dem sechsstelligen Code, den sie anzeigt.");
   }
 
   async function confirmSetup(event: FormEvent<HTMLFormElement>) {
@@ -37,46 +37,46 @@ export function TwoFactorPanel({ enabled }: { enabled: boolean }) {
     setPending(false);
     if (!response.ok) {
       setFailed(true);
-      setNote(data.error ?? "That code was not accepted. Codes expire after 30 seconds.");
+      setNote(data.error ?? "Dieser Code wurde nicht akzeptiert. Codes laufen nach 30 Sekunden ab.");
       return;
     }
     setDone(true);
     setSecret("");
     setOtpauthUrl("");
     setCode("");
-    setNote("Two-step authentication is on. Your next sign-in will ask for a code.");
+    setNote("Die Zwei-Faktor-Anmeldung ist aktiv. Bei der nächsten Anmeldung wird ein Code verlangt.");
   }
 
   return (
     <section className="panel">
       <div className="panel-head">
         <div>
-          <h2>Two-step authentication</h2>
-          <p>A time-based code from an authenticator app, checked on the server at sign-in.</p>
+          <h2>Zwei-Faktor-Anmeldung</h2>
+          <p>Ein zeitbasierter Code aus einer Authenticator-App, den der Server bei der Anmeldung prüft.</p>
         </div>
-        <span className={`pill ${done ? "pill-on" : "pill-off"}`}>{done ? "On" : "Off"}</span>
+        <span className={`pill ${done ? "pill-on" : "pill-off"}`}>{done ? "Aktiv" : "Aus"}</span>
       </div>
 
       {!secret ? (
         <button className="btn btn-quiet" type="button" onClick={startSetup} aria-busy={pending} disabled={pending}>
           <span className="btn-spin" aria-hidden="true" />
-          {pending ? "Preparing…" : done ? "Set up a new device" : "Turn on two-step"}
+          {pending ? "Wird vorbereitet…" : done ? "Neues Gerät einrichten" : "Zwei-Faktor aktivieren"}
         </button>
       ) : (
         <form className="form" onSubmit={confirmSetup}>
           <div className="field">
-            <label htmlFor="totp-secret">Setup key</label>
+            <label htmlFor="totp-secret">Einrichtungsschlüssel</label>
             <code className="code-block" id="totp-secret">{secret}</code>
-            <span className="field-hint" style={{ overflowWrap: "anywhere" }}>Manual URI: {otpauthUrl}</span>
+            <span className="field-hint" style={{ overflowWrap: "anywhere" }}>Manuelle URI: {otpauthUrl}</span>
           </div>
           <div className="field field-code">
-            <label htmlFor="totp-confirm">Current code</label>
+            <label htmlFor="totp-confirm">Aktueller Code</label>
             <input id="totp-confirm" value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="000000" required disabled={pending} aria-invalid={failed || undefined} />
           </div>
           <div>
             <button className="btn btn-primary" type="submit" aria-busy={pending} disabled={pending || code.length !== 6}>
               <span className="btn-spin" aria-hidden="true" />
-              {pending ? "Checking…" : "Confirm and turn on"}
+              {pending ? "Wird geprüft…" : "Bestätigen und aktivieren"}
             </button>
           </div>
         </form>

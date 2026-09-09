@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   try {
     const user = await requireOrganizationUser();
     const body = disableSchema.parse(await request.json());
-    if (!user.passwordHash || !verifyPassword(body.password, user.passwordHash) || !user.totpEnabled || !user.totpSecretEncrypted || !verifyTotp(decryptSecret(user.totpSecretEncrypted), body.code)) return NextResponse.json({ error: "Password or 2FA code invalid" }, { status: 422 });
+    if (!user.passwordHash || !verifyPassword(body.password, user.passwordHash) || !user.totpEnabled || !user.totpSecretEncrypted || !verifyTotp(decryptSecret(user.totpSecretEncrypted), body.code)) return NextResponse.json({ error: "Passwort oder Zwei-Faktor-Code stimmt nicht." }, { status: 422 });
     if (isDevAuthUser(user)) updateDevAuthUser({ totpSecretEncrypted: null, totpPendingSecretEncrypted: null, totpEnabled: false });
     else await prisma.$transaction(async (tx) => {
       await tx.user.update({ where: { id: user.id }, data: { totpSecretEncrypted: null, totpPendingSecretEncrypted: null, totpEnabled: false } });

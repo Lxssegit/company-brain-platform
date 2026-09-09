@@ -15,7 +15,7 @@ export function SignOutButton() {
       onClick={() => { setPending(true); void signOut({ callbackUrl: "/" }); }}
     >
       <span className="btn-spin" aria-hidden="true" />
-      {pending ? "Signing out…" : "Sign out"}
+      {pending ? "Wird abgemeldet…" : "Abmelden"}
     </button>
   );
 }

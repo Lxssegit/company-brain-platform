@@ -3,12 +3,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { AppBar } from "@/components/AppBar";
+import { ROLE_LABEL } from "@/lib/i18n/de";
 import { ArrowUpRight } from "@/components/icons";
 import { TwoFactorPanel } from "@/app/dashboard/TwoFactorPanel";
-
-function titleCase(value: string) {
-  return value.toLowerCase().split("_").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
-}
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -19,39 +16,39 @@ export default async function DashboardPage() {
   const account = await getCurrentUser().catch(() => null);
   const organization = account?.organization?.name ?? null;
   const role = account?.role?.key ?? session.user.role ?? null;
-  const name = account?.name ?? session.user.name ?? session.user.email ?? "your account";
+  const name = account?.name ?? session.user.name ?? session.user.email ?? "Ihr Konto";
   const twoFactorOn = Boolean(account?.totpEnabled);
 
   return (
     <div className="app">
-      <AppBar context="Overview" user={session.user.email} />
+      <AppBar context="Übersicht" user={session.user.email} />
       <main className="app-main">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Welcome back, {name}.</h1>
-            <p>This is the authenticated side of Company Brain. What you can see below is what your organization and role actually allow.</p>
+            <h1 className="page-title">Willkommen zurück, {name}.</h1>
+            <p>Das ist die angemeldete Seite von Company Brain. Was Sie hier sehen, ist genau das, was Ihre Organisation und Ihre Rolle erlauben.</p>
           </div>
         </div>
 
         <dl className="facts">
           <div>
-            <dt>Organization</dt>
-            <dd className={organization ? undefined : "is-empty"}>{organization ?? "Not assigned yet"}</dd>
+            <dt>Organisation</dt>
+            <dd className={organization ? undefined : "is-empty"}>{organization ?? "Noch nicht zugewiesen"}</dd>
           </div>
           <div>
-            <dt>Role</dt>
-            <dd className={role ? undefined : "is-empty"}>{role ? titleCase(role) : "Pending"}</dd>
+            <dt>Rolle</dt>
+            <dd className={role ? undefined : "is-empty"}>{role ? (ROLE_LABEL[role as keyof typeof ROLE_LABEL] ?? role) : "Offen"}</dd>
           </div>
         </dl>
 
         <div className="panel" style={{ marginTop: 18 }}>
           <div className="panel-head">
             <div>
-              <h2>Your knowledge tree</h2>
-              <p>Branches are filtered on the server by organization, role and the grants made to you. Nothing outside that context is rendered.</p>
+              <h2>Ihr Wissensbaum</h2>
+              <p>Zweige werden auf dem Server nach Organisation, Rolle und Ihren Freigaben gefiltert. Nichts außerhalb dieses Kontexts wird ausgeliefert.</p>
             </div>
           </div>
-          <Link className="btn btn-quiet" href="/brain">Open the tree <ArrowUpRight /></Link>
+          <Link className="btn btn-quiet" href="/brain">Baum öffnen <ArrowUpRight /></Link>
         </div>
 
         <TwoFactorPanel enabled={twoFactorOn} />

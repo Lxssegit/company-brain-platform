@@ -21,7 +21,7 @@
 .app :where(h1, h2, h3) { margin: 0; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
 .app h1 { font-size: 1.75rem; }
 .app h2 { font-size: 1.375rem; }
-.app h3 { font-size: 1.0625rem; }
+.app h3 { font-size: 1.125rem; }
 .app :where(p) { margin: 0; }
 
 /* The one place the brand voice is allowed into the app: a page's own title,
@@ -96,7 +96,7 @@
 .facts { display: grid; margin: 0; gap: 1px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); border: 1px solid var(--hairline); border-radius: var(--radius); overflow: hidden; background: var(--hairline); }
 .facts > div { display: flex; flex-direction: column; padding: 16px 18px; gap: 6px; background: var(--panel); }
 .facts dt { color: var(--on-night-subtle); font-size: .8125rem; }
-.facts dd { margin: 0; overflow-wrap: anywhere; font-size: 1.0625rem; font-weight: 600; }
+.facts dd { margin: 0; overflow-wrap: anywhere; font-size: 1.125rem; font-weight: 600; }
 .facts dd.is-empty { color: var(--on-night-subtle); font-weight: 400; }
 
 /* ---------- forms ---------- */
@@ -121,7 +121,7 @@
 .field input:focus-visible { border-color: var(--gold); outline: 2px solid rgba(255, 180, 90, .35); outline-offset: 0; }
 .field input:disabled { cursor: not-allowed; opacity: .55; }
 .field input[aria-invalid="true"] { border-color: var(--danger); }
-.field-code input { font-size: 1.0625rem; letter-spacing: .28em; font-variant-numeric: tabular-nums; }
+.field-code input { font-size: 1.125rem; letter-spacing: .28em; font-variant-numeric: tabular-nums; }
 
 .form-note { display: flex; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--hairline); border-radius: var(--radius-sm); gap: 9px; background: var(--night-raised); color: var(--on-night-muted); font-size: .875rem; }
 .form-note-error { border-color: rgba(255, 138, 117, .45); color: #ffc9bf; }
@@ -130,10 +130,10 @@
 /* ---------- empty and dead-end states that teach ---------- */
 
 .state { display: grid; padding: 34px; border: 1px dashed var(--hairline); border-radius: var(--radius); gap: 12px; justify-items: start; }
-.state h3 { font-size: 1.0625rem; }
+.state h3 { font-size: 1.125rem; }
 .state p { max-width: 56ch; color: var(--on-night-muted); font-size: .9375rem; }
 .state code, .code-block { border-radius: 6px; background: #100906; color: #ffd9a4; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8125rem; }
-.state code { padding: 2px 6px; }
+.state code { padding: 1px 5px; }
 .code-block { display: block; width: 100%; padding: 13px 15px; border: 1px solid var(--hairline); overflow-x: auto; line-height: 1.75; white-space: pre; }
 
 /* ---------- sign in ---------- */
@@ -143,7 +143,7 @@
 .auth-back { display: inline-flex; align-items: center; margin-bottom: 26px; color: var(--on-night-subtle); font-size: .875rem; gap: .45em; text-decoration: none; }
 .auth-back:hover { color: var(--on-night); }
 .auth-card > .brand-mark { display: block; width: 26px; height: 26px; color: var(--gold); }
-.auth-card .page-title { margin: 16px 0 10px; font-size: 2rem; }
+.auth-card .page-title { margin: 16px 0 10px; }
 .auth-lede { margin-bottom: 26px; color: var(--on-night-muted); font-size: .9375rem; }
 .auth-divider { display: flex; align-items: center; margin: 20px 0; gap: 12px; color: var(--on-night-subtle); font-size: .8125rem; }
 .auth-divider::before, .auth-divider::after { flex: 1; height: 1px; background: var(--hairline); content: ""; }
@@ -184,6 +184,6 @@
   .app-bar-right { gap: 4px; }
   .app-bar .btn-ghost { padding: 8px 9px; font-size: .875rem; }
   .app-head { align-items: flex-start; flex-direction: column; }
-  .page-title { font-size: 1.875rem; }
+  .page-title { font-size: 1.75rem; }
   .facts { grid-template-columns: 1fr; }
 }

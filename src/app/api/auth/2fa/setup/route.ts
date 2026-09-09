@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const pendingSecret = encryptSecret(secret);
     if (isDevAuthUser(user)) updateDevAuthUser({ totpPendingSecretEncrypted: pendingSecret });
     else await prisma.user.update({ where: { id: user.id }, data: { totpPendingSecretEncrypted: pendingSecret } });
-    return NextResponse.json({ secret, otpauthUrl: totpOtpauthUrl(secret, user.email), message: "Add this secret to an authenticator app, then confirm with the current six-digit code." });
+    return NextResponse.json({ secret, otpauthUrl: totpOtpauthUrl(secret, user.email), message: "Tragen Sie diesen Schlüssel in eine Authenticator-App ein und bestätigen Sie mit dem aktuellen sechsstelligen Code." });
   } catch (error) {
     return errorResponse(error);
   }
