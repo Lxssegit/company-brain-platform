@@ -34,7 +34,7 @@
   line-height: .99;
 }
 
-.hero-copy h1 { font-size: clamp(2.9rem, 7.4vw, 6rem); }
+.hero-copy h1 { font-size: clamp(2.6rem, 5.6vw, 4.5rem); }
 .story-intro h2 { font-size: clamp(2.1rem, 4.2vw, 3.6rem); }
 .index-inner h2, .landing-cta h2 { font-size: clamp(2.1rem, 4.2vw, 3.6rem); }
 
@@ -73,8 +73,8 @@
 
 .hero-button { display: inline-flex; align-items: center; border-radius: 99px; padding: 13px 20px; font-size: .9375rem; font-weight: 600; text-decoration: none; transition: transform .3s var(--ease), background .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
 .hero-button:hover { transform: translateY(-2px); }
-.hero-button-primary { color: #241109 !important; background: var(--gold); box-shadow: 0 10px 30px -12px rgba(255, 137, 47, .75); }
-.hero-button-primary:hover { background: #ffc47a; box-shadow: 0 16px 38px -14px rgba(255, 137, 47, .9); }
+.hero-button-primary { color: #241109 !important; background: var(--gold); }
+.hero-button-primary:hover { background: #ffc47a; }
 .hero-button-quiet { border: 1px solid var(--hairline); color: var(--on-night) !important; }
 .hero-button-quiet:hover { border-color: var(--hairline-strong); background: var(--night-raised); }
 
@@ -97,7 +97,7 @@
 
 /* ---------- the tree grows ---------- */
 
-.brain-story { position: relative; height: 250vh; background: radial-gradient(circle at 50% 46%, rgba(130, 47, 18, .3), transparent 34%), var(--night); }
+.brain-story { position: relative; height: 250vh; background: var(--night); }
 .brain-story::after { position: absolute; right: 0; bottom: 0; left: 0; height: 210px; background: radial-gradient(115% 100% at 50% 100%, rgba(255, 170, 92, .2), rgba(255, 122, 40, .05) 46%, transparent 74%); content: ""; pointer-events: none; }
 .story-sticky { position: sticky; top: 0; display: grid; overflow: hidden; height: 100vh; min-height: 620px; align-items: center; grid-template-columns: minmax(270px, 26%) minmax(0, 1fr); padding: 84px clamp(22px, 4vw, 56px) 84px clamp(22px, 7vw, 110px); gap: clamp(24px, 4vw, 64px); }
 .story-intro { z-index: 3; }
@@ -157,7 +157,7 @@
 
 .story-progress { position: absolute; right: clamp(22px, 6vw, 90px); bottom: 5vh; z-index: 3; display: flex; align-items: center; gap: 14px; width: 160px; color: var(--on-night-subtle); font-size: .8125rem; font-variant-numeric: tabular-nums; }
 .story-progress-track { position: relative; flex: 1; height: 2px; border-radius: 2px; background: rgba(255, 225, 178, .2); }
-.story-progress-track i { position: absolute; inset: 0 auto 0 0; width: calc(var(--tree-progress) * 100%); border-radius: 2px; background: var(--gold); box-shadow: 0 0 12px rgba(255, 180, 90, .8); }
+.story-progress-track i { position: absolute; inset: 0 auto 0 0; width: calc(var(--tree-progress) * 100%); border-radius: 2px; background: var(--gold); }
 
 /* ---------- the branch index ---------- */
 
