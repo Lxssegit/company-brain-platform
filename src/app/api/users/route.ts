@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import type { RoleKey } from "@prisma/client";
 import { randomUUID } from "node:crypto";
 import { ROLE_KEYS } from "@/lib/domain/enums";
 import { prisma } from "@/lib/db/prisma";

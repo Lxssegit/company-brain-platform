@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { canManageKnowledge } from "@/lib/knowledge/access";
 
 /* getVisibleBranches talks to PostgreSQL; the predicate it feeds is what these

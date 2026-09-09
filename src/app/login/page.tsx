@@ -17,6 +17,9 @@ export default function LoginPage() {
 
         {localConfigured ? <LocalLoginForm /> : null}
         {localConfigured && googleConfigured ? <p className="auth-divider">oder</p> : null}
+        {/* This is a route handler, not a page: OAuth needs a real document
+            navigation, so next/link would break the redirect. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         {googleConfigured ? <a className="btn btn-quiet btn-block" href="/api/auth/signin/google">Mit Google fortfahren <ArrowUpRight /></a> : null}
 
         {/* Nach einem frischen Clone landet man genau hier. Dieser Zustand zeigt

@@ -1,5 +1,9 @@
-allowBuilds:
-  '@prisma/client': true
-  '@prisma/engines': true
-  esbuild: true
-  prisma: true
+# pnpm 10 gates postinstall scripts behind this list. The previous key here was
+# `allowBuilds`, which pnpm does not read at all, so the gate was never actually
+# configured and pnpm kept reporting ignored build scripts.
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - esbuild
+  - prisma
+  - unrs-resolver

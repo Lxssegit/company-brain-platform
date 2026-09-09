@@ -117,10 +117,17 @@ POST   /api/knowledge/:id/embed
 
 `/api/chat` liefert bei fehlender Evidenz den expliziten Status `UNKNOWN`, bei widersprüchlichen aktiven Decisions `CONFLICT` und bei fehlendem Server-Key `AI_NOT_CONFIGURED`. Der OpenAI-Key bleibt ausschließlich serverseitig. Mit `OPENAI_API_KEY` werden `text-embedding-3-small` und `gpt-4o-mini` verwendet; ohne Key bleibt der Chat ehrlich deaktiviert, während der berechtigte Retrieval-Kontext weiterhin testbar ist.
 
-Für produktives Vector-Retrieval muss PostgreSQL die `vector`-Extension aktiviert haben. Das Prisma-Feld `KnowledgeUnit.embedding` ist dafür als `Unsupported("vector")` modelliert und wird über sichere Raw-SQL-Statements beschrieben bzw. gelesen.
+Für produktives Vector-Retrieval muss PostgreSQL die `vector`-Extension bereitstellen. Das Prisma-Feld `KnowledgeUnit.embedding` ist dafür als `Unsupported("vector")` modelliert und wird über sichere Raw-SQL-Statements beschrieben bzw. gelesen.
 
-Vor der ersten Migration einmalig in PostgreSQL ausführen:
+Die Extension und der HNSW-Index werden von der ersten Migration selbst angelegt — ein manuelles `CREATE EXTENSION` ist nicht mehr nötig. Das Image `pgvector/pgvector:pg16` aus `docker-compose.yml` bringt sie mit; eine eigene PostgreSQL-Installation braucht das Paket `pgvector`.
 
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
+## Prüfen
+
+```bash
+pnpm typecheck   # TypeScript, inklusive tests/
+pnpm lint        # ESLint (Flat Config)
+pnpm test        # Vitest
+pnpm build       # Produktionsbuild
 ```
+
+Dieselben Schritte laufen in `.github/workflows/ci.yml`, dazu ein zweiter Job, der Migration und Seed gegen eine echte pgvector-Datenbank ausführt und den Seed zweimal startet, um Idempotenz zu prüfen.
