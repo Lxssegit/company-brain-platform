@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { ArrowDown, ArrowUpRight, BrandMark } from "@/components/icons";
 
 /**
  * Every limb is one path, and every branch owns exactly one limb. `tip` is the
@@ -35,18 +36,6 @@ const branches: Branch[] = [
 ];
 
 const limbStyle = (branch: Branch) => ({ "--limb-start": branch.start, "--limb-span": branch.span, "--limb-accent": branch.accent }) as CSSProperties;
-
-function ArrowUpRight() {
-  return <svg className="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-
-function ArrowDown() {
-  return <svg className="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-
-function BrandMark() {
-  return <svg className="brand-mark" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M10 18.5V8.4M10 12.2 5.4 9.1M10 13.6l4.4-3M10 8.4 6.6 5.8M10 9.6l3.6-2.6" fill="none" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" /><circle cx="10" cy="3.6" r="1.9" fill="currentColor" /></svg>;
-}
 
 function HeroSeed() {
   return (
