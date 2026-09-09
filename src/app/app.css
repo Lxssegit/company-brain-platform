@@ -36,7 +36,9 @@
 .app-brand { display: inline-flex; align-items: center; gap: 9px; color: var(--on-night); font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; }
 .app-brand .brand-mark { width: 20px; height: 20px; color: var(--gold); }
 .app-bar-sep { width: 1px; height: 18px; background: var(--hairline); }
-.app-bar-context { overflow: hidden; color: var(--on-night-muted); font-size: .875rem; text-overflow: ellipsis; white-space: nowrap; }
+/* Capped so a long branch name truncates on its own budget instead of
+   squeezing the navigation next to it. */
+.app-bar-context { max-width: 22ch; overflow: hidden; color: var(--on-night-muted); font-size: .875rem; text-overflow: ellipsis; white-space: nowrap; }
 .app-nav { position: relative; display: flex; align-items: center; }
 .app-nav .app-nav-toggle { display: none; }
 .app-nav-panel { display: flex; align-items: center; gap: 10px; }
@@ -262,7 +264,7 @@
 .hit { padding: 18px 0; border-top: 1px solid var(--hairline); }
 .hit:first-child { border-top: 0; padding-top: 4px; }
 .hit h3 { font-size: 1.125rem; }
-.hit-meta { margin-top: 4px; color: var(--on-night-subtle); font-size: .8125rem; }
+.hit-meta { max-width: var(--measure); margin-top: 4px; color: var(--on-night-subtle); font-size: .8125rem; }
 .hit-content { max-width: var(--measure); margin-top: 8px; color: var(--on-night-muted); font-size: .9375rem; }
 .hit-foot { max-width: var(--measure); margin-top: 10px; color: var(--on-night-subtle); font-size: .8125rem; }
 /* A queue of decisions is read one item at a time, so the column is the
@@ -282,6 +284,27 @@
 .capture-reach .segmented { justify-self: start; background: var(--panel); }
 .capture-consequence { color: var(--on-night-muted); font-size: .875rem; line-height: 1.55; }
 
+/* ---------- decisions ---------- */
+
+.decision + .decision, .hit-group-title + .decision { margin-top: 16px; }
+.decision-reason { max-width: var(--measure); margin-top: 12px; color: var(--on-night-muted); font-size: .9375rem; }
+.decision-reason span { color: var(--on-night-subtle); }
+.decision-label { margin-top: 14px; color: var(--on-night-subtle); font-size: .8125rem; }
+.decision-label + .plain-list { margin-top: 6px; }
+.decision-warn-title { color: var(--gold); }
+.decision-warn-note { max-width: var(--measure); margin-top: 8px; margin-bottom: 16px; color: var(--on-night-muted); font-size: .9375rem; }
+.decision-form { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--hairline); }
+.decision-form.panel { margin-top: 0; padding-top: clamp(20px, 3vw, 30px); border-top: 1px solid var(--hairline); }
+
+.date-pair { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); }
+
+/* Checkboxes, not a multi-select: with a dozen branches the list is short
+   enough to read, and a multi-select hides what is already chosen. */
+.check-list { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.check-list label { display: flex; align-items: center; gap: 8px; color: var(--on-night); cursor: pointer; font-size: .9375rem; }
+.check-list input { width: 1.05rem; height: 1.05rem; accent-color: var(--gold); cursor: pointer; }
+.check-list input:disabled, .check-list input:disabled + span { cursor: not-allowed; color: var(--on-night-subtle); }
+
 /* A link that has to be copied is not code to skim: it wraps rather than
    scrolling out of sight, because a truncated one looks like the whole one. */
 .invite-link .code-block { overflow-x: visible; white-space: pre-wrap; word-break: break-all; line-height: 1.6; }
@@ -297,12 +320,22 @@
 
 .hit-group-title { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 1.125rem; }
 
-@media (max-width: 640px) {
-  /* Five destinations do not fit across a phone, and a bar that wraps three
-     deep is not a bar. The list folds into a disclosure instead of losing
-     entries or shrinking labels past reading. */
+/* The bar carries a brand, an address and six destinations, and measurement
+   says the full row needs about 1340px. Rather than let the context label shrink
+   to a truncated word and then the bar overflow, it sheds in the order things
+   matter: the
+   address first (it is identity, not navigation, and the menu still shows it),
+   then the whole row folds into a disclosure. */
+@media (max-width: 1340px) {
+  .app-bar-context, .app-bar-sep, .app-user { display: none; }
+}
+
+@media (max-width: 900px) {
+  /* Six destinations do not fit across a narrow window, and a bar that wraps
+     three deep is not a bar. The list folds into a disclosure instead of
+     losing entries or shrinking labels past reading. */
   .app-bar { padding: 12px 16px; gap: 10px; }
-  .app-bar-context, .app-bar-sep, .app-brand span { display: none; }
+  .app-brand span { display: none; }
   .app-nav .app-nav-toggle { display: inline-flex; }
   .app-nav-panel {
     position: absolute;

@@ -43,6 +43,7 @@ das Paket `pgvector`.
 | `/login` | Anmeldung |
 | `/dashboard` | Der eigene Zugriff: Rolle, Rechte, sichtbare Zweige |
 | `/brain`, `/brain/:branchId` | Der Wissensbaum und was in einem Zweig liegt |
+| `/entscheidungen` | Was gilt, seit wann, und was abgelaufen ist |
 | `/fragen` | Fragen stellen — Wissen finden oder eine Antwort formulieren lassen |
 | `/freigaben` | Die Warteschlange: was auf eine Entscheidung wartet |
 | `/team` | Wer mitarbeitet, und wen man einlädt |
