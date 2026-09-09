@@ -11,9 +11,14 @@ type Conflict = { key: string; title: string; decisionIds: string[]; explanation
 type Diagnostics = { vectorSearch: "used" | "unavailable" | "not_configured"; candidateSource: "hybrid" | "lexical" | "recent" };
 
 type SearchResult = { status: "ANSWERABLE" | "UNKNOWN" | "CONFLICT"; knowledge: Hit[]; decisions: Decision[]; conflicts: Conflict[]; diagnostics?: Diagnostics };
-type ChatResult = { status: "ANSWERED" | "CONFLICT" | "UNKNOWN" | "AI_NOT_CONFIGURED"; answer: string; citations: Source[]; conflicts: Conflict[]; diagnostics?: Diagnostics };
+type ChatResult = { status: "ANSWERED" | "CONFLICT" | "UNKNOWN" | "AI_NOT_CONFIGURED"; answer: string; knowledge: Hit[]; decisions: Decision[]; citations: Source[]; conflicts: Conflict[]; diagnostics?: Diagnostics };
 
 type Mode = "search" | "ask";
+
+/** How many pieces of company knowledge the answer was actually built from. */
+function groundingCount(answer: ChatResult) {
+  return (answer.knowledge?.length ?? 0) + (answer.decisions?.length ?? 0);
+}
 
 const VECTOR_NOTE: Record<Diagnostics["vectorSearch"], string | null> = {
   used: null,
@@ -111,12 +116,34 @@ export function AskPanel({ branches, branchesUnreachable }: { branches: Array<{ 
           <div className="panel-head">
             <div><h2>Antwort</h2><p>auf „{asked}“</p></div>
             <span className={`pill ${answer.status === "ANSWERED" ? "pill-on" : "pill-off"}`}>
-              {answer.status === "ANSWERED" ? "Belegt" : answer.status === "CONFLICT" ? "Widerspruch" : answer.status === "UNKNOWN" ? "Keine Grundlage" : "AI nicht konfiguriert"}
+              {answer.status === "ANSWERED"
+                ? `Aus ${groundingCount(answer)} ${groundingCount(answer) === 1 ? "Eintrag" : "Einträgen"}`
+                : answer.status === "CONFLICT" ? "Widerspruch" : answer.status === "UNKNOWN" ? "Keine Grundlage" : "AI nicht konfiguriert"}
             </span>
           </div>
           <p className="ask-answer">{answer.answer}</p>
+
+          {/* The pill used to read "Belegt" over an answer that showed nothing
+              at all: citations carries only externally attached sources, and
+              knowledge captured without one produced an assertion the reader
+              could not check. What the answer was built from is the evidence,
+              and it is listed — so a thin basis is visible as a thin basis. */}
+          {groundingCount(answer) ? (
+            <>
+              <p className="decision-label">Worauf diese Antwort steht</p>
+              <ul className="plain-list ask-grounding">
+                {answer.knowledge.map((hit) => (
+                  <li key={hit.id}>{hit.title} <span className="ask-grounding-meta">{KNOWLEDGE_TYPE_LABEL[hit.type]} · {hit.branchName} · {MATCH_METHOD_LABEL[hit.matchMethod]}</span></li>
+                ))}
+                {answer.decisions.map((decision) => (
+                  <li key={decision.id}>{decision.title} <span className="ask-grounding-meta">Entscheidung · {decision.branchNames.join(", ") || "ohne Zweig"}</span></li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+
           {answer.citations.length ? (
-            <p className="ask-citations">Belegt durch: {answer.citations.map((source) => source.citation ? `${source.title} — ${source.citation}` : source.title).join(" · ")}</p>
+            <p className="ask-citations">Hinterlegte Quellen: {answer.citations.map((source) => source.citation ? `${source.title} — ${source.citation}` : source.title).join(" · ")}</p>
           ) : null}
         </section>
       ) : null}

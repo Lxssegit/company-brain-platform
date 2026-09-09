@@ -112,6 +112,43 @@ Three mechanisms, all implemented in the codebase rather than aspirational:
   case studies, benchmarks, pricing, press or usage numbers. Naming any would be
   invention, not documentation.
 
+## Open Risk: the relevance floor cannot say "nothing matched"
+
+The product's central promise is that it does not guess — no evidence means
+UNKNOWN. That promise is currently reachable only while vector search is off.
+
+`relevanceFloor` is `best × threshold`: a purely relative bar. When the vector
+half is active every candidate has a non-zero similarity, so `best` is always
+above zero and the floor is always a fraction of it. Something always survives.
+Measured against a running instance, the question "Wie hoch ist der Umsatz auf
+dem Mars?" returned ANSWERABLE with eight knowledge units — none of them about
+anything of the kind.
+
+The shape of the defect is a fact about the code. Its fix is not, and was
+deliberately not guessed at here. Measured on the same instance:
+
+| Question | Best score |
+| --- | --- |
+| Exact title match | 1.0000 |
+| A genuine paraphrase of a stored fact | 0.2394 |
+| A question about nothing in the company | 0.1979 |
+
+An absolute floor that rejects the third also rejects the second — which is the
+case vector search exists to serve. The two cannot be separated by a constant,
+and the measurement above was taken against a deterministic stand-in for the
+embedding provider, which is far cruder than a real model at exactly the
+distinction that matters. Choosing a number from it would be tuning against an
+artefact.
+
+What is needed before this can be closed: the same measurement against a real
+embedding model on real company knowledge, and a decision from the owner about
+how conservative the assistant should be — refusing a borderline question is a
+cost, and so is answering one.
+
+What was done in the meantime: an answer now shows what it was built from, so a
+thin basis is visible rather than hidden. The status pill reports the number of
+entries behind an answer instead of asserting "Belegt" over nothing.
+
 ## Product Principles
 
 1. **Permission before retrieval.** Filter in the query, never in application

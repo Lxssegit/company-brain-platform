@@ -254,6 +254,8 @@
 .segmented input:disabled:checked + span { color: rgba(255, 245, 229, .75); background: rgba(255, 180, 90, .2); }
 
 .ask-answer { max-width: var(--measure); font-size: 1.125rem; line-height: 1.62; white-space: pre-wrap; }
+.ask-grounding { max-width: var(--measure); margin-top: 6px; }
+.ask-grounding-meta { color: var(--on-night-subtle); font-size: .8125rem; }
 .ask-citations { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hairline); color: var(--on-night-subtle); font-size: .8125rem; }
 
 .panel-warn { border-color: rgba(255, 180, 90, .38); }
