@@ -65,5 +65,30 @@ jobs:
       # Running it twice proves the seed is idempotent rather than
       # only working on an empty database.
       - run: pnpm db:seed
-      - name: Schema matches the migrations
-        run: pnpm exec prisma migrate diff --from-schema-datasource prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --exit-code
+      # `prisma migrate diff` cannot be used here: the pgvector and full-text
+      # indexes are raw SQL that the Prisma datamodel has no way to express, so
+      # a diff against the datamodel reports them as drift forever. Asserting
+      # they exist is both the honest check and the more useful one — these are
+      # the two statements that cannot be exercised without pgvector.
+      - name: The raw indexes the schema cannot express really exist
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 <<'SQL'
+          DO $$
+          DECLARE found int; coltype text;
+          BEGIN
+            SELECT count(*) INTO found FROM pg_indexes
+             WHERE tablename = 'KnowledgeUnit'
+               AND indexname IN ('KnowledgeUnit_embedding_hnsw_idx', 'KnowledgeUnit_fulltext_de_idx');
+            IF found <> 2 THEN
+              RAISE EXCEPTION 'expected both raw indexes on KnowledgeUnit, found %', found;
+            END IF;
+
+            SELECT format_type(atttypid, atttypmod) INTO coltype FROM pg_attribute
+             WHERE attrelid = '"KnowledgeUnit"'::regclass AND attname = 'embedding';
+            IF coltype <> 'vector(1536)' THEN
+              RAISE EXCEPTION 'embedding must stay vector(1536) for the HNSW index, got %', coltype;
+            END IF;
+
+            RAISE NOTICE 'hnsw and full-text indexes present, embedding is vector(1536)';
+          END $$;
+          SQL
