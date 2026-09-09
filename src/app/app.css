@@ -36,7 +36,9 @@
 .app-brand .brand-mark { width: 20px; height: 20px; color: var(--gold); }
 .app-bar-sep { width: 1px; height: 18px; background: var(--hairline); }
 .app-bar-context { overflow: hidden; color: var(--on-night-muted); font-size: .875rem; text-overflow: ellipsis; white-space: nowrap; }
-.app-bar-right { display: flex; align-items: center; gap: 10px; }
+.app-nav { position: relative; display: flex; align-items: center; }
+.app-nav .app-nav-toggle { display: none; }
+.app-nav-panel { display: flex; align-items: center; gap: 10px; }
 .app-user { overflow: hidden; max-width: 26ch; color: var(--on-night-subtle); font-size: .875rem; text-overflow: ellipsis; white-space: nowrap; }
 
 .app-main { width: 100%; max-width: 1120px; margin: 0 auto; padding: clamp(28px, 5vw, 56px) clamp(18px, 4vw, 40px) 96px; }
@@ -121,6 +123,24 @@
   transition: border-color var(--step) var(--ease), background var(--step) var(--ease);
 }
 .field input::placeholder { color: rgba(255, 245, 229, .5); }
+.field textarea {
+  width: 100%;
+  min-height: 9rem;
+  padding: 12px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  background: var(--night-raised);
+  color: var(--on-night);
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color var(--step) var(--ease), outline-color var(--step) var(--ease);
+}
+.field textarea:hover:not(:disabled) { border-color: var(--hairline-strong); }
+.field textarea:focus-visible { border-color: var(--gold); outline: 2px solid rgba(255, 180, 90, .35); outline-offset: 0; }
+.field textarea:disabled { cursor: not-allowed; opacity: .55; }
+.field textarea::placeholder { color: rgba(255, 245, 229, .5); }
+
 .field input:hover:not(:disabled) { border-color: var(--hairline-strong); }
 .field input:focus-visible { border-color: var(--gold); outline: 2px solid rgba(255, 180, 90, .35); outline-offset: 0; }
 .field input:disabled { cursor: not-allowed; opacity: .55; }
@@ -240,17 +260,40 @@
 .optional { color: var(--on-night-subtle); font-weight: 400; }
 /* Rejecting opens a second act inside the card; the rule says so. */
 .review-reject { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--hairline); }
+.capture { max-width: none; }
+.capture-reach { display: grid; margin: 0; padding: 18px; border: 1px solid var(--hairline); border-radius: var(--radius-sm); gap: 14px; background: var(--night-raised); }
+.capture-reach legend { padding: 0 7px; color: var(--on-night-muted); font-size: .875rem; font-weight: 500; }
+.capture-reach .segmented { justify-self: start; background: var(--panel); }
+.capture-consequence { color: var(--on-night-muted); font-size: .875rem; line-height: 1.55; }
 .review-count { margin: -12px 0 16px; color: var(--on-night-subtle); font-size: .8125rem; }
 
 .hit-group-title { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 1.125rem; }
 
 @media (max-width: 640px) {
-  /* Three lines of wrapped navigation is not a bar. The wordmark goes; the
-     mark still gets you home and both actions stay reachable. */
+  /* Five destinations do not fit across a phone, and a bar that wraps three
+     deep is not a bar. The list folds into a disclosure instead of losing
+     entries or shrinking labels past reading. */
   .app-bar { padding: 12px 16px; gap: 10px; }
-  .app-bar-context, .app-user, .app-bar-sep, .app-brand span { display: none; }
-  .app-bar-right { gap: 4px; }
-  .app-bar .btn-ghost { padding: 8px 9px; font-size: .875rem; }
+  .app-bar-context, .app-bar-sep, .app-brand span { display: none; }
+  .app-nav .app-nav-toggle { display: inline-flex; }
+  .app-nav-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 30;
+    display: none;
+    min-width: 13rem;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    gap: 2px;
+    background: var(--panel);
+  }
+  .app-nav[data-open] .app-nav-panel { display: flex; }
+  .app-nav-panel .btn { justify-content: flex-start; padding: 10px 12px; }
+  .app-nav-panel .app-user { padding: 6px 12px 10px; border-bottom: 1px solid var(--hairline); margin-bottom: 4px; overflow-wrap: anywhere; white-space: normal; }
   .app-head { align-items: flex-start; flex-direction: column; }
   .page-title { font-size: 1.75rem; }
   .facts { grid-template-columns: 1fr; }
