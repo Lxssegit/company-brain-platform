@@ -1,14 +1,9 @@
-# pnpm 10+ gates postinstall scripts behind this list. The previous key here was
-# `allowBuilds`, which pnpm does not read at all.
-#
-# This covers the Prisma packages, which is what matters: they stopped being
-# reported as ignored. pnpm still lists esbuild, prisma and unrs-resolver
-# despite being named below, which is a pnpm quirk rather than a missing entry —
-# and it has no practical effect here, because the pipeline runs
-# `pnpm db:generate` explicitly and the other two ship prebuilt binaries.
-onlyBuiltDependencies:
-  - '@prisma/client'
-  - '@prisma/engines'
-  - esbuild
-  - prisma
-  - unrs-resolver
+# pnpm 12 gates dependency build scripts behind this map, and errors with
+# ERR_PNPM_IGNORED_BUILDS on a non-interactive install when an entry is missing.
+# `pnpm approve-builds` writes this exact shape.
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  esbuild: true
+  prisma: true
+  unrs-resolver: true
