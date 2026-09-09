@@ -2,6 +2,16 @@ import Link from "next/link";
 import { LocalLoginForm } from "@/app/login/LocalLoginForm";
 import { ArrowLeft, ArrowUpRight, BrandMark } from "@/components/icons";
 
+/**
+ * Rendered per request rather than prerendered, so the nonce in the
+ * Content-Security-Policy can reach its scripts. A prerendered page's HTML is
+ * written at build time and cannot carry a value that changes per request, so
+ * every script on it is blocked under a nonce policy — the login form rendered
+ * and never hydrated. Neither page fetches anything, so the cost is a template
+ * render.
+ */
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   const googleConfigured = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
   const localConfigured = process.env.NODE_ENV !== "production" && process.env.AUTH_DEV_LOGIN_ENABLED !== "false" && Boolean(process.env.AUTH_DEV_EMAIL && process.env.AUTH_DEV_PASSWORD);

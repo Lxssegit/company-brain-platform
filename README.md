@@ -49,6 +49,24 @@ das Paket `pgvector`.
 | `/team` | Wer mitarbeitet, und wen man einlädt |
 | `/einladung/<token>` | Wo eine eingeladene Person ihr Passwort vergibt |
 
+## Sicherheitsköpfe und CSP
+
+Dokument-Antworten bekommen ihre Content-Security-Policy aus `src/middleware.ts`,
+weil sie einen Nonce trägt, der sich pro Anfrage ändert. `next.config.ts` setzt
+die übrigen Köpfe und eine Policy für alles, was die Middleware nicht anfasst —
+API-Antworten und statische Dateien, in denen ohnehin kein Skript läuft.
+
+`script-src` kommt damit ohne `'unsafe-inline'` aus. Der Preis: eine
+vorgerenderte Seite entsteht zur Bauzeit und kann keinen Wert tragen, der sich
+pro Anfrage ändert — alle ihre Skripte werden blockiert. `/` und `/login` sind
+deshalb ausdrücklich `force-dynamic`; beide holen keine Daten, es kostet ein
+Template-Rendering.
+
+Eine Ausnahme bleibt: die 404-Seite wird immer vorgerendert, und daran ändert
+keine Segment-Konfiguration etwas. Ihre Skripte laufen nicht. Sie ist deshalb so
+gebaut, dass sie keine braucht — Text und ein Link, nichts, was auf Hydration
+wartet. In der Browserkonsole erscheinen dort blockierte Skripte.
+
 ## Wer was ändern darf
 
 Freigabe heißt: jemand Zuständiges hat **diesen Text** gelesen. Daraus folgen

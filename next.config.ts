@@ -5,16 +5,19 @@ const isDev = process.env.NODE_ENV !== "production";
 /**
  * The app shipped with no security headers at all. Notes on the loose parts:
  *
- * - 'unsafe-inline' for scripts is Next's inline bootstrap. Tightening it means
- *   emitting a per-request nonce from middleware, which is worth doing but is a
- *   change to how every page renders rather than a config edit.
+ * - Document requests get their Content-Security-Policy from src/middleware.ts
+ *   instead of this file, because it carries a per-request nonce and a value
+ *   that changes per request cannot be written here. This policy is the floor
+ *   for everything middleware does not rewrite: API responses and static files.
+ *   Neither is a document, so no script runs under it; script-src 'none' says
+ *   so rather than repeating an allowance nothing needs.
  * - 'unsafe-eval' and the websocket connect-src exist only for the dev server's
  *   hot reload and are not present in a production build.
  * - Fonts are self-hosted, so font-src and style-src need no external origin.
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'none'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://lh3.googleusercontent.com",
   "font-src 'self'",
