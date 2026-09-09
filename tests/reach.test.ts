@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { reachConsequence, scopeForBranchKind } from "@/lib/knowledge/reach";
+import { sentenceEnd } from "@/lib/i18n/de";
 
 /**
  * This sentence is the product's promise stated before the person acts. If it
@@ -50,5 +51,16 @@ describe("scopeForBranchKind", () => {
     expect(scopeForBranchKind("DEPARTMENT")).toBe("DEPARTMENT");
     expect(scopeForBranchKind("TEAM")).toBe("TEAM");
     expect(scopeForBranchKind("PERSONAL")).toBe("PERSONAL");
+  });
+});
+
+describe("sentenceEnd", () => {
+  it("adds the full stop a name is missing", () => {
+    expect(sentenceEnd("Northstar")).toBe("Northstar.");
+  });
+
+  it("does not double the one a name already carries", () => {
+    expect(sentenceEnd("Northstar Co.")).toBe("Northstar Co.");
+    expect(sentenceEnd("Wie bitte?")).toBe("Wie bitte?");
   });
 });

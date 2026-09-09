@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getVisibleBranches } from "@/lib/branches/access";
-import { hasRolePermission } from "@/lib/permissions/policy";
 import { AppBar } from "@/components/AppBar";
 import { AskPanel } from "@/app/fragen/AskPanel";
 
@@ -25,7 +24,7 @@ export default async function AskPage() {
 
   return (
     <div className="app">
-      <AppBar context="Fragen" user={session.user.email} canApprove={hasRolePermission(account?.role?.key, "APPROVE")} />
+      <AppBar context="Fragen" user={session.user.email} />
       <main className="app-main">
         <div className="app-head">
           <div>

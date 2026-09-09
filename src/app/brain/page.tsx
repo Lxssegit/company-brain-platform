@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getVisibleBranches } from "@/lib/branches/access";
-import { hasRolePermission } from "@/lib/permissions/policy";
 import { AppBar } from "@/components/AppBar";
 import { BRANCH_KIND_LABEL, branchCount } from "@/lib/i18n/de";
 
@@ -35,13 +34,11 @@ export default async function BrainPage() {
      throw; it now says so, because a blank 500 teaches the reader nothing. */
   let branches: Branches = [];
   let unreachable = false;
-  let canApprove = false;
   try {
     /* Role and organization come from the record, never from the token: a
        session outlives the account state it was minted with. */
     const account = await getCurrentUser();
     if (!account || account.status !== "ACTIVE") redirect("/login");
-    canApprove = hasRolePermission(account.role?.key, "APPROVE");
     branches = await getVisibleBranches(account);
   } catch (error) {
     if (error && typeof error === "object" && "digest" in error) throw error;
@@ -50,7 +47,7 @@ export default async function BrainPage() {
 
   return (
     <div className="app">
-      <AppBar context="Wissensbaum" user={session.user.email} canApprove={canApprove} />
+      <AppBar context="Wissensbaum" user={session.user.email} />
       <main className="app-main">
         <div className="app-head">
           <div>

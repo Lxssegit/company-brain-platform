@@ -52,7 +52,7 @@ export default async function ReviewsPage() {
 
   return (
     <div className="app">
-      <AppBar context="Freigaben" user={session.user.email} canApprove={mayApprove} />
+      <AppBar context="Freigaben" user={session.user.email} />
       <main className="app-main app-main-narrow">
         <div className="app-head">
           <div>

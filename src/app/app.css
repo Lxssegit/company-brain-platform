@@ -13,9 +13,10 @@
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background:
-    radial-gradient(120% 80% at 82% -10%, rgba(255, 141, 56, .07), transparent 58%),
-    var(--night);
+  /* No haze over the working surface. It was the same decorative radial removed
+     from the landing page, it added nothing at 7%, and it made every contrast
+     measurement on these pages unreadable. */
+  background: var(--night);
 }
 
 .app :where(h1, h2, h3) { margin: 0; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
@@ -64,7 +65,16 @@
   white-space: nowrap;
   transition: background var(--step) var(--ease), border-color var(--step) var(--ease), color var(--step) var(--ease), opacity var(--step) var(--ease);
 }
-.btn:disabled, .btn[aria-disabled="true"] { cursor: not-allowed; opacity: .5; }
+/* Disabled is a colour, not a transparency. Fading a control fades its text and
+   its ground together: the gold primary button landed at 1.9:1, unreadable
+   exactly when it has to say what you cannot do yet. These states are muted and
+   solid, and every one of them clears 5:1. */
+.btn:disabled, .btn[aria-disabled="true"] { cursor: not-allowed; }
+.btn-primary:disabled, .btn-primary[aria-disabled="true"] { color: rgba(255, 245, 229, .75); background: rgba(255, 180, 90, .2); }
+.btn-quiet:disabled, .btn-ghost:disabled, .btn-danger:disabled,
+.btn-quiet[aria-disabled="true"], .btn-ghost[aria-disabled="true"], .btn-danger[aria-disabled="true"] {
+  border-color: var(--hairline); color: var(--on-night-subtle); background: transparent;
+}
 .btn:not(:disabled):active { transform: translateY(1px); }
 
 .btn-primary { color: #241109; background: var(--gold); }
@@ -90,7 +100,9 @@
 .panel { padding: clamp(20px, 3vw, 30px); border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--panel); }
 .panel + .panel { margin-top: 18px; }
 .panel-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; gap: 16px; }
-.panel-head p { max-width: var(--measure); margin-top: 8px; color: var(--on-night-muted); font-size: .9375rem; }
+/* :where keeps this at one class, so a paragraph that names its own role —
+   .hit-meta, say — is not outranked into the wrong step of the scale. */
+.panel-head :where(p) { max-width: var(--measure); margin-top: 8px; color: var(--on-night-muted); font-size: .9375rem; }
 
 .pill { display: inline-flex; align-items: center; padding: 4px 11px; border: 1px solid var(--hairline); border-radius: 99px; gap: 7px; font-size: .8125rem; white-space: nowrap; }
 .pill::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
@@ -138,12 +150,15 @@
 }
 .field textarea:hover:not(:disabled) { border-color: var(--hairline-strong); }
 .field textarea:focus-visible { border-color: var(--gold); outline: 2px solid rgba(255, 180, 90, .35); outline-offset: 0; }
-.field textarea:disabled { cursor: not-allowed; opacity: .55; }
+.field textarea:disabled { cursor: not-allowed; color: var(--on-night-subtle); }
 .field textarea::placeholder { color: rgba(255, 245, 229, .5); }
 
 .field input:hover:not(:disabled) { border-color: var(--hairline-strong); }
 .field input:focus-visible { border-color: var(--gold); outline: 2px solid rgba(255, 180, 90, .35); outline-offset: 0; }
-.field input:disabled { cursor: not-allowed; opacity: .55; }
+.field input:disabled { cursor: not-allowed; color: var(--on-night-subtle); }
+/* A read-only field that looks editable invites a click that does nothing. */
+.field input[readonly] { border-style: dashed; color: var(--on-night-muted); cursor: default; }
+.field input[readonly]:hover { border-color: var(--hairline); }
 .field input[aria-invalid="true"] { border-color: var(--danger); }
 .field-code input { font-size: 1.125rem; letter-spacing: .28em; font-variant-numeric: tabular-nums; }
 
@@ -222,7 +237,7 @@
 }
 .field select:hover:not(:disabled) { border-color: var(--hairline-strong); }
 .field select:focus-visible { border-color: var(--gold); outline: 2px solid rgba(255, 180, 90, .35); outline-offset: 0; }
-.field select:disabled { cursor: not-allowed; opacity: .55; }
+.field select:disabled { cursor: not-allowed; color: var(--on-night-subtle); }
 
 /* Two modes, one control. A dropdown would hide the choice that changes what
    the page costs and what it promises. */
@@ -233,7 +248,8 @@
 .segmented label:hover span { color: var(--on-night); background: var(--night-raised); }
 .segmented input:checked + span { color: #241109; background: var(--gold); }
 .segmented input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 3px; }
-.segmented input:disabled + span { cursor: not-allowed; opacity: .55; }
+.segmented input:disabled + span { cursor: not-allowed; color: var(--on-night-subtle); }
+.segmented input:disabled:checked + span { color: rgba(255, 245, 229, .75); background: rgba(255, 180, 90, .2); }
 
 .ask-answer { max-width: var(--measure); font-size: 1.125rem; line-height: 1.62; white-space: pre-wrap; }
 .ask-citations { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hairline); color: var(--on-night-subtle); font-size: .8125rem; }
@@ -248,7 +264,7 @@
 .hit h3 { font-size: 1.125rem; }
 .hit-meta { margin-top: 4px; color: var(--on-night-subtle); font-size: .8125rem; }
 .hit-content { max-width: var(--measure); margin-top: 8px; color: var(--on-night-muted); font-size: .9375rem; }
-.hit-foot { margin-top: 10px; color: var(--on-night-subtle); font-size: .8125rem; }
+.hit-foot { max-width: var(--measure); margin-top: 10px; color: var(--on-night-subtle); font-size: .8125rem; }
 /* A queue of decisions is read one item at a time, so the column is the
    reading measure and not the page. A full-width card around 62ch of prose is
    mostly empty card. */
@@ -265,6 +281,18 @@
 .capture-reach legend { padding: 0 7px; color: var(--on-night-muted); font-size: .875rem; font-weight: 500; }
 .capture-reach .segmented { justify-self: start; background: var(--panel); }
 .capture-consequence { color: var(--on-night-muted); font-size: .875rem; line-height: 1.55; }
+
+/* A link that has to be copied is not code to skim: it wraps rather than
+   scrolling out of sight, because a truncated one looks like the whole one. */
+.invite-link .code-block { overflow-x: visible; white-space: pre-wrap; word-break: break-all; line-height: 1.6; }
+.invite-link h2 + p { margin-bottom: 14px; }
+.invite-link .code-block + .review-actions { margin-top: 16px; }
+
+/* Section headings inside a panel need air below them; .app :where(p) zeroes
+   the margin every paragraph would otherwise inherit. */
+.panel > h2 { margin-bottom: 10px; font-size: 1.375rem; }
+.form > h2 { margin-bottom: 0; }
+.member-list .hit-foot { color: var(--gold); }
 .review-count { margin: -12px 0 16px; color: var(--on-night-subtle); font-size: .8125rem; }
 
 .hit-group-title { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 1.125rem; }

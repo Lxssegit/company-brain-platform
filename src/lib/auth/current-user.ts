@@ -1,8 +1,14 @@
+import { cache } from "react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { devAuthFallbackEnabled, getDevAuthUser } from "@/lib/auth/dev-store";
 
-export async function getCurrentUser() {
+/**
+ * Wrapped in React's per-request cache: several server components on one page
+ * need the same record, and each of them reading it separately is the N+1 this
+ * page can most easily avoid.
+ */
+export const getCurrentUser = cache(async function getCurrentUser() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
@@ -18,7 +24,7 @@ export async function getCurrentUser() {
   const devUser = getDevAuthUser(session.user.email ?? undefined);
   if (!devUser) return null;
   return { ...devUser, status: "ACTIVE" as const, organization: { id: devUser.organizationId, name: "Local Company Brain", slug: "local-company-brain" }, role: { key: devUser.roleKey, permissions: [] } };
-}
+})
 
 export async function requireOrganizationUser() {
   const user = await getCurrentUser();

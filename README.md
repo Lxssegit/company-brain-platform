@@ -45,6 +45,24 @@ das Paket `pgvector`.
 | `/brain`, `/brain/:branchId` | Der Wissensbaum und was in einem Zweig liegt |
 | `/fragen` | Fragen stellen — Wissen finden oder eine Antwort formulieren lassen |
 | `/freigaben` | Die Warteschlange: was auf eine Entscheidung wartet |
+| `/team` | Wer mitarbeitet, und wen man einlädt |
+| `/einladung/<token>` | Wo eine eingeladene Person ihr Passwort vergibt |
+
+## Einladungen
+
+Eingeladene Konten haben kein Passwort und könnten sich sonst nie anmelden.
+`POST /api/users` legt darum zusätzlich eine Einladung an und gibt den Link
+**einmalig** in der Antwort zurück; gespeichert wird nur sein SHA-256-Hash, in
+der `VerificationToken`-Tabelle unter dem Bezeichner `invite:<userId>`. Ein
+geleaktes Datenbankabbild lässt sich damit nicht als Link nachspielen.
+
+Der Link gilt sieben Tage und genau einmal. Beim Einlösen setzt
+`POST /api/invitations/accept` das Passwort, schaltet das Konto auf `ACTIVE`
+und löscht die Einladung — in einer Transaktion. Die Route ist die einzige, die
+Fremde schreibend erreichen, und deshalb rate-limited; sie unterscheidet in der
+Antwort nicht zwischen abgelaufen, verbraucht und nie existiert.
+
+Es wird noch keine Mail versendet. Wer einlädt, gibt den Link selbst weiter.
 
 ## Anmeldung im Development
 

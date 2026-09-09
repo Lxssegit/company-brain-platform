@@ -14,7 +14,6 @@ export default async function CapturePage() {
   if (!account || account.status !== "ACTIVE") redirect("/login");
 
   const mayCreate = hasRolePermission(account.role?.key, "CREATE");
-  const mayApprove = hasRolePermission(account.role?.key, "APPROVE");
 
   let branches: TargetBranch[] = [];
   let unreachable = false;
@@ -32,7 +31,7 @@ export default async function CapturePage() {
 
   return (
     <div className="app">
-      <AppBar context="Festhalten" user={session.user.email} canApprove={mayApprove} />
+      <AppBar context="Festhalten" user={session.user.email} />
       <main className="app-main app-main-narrow">
         <div className="app-head">
           <div>

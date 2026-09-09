@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db/prisma";
 import { requirePermission } from "@/lib/auth/authorize";
 import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
+import { hashInviteSecret, inviteExpiry, inviteIdentifier, inviteUrl, newInviteSecret } from "@/lib/invitations/token";
 
 const userSchema = z.object({
   name: z.string().trim().min(2).max(120),
@@ -45,14 +46,19 @@ export async function POST(request: Request) {
       : await prisma.branch.findFirst({ where: { organizationId, kind: "COMPANY", depth: 0 } });
     if (!parent) return NextResponse.json({ error: "Parent branch not found" }, { status: 404 });
     const personalBranchId = randomUUID();
+    /* An invited account has no password, so without a way to set one it can
+       never sign in. The link is returned once and never again — only its hash
+       is stored — so the administrator has to pass it on now. */
+    const secret = newInviteSecret();
     const result = await prisma.$transaction(async (tx) => {
       const created = await tx.user.create({ data: { name: body.name, email, organizationId, roleId: role.id, status: "INVITED" }, select: { id: true, name: true, email: true, status: true, role: { select: { key: true, name: true } } } });
       const personalBranch = await tx.branch.create({ data: { id: personalBranchId, organizationId, parentId: parent.id, kind: "PERSONAL", name: body.name, path: `${parent.path}/${personalBranchId}`, depth: parent.depth + 1, ownerUserId: created.id } });
       await tx.branchMember.create({ data: { branchId: personalBranch.id, userId: created.id, access: "READ", grantedBy: actor.id } });
+      await tx.verificationToken.create({ data: { identifier: inviteIdentifier(created.id), token: hashInviteSecret(secret), expires: inviteExpiry() } });
       await auditEvent(tx, { organizationId, actorUserId: actor.id, action: "USER_INVITED", entityType: "User", entityId: created.id, after: { email: created.email, role: body.role, personalBranchId: personalBranch.id } });
       return { user: created, personalBranch };
     });
-    return NextResponse.json(result, { status: 201 });
+    return NextResponse.json({ ...result, inviteUrl: inviteUrl(new URL(request.url).origin, result.user.id, secret) }, { status: 201 });
   } catch (error) {
     return errorResponse(error);
   }

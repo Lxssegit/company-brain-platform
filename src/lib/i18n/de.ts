@@ -1,4 +1,4 @@
-import type { BranchKind, KnowledgeScope, KnowledgeStatus, KnowledgeType, RoleKey } from "@prisma/client";
+import type { BranchKind, KnowledgeScope, KnowledgeStatus, KnowledgeType, RoleKey, UserStatus } from "@prisma/client";
 
 /**
  * One glossary for the interface, so the same concept is not called three
@@ -64,3 +64,17 @@ export const MATCH_METHOD_LABEL: Record<"lexical" | "vector" | "hybrid", string>
   vector: "Bedeutungstreffer",
   hybrid: "Wort- und Bedeutungstreffer",
 };
+
+export const USER_STATUS_LABEL: Record<UserStatus, string> = {
+  INVITED: "Eingeladen",
+  ACTIVE: "Aktiv",
+  SUSPENDED: "Gesperrt",
+};
+
+/**
+ * Ends a sentence that finishes on a proper name. "Northstar Co." already
+ * carries its own full stop, and appending a second one reads as a typo.
+ */
+export function sentenceEnd(text: string) {
+  return /[.!?…]$/.test(text.trim()) ? text.trim() : `${text.trim()}.`;
+}
