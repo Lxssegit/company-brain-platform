@@ -176,6 +176,57 @@
 .crumbs a:hover { color: var(--gold); text-decoration: underline; text-underline-offset: .28em; }
 .crumbs [aria-current="page"] { color: var(--on-night); }
 
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- asking ---------- */
+
+.ask-form-panel { margin-bottom: 18px; }
+.ask-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; }
+.ask-branch { min-width: 220px; }
+.ask-controls .btn { margin-left: auto; }
+
+.field select {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  background: var(--panel-raised);
+  color: var(--on-night);
+  font: inherit;
+  font-size: .9375rem;
+  transition: border-color var(--step) var(--ease);
+}
+.field select:hover:not(:disabled) { border-color: var(--hairline-strong); }
+.field select:focus-visible { border-color: var(--gold); outline: 2px solid rgba(255, 180, 90, .35); outline-offset: 0; }
+.field select:disabled { cursor: not-allowed; opacity: .55; }
+
+/* Two modes, one control. A dropdown would hide the choice that changes what
+   the page costs and what it promises. */
+.segmented { display: flex; margin: 0; padding: 3px; border: 1px solid var(--hairline); border-radius: 99px; gap: 2px; }
+.segmented label { position: relative; }
+.segmented input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.segmented span { display: block; padding: 8px 15px; border-radius: 99px; color: var(--on-night-muted); cursor: pointer; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: background var(--step) var(--ease), color var(--step) var(--ease); }
+.segmented label:hover span { color: var(--on-night); background: var(--night-raised); }
+.segmented input:checked + span { color: #241109; background: var(--gold); }
+.segmented input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 3px; }
+.segmented input:disabled + span { cursor: not-allowed; opacity: .55; }
+
+.ask-answer { max-width: var(--measure); font-size: 1.125rem; line-height: 1.62; white-space: pre-wrap; }
+.ask-citations { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hairline); color: var(--on-night-subtle); font-size: .8125rem; }
+
+.panel-warn { border-color: rgba(255, 180, 90, .38); }
+.plain-list { margin: 0; padding-left: 18px; color: var(--on-night-muted); font-size: .9375rem; }
+.plain-list li + li { margin-top: 8px; }
+
+.hit-list { margin: 0; padding: 0; list-style: none; }
+.hit { padding: 18px 0; border-top: 1px solid var(--hairline); }
+.hit:first-child { border-top: 0; padding-top: 4px; }
+.hit h3 { font-size: 1.125rem; }
+.hit-meta { margin-top: 4px; color: var(--on-night-subtle); font-size: .8125rem; }
+.hit-content { max-width: var(--measure); margin-top: 8px; color: var(--on-night-muted); font-size: .9375rem; }
+.hit-foot { margin-top: 10px; color: var(--on-night-subtle); font-size: .8125rem; }
+.hit-group-title { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 1.125rem; }
+
 @media (max-width: 640px) {
   /* Three lines of wrapped navigation is not a bar. The wordmark goes; the
      mark still gets you home and both actions stay reachable. */
@@ -186,4 +237,9 @@
   .app-head { align-items: flex-start; flex-direction: column; }
   .page-title { font-size: 1.75rem; }
   .facts { grid-template-columns: 1fr; }
+  .ask-controls { align-items: stretch; flex-direction: column; }
+  .ask-controls .btn { margin-left: 0; }
+  .segmented { justify-content: stretch; }
+  .segmented label { flex: 1; }
+  .segmented span { text-align: center; }
 }

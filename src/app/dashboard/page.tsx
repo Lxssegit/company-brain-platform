@@ -44,6 +44,16 @@ export default async function DashboardPage() {
         <div className="panel" style={{ marginTop: 18 }}>
           <div className="panel-head">
             <div>
+              <h2>Eine Frage stellen</h2>
+              <p>Durchsucht wird nur, was Ihre Organisation, Ihre Rolle und Ihre Freigaben zulassen. Ohne belastbare Grundlage sagt Company Brain das, statt zu raten.</p>
+            </div>
+          </div>
+          <Link className="btn btn-primary" href="/fragen">Zu den Fragen <ArrowUpRight /></Link>
+        </div>
+
+        <div className="panel">
+          <div className="panel-head">
+            <div>
               <h2>Ihr Wissensbaum</h2>
               <p>Zweige werden auf dem Server nach Organisation, Rolle und Ihren Freigaben gefiltert. Nichts außerhalb dieses Kontexts wird ausgeliefert.</p>
             </div>

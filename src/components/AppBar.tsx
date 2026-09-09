@@ -12,6 +12,7 @@ export function AppBar({ context, user }: { context?: string; user?: string | nu
       </div>
       <div className="app-bar-right">
         {user ? <span className="app-user">{user}</span> : null}
+        <Link className="btn btn-ghost" href="/fragen">Fragen</Link>
         <Link className="btn btn-ghost" href="/brain">Wissensbaum</Link>
         <SignOutButton />
       </div>
