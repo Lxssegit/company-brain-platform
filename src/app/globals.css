@@ -2,34 +2,52 @@
 @import "./landing.css";
 
 :root {
-  /* Ground and light. One ember lit in a dark room; every accent is a step
-     along the same warm ramp rather than a separate hue. Shared by the
-     marketing surface and the authenticated app. */
-  --night: #170d09;
-  --night-raised: rgba(255, 233, 205, .06);
-  --ember: #ff8d38;
-  --gold: #ffb45a;
-  --cream: #fff5e5;
-  --day: #f7eee2;
-  --day-ink: #29150d;
+  /* Paper, not screen. The ground is warm off-white so the ink can be a warm
+     near-black instead of a cold one; a neutral gray page would make every
+     accent read as a second hue rather than the same ink at full strength. */
+  --paper: #faf8f4;
+  --paper-raised: #ffffff;
+  --paper-sunk: #f2eee7;
+  --paper-deep: #191410;
 
-  /* Text tints are the foreground at lower opacity, never gray, and never
-     below .52 -- that is where 4.5:1 against --night gives out. */
-  --on-night: var(--cream);
-  --on-night-muted: rgba(255, 245, 229, .68);
-  --on-night-subtle: rgba(255, 245, 229, .54);
-  --hairline: rgba(255, 225, 178, .16);
-  --hairline-strong: rgba(255, 225, 178, .3);
+  /* One accent, carried over from the ember the app was built around but
+     darkened until it holds 5.5:1 on paper. It marks; it never decorates. */
+  --accent: #c4441a;
+  --accent-hover: #a7360f;
+  --accent-wash: #f6e7df;
 
-  /* Two semantic signals, warm enough to belong here and far enough apart
-     from the accent that neither reads as a primary action. */
-  --ok: #74c49b;
-  --danger: #ff8a75;
+  /* Ink tints are the same warm black at lower strength, never gray, and
+     never past --ink-subtle -- that is where 4.5:1 on --paper gives out. */
+  --ink: #191410;
+  --ink-muted: #574e44;
+  --ink-subtle: #756b60;
+
+  /* Structure is drawn, not shadowed. Every division on this site is a rule
+     of exactly one device pixel. */
+  --rule: rgba(25, 20, 16, .13);
+  --rule-strong: rgba(25, 20, 16, .26);
+
+  --ok: #1f7a4d;
+  --danger: #b32d1c;
 
   --ease: cubic-bezier(.16, 1, .3, 1);
   --measure: 62ch;
 
-  color-scheme: dark;
+  /* One spacing scale, in fourths of the body line. Sections breathe at the
+     top of it; nothing on the page uses a value from outside it. */
+  --s1: .25rem;
+  --s2: .5rem;
+  --s3: .75rem;
+  --s4: 1rem;
+  --s6: 1.5rem;
+  --s8: 2rem;
+  --s12: 3rem;
+  --s16: 4rem;
+  --s24: 6rem;
+  --s32: 8rem;
+  --s48: 12rem;
+
+  color-scheme: light;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -37,14 +55,30 @@ html, body { min-height: 100%; }
 
 body {
   margin: 0;
-  background: var(--night);
-  color: var(--on-night);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-::selection { color: #1b0f09; background: #ffc985; }
-:focus-visible { border-radius: 6px; outline: 2px solid var(--gold); outline-offset: 3px; }
-html { scrollbar-color: #4a2a17 var(--night); }
+/* Both icon components default to these class names, and both are used on the
+   marketing page and inside the app. They sized correctly only as long as a
+   page stylesheet happened to be loaded, so they live here instead. */
+.icon { width: 1em; height: 1em; vertical-align: -.09em; }
+.brand-mark { width: 22px; height: 22px; color: var(--accent); }
+
+::selection { color: var(--paper-raised); background: var(--ink); }
+:focus-visible { border-radius: 4px; outline: 2px solid var(--accent); outline-offset: 3px; }
+html { scrollbar-color: #cfc7bb var(--paper); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,248 +1,311 @@
-/* Company Brain landing page */
+/* The public page. A register kept on paper: hairlines carry the structure,
+   numbers carry the order, and the accent appears only where something is
+   actually marked. No shadow anywhere -- depth is drawn, not simulated. */
 
-@property --tree-progress { syntax: "<number>"; inherits: true; initial-value: 0; }
-
-/* Palette and easing live in globals.css so the marketing world and the
-   authenticated app cannot drift apart. */
-.landing-page {
-  overflow: clip;
-  background: var(--night);
-  color: var(--on-night);
-  font-size: 16px;
-  line-height: 1.6;
+.site {
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --col: minmax(0, 1fr);
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
-.landing-page a { color: inherit; }
+/* ---------- masthead ---------- */
 
-/* The surfaces we did not draw still belong to the page. */
-.landing-page ::selection { color: #1b0f09; background: #ffc985; }
-.landing-page :focus-visible { border-radius: 6px; outline: 2px solid var(--gold); outline-offset: 3px; }
-.landing-page :where(button, a) { caret-color: var(--gold); }
-.landing-page :where(h1, h2) { text-wrap: balance; }
-.landing-page :where(p) { text-wrap: pretty; }
-
-.icon { width: 1em; height: 1em; margin-left: .55em; vertical-align: -.09em; }
-.brand-mark { width: 22px; height: 22px; color: var(--gold); }
-
-/* Display voice. Capped at 4.5rem, tracking never tighter than -.02em: an
-   editorial serif loses its joins long before a grotesk does. */
-.landing-page :where(h1, h2) {
-  margin: 0;
-  font-family: var(--font-display), ui-serif, Georgia, serif;
-  font-weight: 400;
-  letter-spacing: -.02em;
-  line-height: .99;
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s6);
+  padding: var(--s6) var(--gutter);
+  border-bottom: 1px solid var(--rule);
 }
 
-.hero-copy h1 { font-size: clamp(2.6rem, 5.6vw, 4.5rem); }
-.story-intro h2 { font-size: clamp(2.1rem, 4.2vw, 3.6rem); }
-.index-inner h2, .landing-cta h2 { font-size: clamp(2.1rem, 4.2vw, 3.6rem); }
+.wordmark {
+  display: inline-flex;
+  white-space: nowrap;
+  align-items: center;
+  gap: var(--s2);
+  color: var(--ink);
+  font-size: .9375rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  text-decoration: none;
+}
 
-.hero-copy h1 em, .landing-cta h2 em { color: var(--gold); font-style: italic; }
-.story-intro h2 span { color: var(--gold); }
+.wordmark-glyph { width: 18px; height: 18px; color: var(--accent); }
 
-/* ---------- navigation ---------- */
+.masthead-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--s8);
+  font-size: .875rem;
+}
 
-.landing-nav { position: absolute; z-index: 10; top: 0; right: 0; left: 0; display: flex; align-items: center; justify-content: space-between; padding: 26px clamp(22px, 6vw, 92px); font-size: .875rem; }
-.landing-brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; text-decoration: none; }
-.landing-nav-actions { display: flex; align-items: center; gap: 26px; color: var(--on-night-muted); }
-.landing-nav-actions a { text-decoration: none; transition: color .25s var(--ease); }
-.landing-nav-actions a:hover { color: var(--gold); }
-.nav-signin { display: inline-flex; align-items: center; padding: 9px 16px; border: 1px solid var(--hairline); border-radius: 99px; color: var(--on-night); transition: border-color .25s var(--ease), background .25s var(--ease); }
-.nav-signin:hover { border-color: var(--hairline-strong); background: var(--night-raised); }
+.masthead-nav a { color: var(--ink-muted); text-decoration: none; transition: color .18s var(--ease); }
+.masthead-nav a:hover { color: var(--ink); }
+
+.link-action { display: inline-flex; align-items: center; gap: .3em; color: var(--ink) !important; font-weight: 550; }
+.link-arrow { width: 13px; height: 13px; transition: transform .22s var(--ease); }
+.link-action:hover .link-arrow { transform: translate(2px, -2px); }
 
 /* ---------- hero ---------- */
 
-.landing-hero {
-  position: relative;
+/* Deliberately not a centred stack: the headline owns the left seven columns
+   and the reading copy sits lower and right of it, so the eye travels down a
+   diagonal instead of straight through the middle. */
+.hero {
   display: grid;
-  min-height: 100vh;
-  align-content: center;
-  grid-template-columns: minmax(0, 1fr) minmax(0, .78fr);
+  grid-template-columns: repeat(12, var(--col));
+  column-gap: var(--s6);
+  padding: clamp(var(--s16), 11vw, var(--s48)) var(--gutter) var(--s24);
+}
+
+.hero h1 {
+  grid-column: 1 / span 7;
+  margin: 0;
+  font-size: clamp(2.75rem, 7.2vw, 5.75rem);
+  font-weight: 500;
+  line-height: .96;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+
+.hero h1 em,
+.register-head h2 em,
+.closing h2 em {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -.02em;
+}
+
+.hero-side {
+  grid-column: 9 / -1;
+  align-self: end;
+  padding-bottom: var(--s2);
+}
+
+.lede {
+  margin: 0 0 var(--s8);
+  max-width: 34ch;
+  color: var(--ink-muted);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: var(--s3); }
+
+/* A button is a filled rectangle with a 2px radius -- enough to not look
+   broken, not enough to read as a pill. */
+.btn {
+  display: inline-flex;
   align-items: center;
-  padding: 132px clamp(22px, 7vw, 118px) 92px;
-  gap: 40px;
-  isolation: isolate;
+  gap: .4em;
+  padding: .72em 1.15em;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: .9375rem;
+  font-weight: 550;
+  letter-spacing: -.005em;
+  text-decoration: none;
+  transition: background .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease);
 }
 
-.hero-copy { position: relative; z-index: 2; max-width: 44rem; }
-.hero-copy h1 { max-width: 13ch; }
-.hero-description { max-width: 46ch; margin: 30px 0 0; color: var(--on-night-muted); font-size: 1.125rem; line-height: 1.62; }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
-.hero-proof { margin: 40px 0 0; padding-top: 18px; border-top: 1px solid var(--hairline); max-width: 38ch; color: var(--on-night-subtle); font-size: .9375rem; }
+.btn:hover { border-color: var(--accent); background: var(--accent); }
+.btn-quiet { border-color: var(--rule-strong); background: transparent; color: var(--ink); }
+.btn-quiet:hover { border-color: var(--ink); background: transparent; color: var(--ink); }
+.btn-lg { padding: .85em 1.5em; font-size: 1rem; }
 
-.hero-button { display: inline-flex; align-items: center; border-radius: 99px; padding: 13px 20px; font-size: .9375rem; font-weight: 600; text-decoration: none; transition: transform .3s var(--ease), background .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
-.hero-button:hover { transform: translateY(-2px); }
-.hero-button-primary { color: #241109 !important; background: var(--gold); }
-.hero-button-primary:hover { background: #ffc47a; }
-.hero-button-quiet { border: 1px solid var(--hairline); color: var(--on-night) !important; }
-.hero-button-quiet:hover { border-color: var(--hairline-strong); background: var(--night-raised); }
-
-/* The right half used to be empty. It now carries the first light of the tree
-   that the next section grows, so the hero and the story share one source. */
-.hero-ember {
-  position: relative;
-  z-index: 1;
-  aspect-ratio: 1;
-  width: 100%;
-  justify-self: center;
+/* The document head: four facts under a rule, the way a file card states its
+   own terms before the contents begin. */
+.colophon {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s6);
+  margin: var(--s24) 0 0;
+  padding-top: var(--s4);
+  border-top: 1px solid var(--rule);
 }
-.hero-seed { display: block; width: 100%; height: 100%; overflow: visible; }
-.hero-seed-ring { fill: none; stroke: var(--hairline); stroke-width: 1.4; }
-.hero-seed-trunk { fill: none; stroke: url(#seedTrunk); stroke-width: 11; stroke-linecap: round; }
-.hero-seed-limb { fill: none; stroke: url(#seedTrunk); stroke-width: 5.5; stroke-linecap: round; }
-.hero-seed-root { fill: none; stroke: #d66527; stroke-width: 3.5; stroke-linecap: round; opacity: .75; }
-.hero-seed-core { fill: #fff1b9; }
-.hero-seed-tip { fill: #fff1b9; }
 
-/* ---------- the tree grows ---------- */
+.colophon div { display: flex; flex-direction: column; gap: .15rem; }
+.colophon dt { color: var(--ink-subtle); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+.colophon dd { margin: 0; font-size: .9375rem; font-weight: 550; }
 
-.brain-story { position: relative; height: 250vh; background: var(--night); }
-.brain-story::after { position: absolute; right: 0; bottom: 0; left: 0; height: 210px; background: radial-gradient(115% 100% at 50% 100%, rgba(255, 170, 92, .2), rgba(255, 122, 40, .05) 46%, transparent 74%); content: ""; pointer-events: none; }
-.story-sticky { position: sticky; top: 0; display: grid; overflow: hidden; height: 100vh; min-height: 620px; align-items: center; grid-template-columns: minmax(270px, 26%) minmax(0, 1fr); padding: 84px clamp(22px, 4vw, 56px) 84px clamp(22px, 7vw, 110px); gap: clamp(24px, 4vw, 64px); }
-.story-intro { z-index: 3; }
-.story-intro > p { margin-top: 22px; max-width: 34ch; color: var(--on-night-muted); font-size: .9375rem; }
+/* ---------- product stack ---------- */
 
-.brain-tree-scene { position: relative; height: 100%; min-width: 0; }
-.brain-tree-svg { display: block; width: 100%; height: 100%; }
+/* Three surfaces, staggered rather than stacked. Overlapping them the way an
+   ad does cuts every pane behind the front one mid-row, and a half-sentence
+   reads as a rendering fault, not as depth. Offsetting them left, right and
+   centre gives the same layered read while every surface stays legible --
+   which is the point, since these are the product, not decoration. */
 
-/* One authored moment: scroll draws the trunk, then each limb in turn, then
-   the canopy answers. Every element below reads the same progress value. */
-.tree-limb, .branch-node { --limb-p: clamp(0, calc((var(--tree-progress) - var(--limb-start)) / var(--limb-span)), 1); }
+.showcase { padding: 0 var(--gutter) var(--s32); }
 
-.tree-trunk-glow, .tree-branch-glow { fill: none; stroke: var(--ember); stroke-linecap: round; stroke-linejoin: round; stroke-width: 30; opacity: .22; filter: blur(14px); }
-.tree-trunk, .tree-branch { fill: none; stroke: url(#trunkGradient); stroke-linecap: round; stroke-linejoin: round; }
-.tree-trunk { stroke-width: 18; }
-.tree-branch { stroke: url(#branchGradient); stroke-width: 8; }
-.tree-root { fill: none; stroke: #d66527; stroke-linecap: round; stroke-width: 5; opacity: .75; }
+.stack {
+  display: grid;
+  gap: var(--s4);
+  max-width: 64rem;
+  margin: 0 auto;
+}
 
-.tree-trunk, .tree-trunk-glow { stroke-dasharray: 1; stroke-dashoffset: clamp(0, calc(1 - var(--tree-progress) / .3), 1); }
-.tree-root { stroke-dasharray: 1; stroke-dashoffset: clamp(0, calc(1 - (var(--tree-progress) - .1) / .26), 1); }
-.tree-branch, .tree-branch-glow { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--limb-p)); }
+.pane {
+  margin: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  background: var(--paper-raised);
+  overflow: hidden;
+}
 
-.tree-limb-tip { fill: var(--limb-accent); opacity: clamp(0, calc((var(--limb-p) - .82) * 6), 1); }
-.tree-canopy { opacity: clamp(0, calc((var(--tree-progress) - .44) / .34), 1); }
-.tree-crown { fill: #fff1b9; opacity: clamp(0, calc((var(--tree-progress) - .24) * 8), 1); filter: url(#softGlow); }
-.tree-core { fill: var(--gold); opacity: clamp(0, calc(var(--tree-progress) / .3), 1); }
-.tree-core-inner { fill: #fff1b9; opacity: clamp(0, calc(var(--tree-progress) / .3), 1); }
-.tree-sparks circle { fill: #ffe0a2; filter: url(#softGlow); opacity: clamp(0, calc((var(--tree-progress) - .58) / .26), 1); }
-
-/* The one thing that keeps moving on its own: the heart of the tree. */
-@keyframes core-breath { 50% { transform: scale(1.18); opacity: .85; } }
-.tree-core-inner { transform-box: fill-box; transform-origin: center; animation: core-breath 3.6s ease-in-out infinite; }
-
-.tree-caption { position: absolute; right: 0; bottom: -6px; left: 0; display: none; margin: 0; color: var(--limb-accent, var(--gold)); font-size: 1.125rem; text-align: center; transition: color .3s var(--ease); }
-.tree-labels { position: absolute; inset: 0; pointer-events: none; }
-.branch-node {
-  position: absolute;
-  top: var(--node-y);
-  left: var(--node-x);
+.pane-bar {
   display: flex;
   align-items: center;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--on-night);
-  cursor: pointer;
-  font: inherit;
-  opacity: clamp(0, calc((var(--limb-p) - .8) * 5), 1);
-  pointer-events: auto;
-  transition: opacity .2s linear;
+  gap: var(--s2);
+  padding: .55rem var(--s4);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-sunk);
 }
-.branch-node.side-left { transform: translate(-100%, -50%); padding-right: 16px; }
-.branch-node.side-right { transform: translate(0, -50%); padding-left: 16px; }
-.branch-node-label { padding: 7px 13px; border: 1px solid var(--hairline); border-radius: 99px; background: rgba(28, 15, 9, .82); backdrop-filter: blur(8px); font-size: .8125rem; white-space: nowrap; transition: border-color .25s var(--ease), color .25s var(--ease), transform .3s var(--ease); }
-.branch-node:hover .branch-node-label { transform: translateY(-2px); border-color: var(--limb-accent); }
-.branch-node.is-active .branch-node-label { border-color: var(--limb-accent); color: var(--limb-accent); }
 
-.story-progress { position: absolute; right: clamp(22px, 6vw, 90px); bottom: 5vh; z-index: 3; display: flex; align-items: center; gap: 14px; width: 160px; color: var(--on-night-subtle); font-size: .8125rem; font-variant-numeric: tabular-nums; }
-.story-progress-track { position: relative; flex: 1; height: 2px; border-radius: 2px; background: rgba(255, 225, 178, .2); }
-.story-progress-track i { position: absolute; inset: 0 auto 0 0; width: calc(var(--tree-progress) * 100%); border-radius: 2px; background: var(--gold); }
+.pane-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule-strong); }
+.pane-title { color: var(--ink-muted); font-size: .6875rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
+.pane-body { display: grid; gap: var(--s3); padding: var(--s4); }
 
-/* ---------- the branch index ---------- */
+/* Back two sit inset and to opposite sides; the front one is widest and
+   centred, so the eye lands on the answer with its sources. */
+.pane-back  { width: 74%; justify-self: start; }
+.pane-mid   { width: 74%; justify-self: end; }
+.pane-front { width: 90%; justify-self: center; }
 
-/* Not cards. Seven rows read top to bottom, the way the tree reads root to
-   tip, so nothing hides behind a hover and no grid leaves an orphan. */
-.branch-index {
-  position: relative;
-  padding: 132px clamp(22px, 8vw, 130px) 150px;
-  border-top: 1px solid rgba(255, 168, 84, .55);
-  background: var(--day);
-  color: var(--day-ink);
+.queue-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); font-size: .8125rem; }
+.queue-row:last-child { padding-bottom: 0; border-bottom: 0; }
+.queue-name { color: var(--ink); }
+
+.chip { padding: .12em .5em; border-radius: 2px; font-size: .6875rem; font-weight: 600; letter-spacing: .02em; white-space: nowrap; }
+.chip-wait { background: var(--accent-wash); color: var(--accent); }
+.chip-ok   { background: rgba(31, 122, 77, .12); color: var(--ok); }
+.chip-live { background: var(--ink); color: var(--paper); }
+.chip-past { background: var(--paper-sunk); color: var(--ink-subtle); }
+
+.decision { display: grid; gap: var(--s2); padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); }
+.decision:last-child { padding-bottom: 0; border-bottom: 0; }
+.decision-head { display: flex; align-items: center; gap: var(--s2); }
+.decision-date { color: var(--ink-subtle); font-size: .6875rem; }
+.decision-text { margin: 0; font-size: .8125rem; line-height: 1.45; }
+.is-past .decision-text { color: var(--ink-subtle); text-decoration: line-through; text-decoration-color: var(--rule-strong); }
+
+.ask { margin: 0; font-size: .9375rem; font-weight: 600; }
+.answer { padding-top: var(--s3); border-top: 1px solid var(--rule); }
+.answer p { margin: 0 0 var(--s3); font-size: .8125rem; line-height: 1.5; color: var(--ink-muted); }
+.sources { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; }
+.sources li { display: flex; align-items: center; gap: var(--s2); color: var(--ink-subtle); font-size: .6875rem; }
+.src-n {
+  display: grid; place-items: center;
+  width: 15px; height: 15px;
+  border: 1px solid var(--rule-strong); border-radius: 2px;
+  color: var(--accent); font-size: .5625rem; font-weight: 700;
 }
-.branch-index ::selection { color: #fffaf2; background: #9c4515; }
-.branch-index :focus-visible { outline-color: #a4491a; }
-.index-inner { max-width: 1080px; margin: 0 auto; }
-.index-inner h2 { color: var(--day-ink); }
-.index-inner h2 span { color: #a8481a; }
-.index-list { margin: 60px 0 0; padding: 0; list-style: none; border-top: 1px solid rgba(41, 21, 13, .16); }
-.index-list li { border-bottom: 1px solid rgba(41, 21, 13, .16); }
-.index-row {
+
+/* ---------- register ---------- */
+
+.register {
   display: grid;
-  width: 100%;
-  align-items: baseline;
-  padding: 26px 4px;
-  border: 0;
-  gap: 4px 26px;
-  grid-template-columns: 14px minmax(0, 13ch) minmax(0, 1fr);
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  text-align: left;
-  transition: background .3s var(--ease);
-}
-.index-row:hover, .index-row.is-active { background: rgba(255, 252, 247, .72); }
-.index-dot { width: 11px; height: 11px; align-self: center; border-radius: 50%; background: var(--limb-accent); box-shadow: 0 1px 3px rgba(92, 50, 29, .35); transition: transform .3s var(--ease); }
-.index-row:hover .index-dot, .index-row.is-active .index-dot { transform: scale(1.45); }
-.index-name { font-family: var(--font-display), ui-serif, Georgia, serif; font-size: 1.375rem; letter-spacing: -.01em; }
-.index-copy { max-width: 58ch; color: #6a5041; font-size: .9375rem; line-height: 1.6; }
-.index-row.is-active .index-copy { color: #543c2e; }
-
-/* ---------- close ---------- */
-
-.landing-cta { display: flex; align-items: flex-end; justify-content: space-between; padding: 150px clamp(22px, 8vw, 130px); gap: 40px; background: var(--night); }
-.landing-footer { display: flex; justify-content: space-between; padding: 26px clamp(22px, 8vw, 130px); border-top: 1px solid var(--hairline); gap: 20px; color: var(--on-night-subtle); background: var(--night); font-size: .875rem; }
-.landing-footer a { display: inline-flex; align-items: center; color: var(--gold); text-decoration: none; }
-.landing-footer a:hover { text-decoration: underline; text-underline-offset: .28em; }
-
-/* ---------- narrower viewports ---------- */
-
-@media (max-width: 1100px) {
-  .landing-hero { grid-template-columns: minmax(0, 1fr); }
-  .hero-ember { position: absolute; z-index: -1; top: 10%; right: -20%; width: 64vw; }
-  .hero-copy { max-width: none; }
-  .story-sticky { grid-template-columns: minmax(230px, 33%) minmax(0, 1fr); padding-left: clamp(22px, 5vw, 60px); }
+  grid-template-columns: repeat(12, var(--col));
+  column-gap: var(--s6);
+  padding: var(--s24) var(--gutter);
+  border-top: 1px solid var(--rule);
 }
 
-@media (max-width: 760px) {
-  .landing-nav { padding: 18px 22px; font-size: .8125rem; }
-  .landing-nav-actions { gap: 16px; }
-  .landing-nav-actions > a:first-child { display: none; }
-  .landing-hero { min-height: auto; padding: 120px 22px 80px; }
-  .hero-copy h1 { max-width: none; }
-  .hero-ember { top: 4%; right: -30%; width: 96vw; }
+.register-head { grid-column: 1 / span 5; position: sticky; top: var(--s12); align-self: start; }
+.register-head h2 { margin: 0 0 var(--s4); font-size: clamp(2rem, 3.4vw, 3.25rem); font-weight: 500; line-height: 1.02; letter-spacing: -.03em; }
+.register-head p { margin: 0; max-width: 30ch; color: var(--ink-muted); font-size: .9375rem; }
 
-  .brain-story { height: 215vh; }
-  .story-sticky { display: flex; min-height: 540px; flex-direction: column; padding: 9vh 22px 8vh; gap: 18px; }
-  .story-intro { width: auto; }
-  .story-intro > p { max-width: none; }
-  /* A floating label would clip at this width, so the tree keeps its lit tips
-     and the caption names whichever limb is growing. */
-  .brain-tree-scene { flex: 1; min-height: 0; }
-  .tree-caption { display: block; }
-  .story-progress { position: static; width: auto; }
+.register-list { grid-column: 7 / -1; margin: 0; padding: 0; list-style: none; }
 
-  .branch-index { padding: 96px 22px 110px; }
-  .index-list { margin-top: 42px; }
-  .index-row { padding: 22px 4px; gap: 10px 14px; grid-template-columns: 12px minmax(0, 1fr); }
-  .index-copy { grid-column: 2; }
-
-  .landing-cta { flex-direction: column; align-items: flex-start; padding: 110px 22px; }
-  .landing-footer { flex-wrap: wrap; }
+/* Each entry is a row in a ledger: number, name, description, then the rule
+   that closes it. The accent only shows up on hover, on the number. */
+.entry {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  gap: var(--s2) var(--s4);
+  padding: var(--s6) 0;
+  border-bottom: 1px solid var(--rule);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .landing-page *, .landing-page *::before, .landing-page *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .landing-page { scroll-behavior: auto; }
+.entry:first-child { padding-top: 0; }
+
+.entry-n {
+  grid-row: span 2;
+  color: var(--ink-subtle);
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: color .2s var(--ease);
+}
+
+.entry:hover .entry-n { color: var(--accent); }
+.entry-label { margin: 0; font-size: 1.0625rem; font-weight: 600; letter-spacing: -.01em; }
+.entry-copy { margin: 0; max-width: 52ch; color: var(--ink-muted); font-size: .9375rem; line-height: 1.55; }
+
+/* ---------- principles ---------- */
+
+.principles { padding: var(--s24) var(--gutter); border-top: 1px solid var(--rule); background: var(--paper-sunk); }
+.principles-head { margin: 0 0 var(--s16); max-width: 20ch; font-size: clamp(1.75rem, 3vw, 2.75rem); font-weight: 500; line-height: 1.05; letter-spacing: -.03em; }
+.principles-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s12); }
+.principle { display: grid; gap: var(--s3); padding-top: var(--s4); border-top: 1px solid var(--rule-strong); }
+.principle-n { color: var(--accent); font-family: var(--font-display), ui-serif, Georgia, serif; font-size: 1.25rem; line-height: 1; }
+.principle h3 { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+.principle p { margin: 0; color: var(--ink-muted); font-size: .9375rem; line-height: 1.55; }
+
+/* ---------- closing ---------- */
+
+.closing { display: grid; justify-items: start; gap: var(--s8); padding: var(--s32) var(--gutter); border-top: 1px solid var(--rule); }
+.closing h2 { margin: 0; font-size: clamp(2.25rem, 5vw, 4.25rem); font-weight: 500; line-height: 1; letter-spacing: -.035em; }
+
+/* ---------- footer ---------- */
+
+.footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s4); padding: var(--s6) var(--gutter); border-top: 1px solid var(--rule); color: var(--ink-subtle); font-size: .8125rem; }
+.footer-mark { display: inline-flex; align-items: center; gap: var(--s2); color: var(--ink); font-weight: 600; }
+
+/* ---------- one orchestrated load ---------- */
+
+/* A single staggered reveal on paint. Nothing animates on scroll: the page is
+   a document, and documents do not perform. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero h1, .hero-side, .colophon, .pane {
+    animation: rise .7s var(--ease) backwards;
+  }
+  .hero h1    { animation-delay: .04s; }
+  .hero-side  { animation-delay: .14s; }
+  .colophon   { animation-delay: .22s; }
+  .pane-back  { animation-delay: .28s; }
+  .pane-mid   { animation-delay: .36s; }
+  .pane-front { animation-delay: .44s; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- narrow ---------- */
+
+@media (max-width: 1000px) {
+  .hero h1 { grid-column: 1 / -1; }
+  .hero-side { grid-column: 1 / -1; margin-top: var(--s8); }
+  .register-head, .register-list { grid-column: 1 / -1; }
+  .register-head { position: static; margin-bottom: var(--s12); }
+  .principles-grid { grid-template-columns: 1fr; gap: var(--s8); }
+  .pane-back, .pane-mid, .pane-front { width: 100%; justify-self: stretch; }
+}
+
+@media (max-width: 640px) {
+  .colophon { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); margin-top: var(--s16); }
+  /* At this width the masthead can hold the wordmark and one action without
+     either of them wrapping. The section link drops; the page still has its
+     own anchor to the same place. */
+  .masthead-nav a:not(.link-action) { display: none; }
+  .entry { grid-template-columns: 2.5rem minmax(0, 1fr); }
+  .actions .btn { flex: 1 1 auto; justify-content: center; }
 }
