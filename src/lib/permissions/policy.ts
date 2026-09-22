@@ -10,7 +10,14 @@ const rolePermissions: Record<RoleKey, PermissionKey[]> = {
   COMPANY_ADMIN: ["READ", "CREATE", "EDIT", "DELETE", "APPROVE", "MANAGE_USERS", "MANAGE_BRANCH", "MANAGE_DECISIONS"],
   DEPARTMENT_ADMIN: ["READ", "CREATE", "EDIT", "APPROVE", "MANAGE_BRANCH", "MANAGE_DECISIONS"],
   MANAGER: ["READ", "CREATE", "EDIT", "APPROVE"],
-  EMPLOYEE: ["READ", "CREATE"],
+  /* EDIT is scoped by canManageKnowledge to what this person wrote, and an edit
+     to approved shared knowledge goes back through review. Without it an
+     employee could not fix a typo in their own note — not even in their
+     personal branch, which nobody else can see or repair. DELETE is scoped by
+     canArchiveKnowledge to what is still theirs alone: a personal note, a
+     draft, something not yet agreed. Removing agreed shared knowledge is not a
+     decision its author makes by themselves. */
+  EMPLOYEE: ["READ", "CREATE", "EDIT", "DELETE"],
 };
 
 export function hasRolePermission(role: RoleKey | null | undefined, permission: PermissionKey) {

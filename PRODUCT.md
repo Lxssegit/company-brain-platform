@@ -1,0 +1,169 @@
+# Product
+
+<!-- impeccable:product-schema 1 -->
+
+## Platform
+
+web
+
+## Users
+
+Everyone in the company, from a new employee to the managing director. Confirmed:
+this is not a tool where a curator role maintains knowledge for everyone else.
+The same person asks and contributes.
+
+- **Asking** is the everyday act: someone is mid-task, needs an answer that holds
+  up, and cannot afford a plausible guess.
+- **Curating** is the same product, not a second one: approving what colleagues
+  propose, recording decisions, granting branch access.
+
+System roles, in ascending authority: `EMPLOYEE`, `MANAGER`, `DEPARTMENT_ADMIN`,
+`COMPANY_ADMIN`, `SUPER_ADMIN`. Role is the ceiling; branch membership is the
+scope. Both must permit a request.
+
+Target customer: German *Mittelstand* / KMU. Grown structures, knowledge sitting
+in individual heads and mail folders rather than in a system.
+
+## Product Purpose
+
+Company Brain is a company's operating memory. Scattered knowledge, decisions and
+context become one permission-aware source of truth.
+
+Success is a question answered truthfully from verified company knowledge — or an
+explicit statement that the evidence is not there. A confident invented answer is
+a product failure, not a rough edge.
+
+## Positioning
+
+Three mechanisms, all implemented in the codebase rather than aspirational:
+
+1. **Permission is resolved before retrieval, not after.** Organization, role and
+   the allowed branch set become a SQL predicate that is applied before the
+   vector similarity operation. Rows a user may not read never reach the model's
+   prompt. Retrieving globally and filtering in application code is explicitly
+   rejected in `ARCHITECTURE.md`.
+2. **Decision Memory with validity and supersession.** A replaced decision is not
+   edited or deleted; it stays readable as `SUPERSEDED` and linked through
+   `supersedesDecisionId`. "Why do we do it this way, and what did we do before"
+   is answerable.
+3. **The answer contract has honest non-answers.** `UNKNOWN` when evidence falls
+   below the retrieval threshold, `CONFLICT` when active decisions contradict
+   each other. The model is not permitted to silently pick a winner.
+
+## Operating Context
+
+- Branches form a tree: Company → Department → Team → Personal. Every user gets a
+  personal branch under their team.
+- Inheritance is a **visibility rule, not a copy**. Knowledge stays owned by its
+  originating branch and is resolved at read time, so approvals, audit history
+  and later permission changes stay correct.
+- An explicit `DENY` grant beats an inherited `READ`.
+- Knowledge an employee shares beyond their personal branch enters
+  `PENDING_REVIEW` and becomes visible on approval. Personal knowledge stays
+  private to its creator.
+- Knowledge and decisions carry sources: document, email, meeting, chat, CRM,
+  ERP, manual entry, employee input, decision.
+- Deletion archives rather than destroys. The audit log is append-only.
+
+## Capabilities and Constraints
+
+- **Product language is German.** Confirmed, and the interface is translated.
+  Domain identifiers stay English in code (`Branch`, `KnowledgeUnit`, `Decision`,
+  `Review`, `Source`); the words a user reads are German, held in one glossary at
+  `src/lib/i18n/de.ts`. The mapping — Branch → *Zweig*, knowledge tree →
+  *Wissensbaum*, Decision → *Entscheidung*, Review → *Freigabe*, Source →
+  *Quelle* — was chosen to keep the product's tree metaphor intact and is
+  **proposed, not confirmed by the owner**.
+- **Form of address: Sie.** Chosen for the KMU target market. The repository's
+  earlier German strings were developer-facing and informal, so there was no
+  product precedent to follow. Also **proposed, not confirmed**.
+- Multi-tenant. Every tenant-owned row carries `organizationId`, enforced in the
+  query layer.
+- Knowledge types: `FACT`, `PROCESS`, `RULE`, `DECISION`, `CUSTOMER`, `PRODUCT`,
+  `PERSON`, `EXCEPTION`, `PROCEDURE`, `LESSON`, `POLICY`.
+  Scopes: `PERSONAL`, `TEAM`, `DEPARTMENT`, `COMPANY`.
+  Statuses: `DRAFT`, `PENDING_REVIEW`, `APPROVED`, `REJECTED`, `ARCHIVED`.
+- The OpenAI key stays server-side. Without it the chat is honestly disabled
+  (`AI_NOT_CONFIGURED`) rather than faked; authorized retrieval still works and
+  stays testable.
+- Vector retrieval requires PostgreSQL with the `pgvector` extension.
+- Planned but not built: integrations with an encrypted-token boundary, an
+  outbox for reliable background work and n8n hooks, onboarding plans. No
+  "connected" state may be shown for an integration that does not exist.
+- **Undecided:** accessibility standard; where inside KMU the size band sits;
+  owner confirmation of the glossary and the Sie/du decision above.
+
+## Brand Commitments
+
+- Name: **Company Brain**.
+- No logo file, wordmark, colour specification or brand guideline exists in the
+  repository. The visual world currently in the code was established during
+  design work in this project, not handed down as an identity — it is recorded in
+  `DESIGN.md`, and nothing about it is a binding brand constraint yet.
+
+## Evidence on Hand
+
+- `ARCHITECTURE.md` — the project's own architecture decision record covering
+  phases 2–6, the permission model, the retrieval order and the data model.
+- `README.md` — setup and the API surface.
+- Working implementation: 22 routes, the permission policy, the retrieval
+  pipeline, and `tests/security/permissions.test.ts` (13 passing unit tests).
+- **Absences future work must not fill in:** there are no customers, testimonials,
+  case studies, benchmarks, pricing, press or usage numbers. Naming any would be
+  invention, not documentation.
+
+## Open Risk: the relevance floor cannot say "nothing matched"
+
+The product's central promise is that it does not guess — no evidence means
+UNKNOWN. That promise is currently reachable only while vector search is off.
+
+`relevanceFloor` is `best × threshold`: a purely relative bar. When the vector
+half is active every candidate has a non-zero similarity, so `best` is always
+above zero and the floor is always a fraction of it. Something always survives.
+Measured against a running instance, the question "Wie hoch ist der Umsatz auf
+dem Mars?" returned ANSWERABLE with eight knowledge units — none of them about
+anything of the kind.
+
+The shape of the defect is a fact about the code. Its fix is not, and was
+deliberately not guessed at here. Measured on the same instance:
+
+| Question | Best score |
+| --- | --- |
+| Exact title match | 1.0000 |
+| A genuine paraphrase of a stored fact | 0.2394 |
+| A question about nothing in the company | 0.1979 |
+
+An absolute floor that rejects the third also rejects the second — which is the
+case vector search exists to serve. The two cannot be separated by a constant,
+and the measurement above was taken against a deterministic stand-in for the
+embedding provider, which is far cruder than a real model at exactly the
+distinction that matters. Choosing a number from it would be tuning against an
+artefact.
+
+What is needed before this can be closed: the same measurement against a real
+embedding model on real company knowledge, and a decision from the owner about
+how conservative the assistant should be — refusing a borderline question is a
+cost, and so is answering one.
+
+What was done in the meantime: an answer now shows what it was built from, so a
+thin basis is visible rather than hidden. The status pill reports the number of
+entries behind an answer instead of asserting "Belegt" over nothing.
+
+## Product Principles
+
+1. **Permission before retrieval.** Filter in the query, never in application
+   code afterwards.
+2. **An honest non-answer beats a plausible one.** `UNKNOWN` and `CONFLICT` are
+   features to be shown clearly, not errors to be smoothed over.
+3. **Knowledge keeps its origin.** Inheritance is visibility, archiving is not
+   deleting, and a superseded decision stays readable.
+4. **One product for the whole hierarchy.** The employee and the managing
+   director use the same surfaces; the tree decides what each of them sees.
+5. **Never claim what is not in the record.** No invented sources, citations,
+   customers or confidence.
+
+## Accessibility & Inclusion
+
+No standard has been established for this product. Recorded as undecided rather
+than assumed; the contrast and keyboard work done so far targets WCAG 2.2 AA by
+default, not by requirement.

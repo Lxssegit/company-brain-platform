@@ -226,7 +226,9 @@ model KnowledgeUnit {
   approvedById   String?
   confidence     Float?
   verifiedAt     DateTime?
-  embedding      Unsupported("vector")?
+  /// 1536 = text-embedding-3-small. pgvector cannot index a dimensionless
+  /// vector column, and a different model needs a migration, not a config change.
+  embedding      Unsupported("vector(1536)")?
   embeddingModel String?
   embeddedAt     DateTime?
   createdAt      DateTime        @default(now())

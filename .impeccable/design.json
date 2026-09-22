@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-22T17:27:47Z",
+  "title": "Design System: Company Brain",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "tertiary",
+        "displayName": "Kiln Rust",
+        "canonical": "#c4441a",
+        "tonalRamp": [
+          "#421c0a",
+          "#6e2f11",
+          "#9b4218",
+          "#c7551f",
+          "#e06f38",
+          "#e99872",
+          "#f1bfa7",
+          "#fae9e0"
+        ]
+      },
+      "accent-strong": {
+        "role": "primary",
+        "displayName": "Live Ember",
+        "canonical": "#c4441a",
+        "tonalRamp": [
+          "#4c2100",
+          "#803600",
+          "#b24c00",
+          "#e66200",
+          "#ff7c1a",
+          "#ffa25c",
+          "#ffc599",
+          "#ffebdb"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Deep Ember Black",
+        "canonical": "#faf8f4",
+        "tonalRamp": [
+          "#371f16",
+          "#5c3424",
+          "#804932",
+          "#a55d41",
+          "#be775a",
+          "#d19e8a",
+          "#e2c2b6",
+          "#f5eae5"
+        ]
+      },
+      "paper-raised": {
+        "role": "neutral",
+        "displayName": "Raised Ember Black",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#372116",
+          "#5b3724",
+          "#804c33",
+          "#a46242",
+          "#bd7c5b",
+          "#d0a28a",
+          "#e2c5b6",
+          "#f5ebe6"
+        ]
+      },
+      "paper-sunk": {
+        "role": "tertiary",
+        "displayName": "Daylight Cream",
+        "canonical": "#f2eee7",
+        "tonalRamp": [
+          "#3c2911",
+          "#64451c",
+          "#8c6027",
+          "#b47c32",
+          "#cd964b",
+          "#dcb47f",
+          "#e9d0af",
+          "#f7efe3"
+        ]
+      },
+      "ink": {
+        "role": "tertiary",
+        "displayName": "Bark Ink",
+        "canonical": "#191410",
+        "tonalRamp": [
+          "#3a1e12",
+          "#61321f",
+          "#88452b",
+          "#ae5937",
+          "#c87351",
+          "#d89b83",
+          "#e6c1b2",
+          "#f6e9e4"
+        ]
+      },
+      "ok": {
+        "role": "secondary",
+        "displayName": "Sage Confirm",
+        "canonical": "#1f7a4d",
+        "tonalRamp": [
+          "#173626",
+          "#265a3f",
+          "#357d58",
+          "#44a172",
+          "#5ebb8b",
+          "#8ccead",
+          "#b7e1cb",
+          "#e6f4ed"
+        ]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "Warm Alarm",
+        "canonical": "#b32d1c",
+        "tonalRamp": [
+          "#4c0c00",
+          "#801300",
+          "#b21b00",
+          "#e62300",
+          "#ff3c1a",
+          "#ff755c",
+          "#ffa999",
+          "#ffe1db"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Marketing headlines only, capped at 4.5rem — the cap is set by the longest headline on the page, not by the face. Emphasised clause in italic gold."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The single serif moment on an authenticated screen: its page title."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel and section headings inside the app. Grotesk, never the serif."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text, held to roughly 62ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, navigation and metadata. Never below 0.8125rem."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ember-bloom",
+        "value": "none",
+        "purpose": "Emitted light under a primary button. Not a depth cue."
+      },
+      {
+        "name": "ember-bloom-hover",
+        "value": "none",
+        "purpose": "The same bloom, opened up on hover."
+      },
+      {
+        "name": "limb-glow",
+        "value": "0 0 0 5px #faf8f4",
+        "purpose": "A lit branch tip or the scroll progress fill."
+      },
+      {
+        "name": "none",
+        "value": "none",
+        "purpose": "Every panel, card and container. Depth is tonal in this system."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Exponential ease-out for every state transition in the system."
+      },
+      {
+        "name": "duration-state",
+        "value": "200ms",
+        "purpose": "App state transitions: hover, focus, selection."
+      },
+      {
+        "name": "duration-surface",
+        "value": "300ms",
+        "purpose": "Marketing surface transitions and button lifts."
+      },
+      {
+        "name": "core-breath",
+        "value": "3.6s ease-in-out infinite",
+        "purpose": "The one ambient loop in the system: the heart of the tree."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "app-compact",
+        "value": "640px"
+      },
+      {
+        "name": "tree-compact",
+        "value": "760px"
+      },
+      {
+        "name": "hero-stack",
+        "value": "1100px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled control. Ember Gold with near-black text.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Company Brain öffnen</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:10px 16px;border:1px solid transparent;border-radius:99px;background:transparent;font:600 .9375rem/1.4 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;white-space:nowrap;cursor:pointer;transition:background 200ms cubic-bezier(.16,1,.3,1),border-color 200ms cubic-bezier(.16,1,.3,1)}.ds-btn-primary{background:#c4441a;color:#faf8f4}.ds-btn-primary:hover{background:#a7360f}.ds-btn-primary:focus-visible{outline:2px solid #c4441a;outline-offset:3px}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:disabled{background:rgba(25,20,16,.28);color:rgba(250,248,244,.9);cursor:not-allowed}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "The default secondary control: hairline border, no fill.",
+      "html": "<button class=\"ds-btn ds-btn-quiet\">Baum öffnen</button>",
+      "css": ".ds-btn-quiet{display:inline-flex;align-items:center;gap:.5em;padding:10px 16px;border:1px solid rgba(25,20,16,.13);border-radius:99px;background:transparent;color:#191410;font:600 .9375rem/1.4 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;cursor:pointer;white-space:nowrap;transition:background 200ms cubic-bezier(.16,1,.3,1),border-color 200ms cubic-bezier(.16,1,.3,1)}.ds-btn-quiet:hover{border-color:rgba(25,20,16,.26);background:#f2eee7}.ds-btn-quiet:focus-visible{outline:2px solid #c4441a;outline-offset:3px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Sunk one tone below the panel it sits on; focus shifts the border to gold.",
+      "html": "<div class=\"ds-field\"><label for=\"ds-f1\">E-Mail</label><input id=\"ds-f1\" type=\"email\" placeholder=\"du@firma.example\"><span class=\"ds-hint\">Wird serverseitig geprüft.</span></div>",
+      "css": ".ds-field{display:grid;gap:7px;font-family:'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif}.ds-field label{color:#574e44;font-size:.875rem;font-weight:500}.ds-field input{width:100%;padding:11px 13px;border:1px solid rgba(25,20,16,.13);border-radius:7px;background:#f2eee7;color:#191410;font:400 .9375rem/1.5 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;transition:border-color 200ms cubic-bezier(.16,1,.3,1)}.ds-field input::placeholder{color:#756b60}.ds-field input:hover{border-color:rgba(25,20,16,.26)}.ds-field input:focus-visible{border-color:#c4441a;outline:2px solid rgba(196,68,26,.3);outline-offset:0}.ds-field input[aria-invalid=\"true\"]{border-color:#b32d1c}.ds-hint{color:#756b60;font-size:.8125rem}"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The container. A lighter tone plus a hairline; never a shadow.",
+      "html": "<section class=\"ds-panel\"><h2>Zwei-Faktor-Anmeldung</h2><p>Ein zeitbasierter Code aus einer Authenticator-App, serverseitig geprüft.</p></section>",
+      "css": ".ds-panel{padding:30px;border:1px solid rgba(25,20,16,.13);border-radius:10px;background:#ffffff;font-family:'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif}.ds-panel h2{margin:0;color:#191410;font-size:1.375rem;font-weight:600;letter-spacing:-.01em}.ds-panel p{margin:8px 0 0;max-width:62ch;color:#574e44;font-size:.9375rem;line-height:1.6}"
+    },
+    {
+      "name": "Status Pill",
+      "kind": "chip",
+      "refersTo": "pill-status",
+      "description": "State, never an action. Sage Confirm when on, tinted foreground when off.",
+      "html": "<span class=\"ds-pill ds-pill-on\">An</span> <span class=\"ds-pill ds-pill-off\">Aus</span>",
+      "css": ".ds-pill{display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border:1px solid rgba(25,20,16,.13);border-radius:99px;font:400 .8125rem/1.4 'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;white-space:nowrap}.ds-pill::before{width:7px;height:7px;border-radius:50%;background:currentColor;content:\"\"}.ds-pill-on{border-color:rgba(31,122,77,.4);color:#1f7a4d}.ds-pill-off{color:#756b60}"
+    },
+    {
+      "name": "Branch Tree Row",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "One row of the knowledge tree: kind dot, name, kind label, and a hairline rail for nesting.",
+      "html": "<ul class=\"ds-tree\"><li><a class=\"ds-tree-link\" href=\"#\" style=\"--kind:#c4441a\"><span class=\"ds-tree-dot\"></span><span>Northstar GmbH</span><span class=\"ds-tree-kind\">unternehmen</span></a><ul class=\"ds-tree ds-tree-nested\"><li><a class=\"ds-tree-link\" href=\"#\" style=\"--kind:#ff8c3d\" aria-current=\"page\"><span class=\"ds-tree-dot\"></span><span>Produkt &amp; Technik</span><span class=\"ds-tree-kind\">abteilung</span></a></li></ul></li></ul>",
+      "css": ".ds-tree{margin:0;padding:0;list-style:none;font-family:'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif}.ds-tree-nested{margin-left:11px;padding-left:17px;border-left:1px solid rgba(25,20,16,.13)}.ds-tree li{position:relative}.ds-tree-nested>li::before{position:absolute;top:20px;left:-17px;width:13px;height:1px;background:rgba(25,20,16,.13);content:\"\"}.ds-tree-link{display:inline-flex;align-items:center;gap:11px;padding:9px 11px;border-radius:7px;color:#191410;font-size:.9375rem;text-decoration:none;transition:background 200ms cubic-bezier(.16,1,.3,1)}.ds-tree-link:hover{background:#f2eee7}.ds-tree-link[aria-current=\"page\"]{background:#f6e7df;color:#c4441a}.ds-tree-dot{width:9px;height:9px;flex:none;border-radius:50%;background:var(--kind,rgba(25,20,16,.26))}.ds-tree-kind{margin-left:6px;color:#756b60;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase}"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Register Kept on Paper",
+    "overview": "The system behaves like a document a company keeps about itself. The ground is a warm off-white, never a cold white or a neutral grey, so the ink can be a warm near-black and the single accent reads as the same family rather than a second hue.\n\nStructure is drawn, not simulated. No shadow appears anywhere: surfaces separate with a one-pixel rule, stacked panes are offset instead of overlapped, and order is carried by numerals rather than by depth.\n\nOne accent marks; it never decorates. It appears on source numbers, entry numbers under the pointer, the waiting state, primary-button hover and focus rings. A colour that is only making the page prettier is wrong.\n\nThe marketing surface and the app share the palette and both faces. The display serif crosses into the app exactly once per screen, on the page title, and never touches a label, a control or a value.",
+    "keyCharacteristics": [
+      "One ground, one ink, one accent; state colours are not accents.",
+      "Hairlines carry every division. No box-shadow exists in the system.",
+      "Ink tints are the same warm black at lower strength, never grey, and never past --ink-subtle.",
+      "Composition is asymmetric: the hero headline and its reading copy sit on a diagonal, not a centre line.",
+      "One orchestrated load animation per surface, then stillness. Documents do not perform."
+    ],
+    "rules": [
+      {
+        "name": "The One Ramp Rule",
+        "body": "Every colour in the system is a step on the rust to ember to gold ramp, plus the two semantic signals. There is no blue, no violet, no grey. A proposed colour that cannot be placed on that ramp does not belong to this system.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tinted Text Rule",
+        "body": "Secondary and tertiary text is the cream foreground at reduced opacity, never a grey. The alpha floor is .52; below that, 4.5:1 against the ground gives out.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Distance Rule",
+        "body": "Only two semantic colours exist, and both are deliberately far enough from the accent that a status pill can never be mistaken for a button.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Serif Per Screen Rule",
+        "body": "The display serif appears once on an authenticated screen, as its title. A serif label, a serif button, or a serif value is always wrong.",
+        "section": "typography"
+      },
+      {
+        "name": "The -0.02em Floor Rule",
+        "body": "Display tracking never goes tighter than -0.02em. The system previously ran -0.059em at 118px and the letterforms collided.",
+        "section": "typography"
+      },
+      {
+        "name": "The 13px Floor Rule",
+        "body": "No real text renders below 0.8125rem. Metadata that will not fit at that size is metadata the screen does not need.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glow-Is-Light Rule",
+        "body": "A zero-offset coloured shadow is only permitted on an element that is supposed to be emitting light. Everything else uses tone and a hairline. A glowing card is a category error.",
+        "section": "elevation"
+      },
+      "Disabled is a colour, not a transparency: fading a control fades its text and its ground together. Disabled primary is rgba(25,20,16,.28) under rgba(250,248,244,.9); every other disabled control keeps its ground and drops its text to --on-night-subtle. Nothing disabled falls below 5:1.",
+      "No low-opacity warm radial over a working surface. It reads as haze rather than light, and a contrast checker reading through it reported 2:1 for text that measures 17.7:1."
+    ],
+    "dos": [
+      "Do reach for a hairline before a radius, a numeral before an icon, and the spacing scale before a hand-picked value.",
+      "Do keep the accent to marks: numbers, states, focus.",
+      "Do tint secondary text from the ink, never toward grey, and never past --ink-subtle.",
+      "Do offset stacked surfaces rather than overlapping them, so no content is clipped mid-row.",
+      "Do give every interactive element hover, focus-visible, active and disabled before shipping it.",
+      "Do keep one authored motion moment per surface and use cubic-bezier(.16, 1, .3, 1) at 200-300ms for everything else."
+    ],
+    "donts": [
+      "Don’t add a shadow, a glow or a gradient. If something needs to separate, it gets a rule.",
+      "Don’t put an eyebrow or kicker label above a heading. The heading carries its own weight.",
+      "Don’t centre a hero block. The asymmetry is the composition.",
+      "Don’t introduce a second accent hue.",
+      "Don’t number sections unless the sequence itself is information the reader needs. The seven layers are; a three-card row is not.",
+      "Don’t build a page out of same-size cards of dot plus heading plus text.",
+      "Don’t stand a Unicode glyph in for an icon. Icons are drawn SVG at a single 1.5 stroke.",
+      "Don’t use monospace as a costume for technical. It is for keys, commands and code.",
+      "Don’t animate padding, width, height or margin. Transform and opacity only.",
+      "Don’t let the display serif touch a label, a control, or a value."
+    ]
+  }
+}

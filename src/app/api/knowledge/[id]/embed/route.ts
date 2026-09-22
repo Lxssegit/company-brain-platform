@@ -3,9 +3,11 @@ import { Prisma } from "@prisma/client";
 import { requirePermission } from "@/lib/auth/authorize";
 import { getAIProvider } from "@/lib/ai/provider";
 import { prisma } from "@/lib/db/prisma";
-import { visibleKnowledgeWhere } from "@/lib/knowledge/access";
+import { canManageKnowledge, visibleKnowledgeWhere } from "@/lib/knowledge/access";
 import { auditEvent } from "@/lib/audit/write";
+import { clientKey, rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
 import { errorResponse } from "@/lib/http";
+import { API_ERROR } from "@/lib/i18n/api";
 
 function vectorLiteral(values: number[]) {
   if (!values.length || values.some((value) => !Number.isFinite(value))) throw new Error("Invalid embedding");
@@ -14,14 +16,20 @@ function vectorLiteral(values: number[]) {
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const limited = rateLimit(clientKey(request, "embed"), 30, 60_000);
+    if (!limited.ok) return tooManyRequests(limited.retryAfterSeconds);
     const user = await requirePermission("EDIT");
-    if (!user.organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
+    if (!user.organizationId) return NextResponse.json({ error: API_ERROR.organizationRequired }, { status: 403 });
     const organizationId = user.organizationId;
     const { id } = await params;
     const where = await visibleKnowledgeWhere(user);
-    if (!where) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!where) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     const knowledge = await prisma.knowledgeUnit.findFirst({ where: { AND: [where, { id }] }, include: { branch: true } });
-    if (!knowledge) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!knowledge) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
+    /* Embedding costs a provider call per unit. Being able to read something is
+       not a reason to be able to spend on it — the same people who may edit a
+       unit may re-embed it. */
+    if (!canManageKnowledge(user, knowledge.createdById, "EDIT")) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     const provider = getAIProvider();
     const embedding = await provider.generateEmbedding(`${knowledge.title}\n${knowledge.content}`);
     const literal = vectorLiteral(embedding);

@@ -1,33 +1,10 @@
-# Company Brain MVP
+# Company Brain
 
-Ein eigenständiger Frontend-Prototyp für den Company-Brain-Build-Brief. Die Demo läuft ohne Build-Schritt und ohne Backend.
+Das Betriebsgedächtnis eines Unternehmens: eine Next.js-Anwendung, in der Wissen,
+Entscheidungen und Kontext an dem Zweig hängen, zu dem sie gehören, und in der
+jede Antwort nur aus dem gebaut wird, was die fragende Person auch sehen darf.
 
 ## Starten
-
-Im Projektordner einen statischen Server starten:
-
-```bash
-python3 -m http.server 4173
-```
-
-Dann `http://localhost:4173` öffnen.
-
-## Enthalten
-
-- Personalisiertes Overview-Dashboard mit Zugriffskette `Company → Product & Tech → Service`
-- Knowledge Tree mit Branch-Auswahl und Branch-Detailansicht
-- Knowledge Units mit Typ, Quelle und Confidence
-- Decision Memory inklusive `superseded`-Historie
-- Review Queue mit Approve/Reject-Interaktionen
-- Permission- und Source-Policy-Ansicht in Settings
-- Chat-Demo mit Quellenhinweis und explizitem „authorized context“-Verhalten
-- Responsive Layout für Desktop und mobile Navigation
-
-Die Demo-Daten sind bewusst lokal in `index.html` gehalten. Für die nächste Ausbaustufe können die UI-Aktionen an Next.js Server Actions/API-Routen, Prisma/PostgreSQL/pgvector, Auth und eine serverseitige OpenAI-Abstraktionsschicht angeschlossen werden.
-
-## Phase 2 — serverseitige Grundlage
-
-Zusätzlich ist jetzt eine Next.js-/TypeScript-Grundlage für Authentifizierung, Organisationen, Rollen und Tenant-Isolation enthalten:
 
 ```bash
 pnpm install
@@ -36,14 +13,17 @@ pnpm db:generate
 pnpm dev
 ```
 
-Die Next.js-App läuft auf `http://localhost:3000`. Für Datenbankmigrationen zuerst `DATABASE_URL` in `.env` setzen und dann ausführen:
+Die App läuft auf `http://localhost:3000`.
+
+Für die Datenbank zuerst `DATABASE_URL` in `.env` setzen, dann:
 
 ```bash
 pnpm db:migrate
 pnpm db:seed
 ```
 
-Wenn lokal noch kein PostgreSQL läuft und Docker installiert ist, kannst du die vorbereitete pgvector-Datenbank starten:
+Wenn lokal kein PostgreSQL läuft und Docker vorhanden ist, bringt
+`docker-compose.yml` eine passende pgvector-Datenbank mit:
 
 ```bash
 docker compose up -d db
@@ -51,17 +31,105 @@ pnpm db:migrate
 pnpm db:seed
 ```
 
-Die Compose-Konfiguration liegt in `docker-compose.yml` und verwendet dieselben lokalen Zugangsdaten wie `.env`.
+Die Migration legt Extension und HNSW-Index selbst an; ein manuelles
+`CREATE EXTENSION` ist nicht nötig. Eine eigene PostgreSQL-Installation braucht
+das Paket `pgvector`.
 
-Im Development ist zusätzlich ein lokaler Credentials-Provider aktiv. Wenn PostgreSQL läuft, legt `pnpm db:seed` den Demo-User an. Falls PostgreSQL lokal noch nicht verfügbar ist, erlaubt `AUTH_DEV_MEMORY_FALLBACK=true` den Demo-Login trotzdem; der Benutzer und sein 2FA-Status werden dann in der ignorierten Datei `.dev-auth.json` gespeichert. Dieser Fallback ist nur für Development gedacht und wird in Production automatisch deaktiviert. Google OAuth bleibt optional und benötigt die echten Werte für `AUTH_GOOGLE_ID` und `AUTH_GOOGLE_SECRET`.
+## Die Oberflächen
 
-Passwörter werden als scrypt-Hash gespeichert. Im authentifizierten Dashboard kann TOTP-2FA eingerichtet werden; der Secret wird verschlüsselt gespeichert und beim Login serverseitig geprüft. Für produktive Umgebungen muss zusätzlich ein eigener `AUTH_ENCRYPTION_KEY` gesetzt werden.
+| Pfad | Was dort passiert |
+| --- | --- |
+| `/` | Die öffentliche Seite: der Baum, der beim Scrollen wächst |
+| `/login` | Anmeldung |
+| `/dashboard` | Der eigene Zugriff: Rolle, Rechte, sichtbare Zweige |
+| `/brain`, `/brain/:branchId` | Der Wissensbaum und was in einem Zweig liegt |
+| `/entscheidungen` | Was gilt, seit wann, und was abgelaufen ist |
+| `/fragen` | Fragen stellen — Wissen finden oder eine Antwort formulieren lassen |
+| `/freigaben` | Die Warteschlange: was auf eine Entscheidung wartet |
+| `/team` | Wer mitarbeitet, und wen man einlädt |
+| `/einladung/<token>` | Wo eine eingeladene Person ihr Passwort vergibt |
+| `/organisation` | Wo ein Konto ohne Unternehmen eines gründet |
 
-Die statische UI-Referenz läuft weiterhin separat auf Port `4173`.
+## Sicherheitsköpfe und CSP
+
+Dokument-Antworten bekommen ihre Content-Security-Policy aus `src/middleware.ts`,
+weil sie einen Nonce trägt, der sich pro Anfrage ändert. `next.config.ts` setzt
+die übrigen Köpfe und eine Policy für alles, was die Middleware nicht anfasst —
+API-Antworten und statische Dateien, in denen ohnehin kein Skript läuft.
+
+`script-src` kommt damit ohne `'unsafe-inline'` aus. Der Preis: eine
+vorgerenderte Seite entsteht zur Bauzeit und kann keinen Wert tragen, der sich
+pro Anfrage ändert — alle ihre Skripte werden blockiert. `/` und `/login` sind
+deshalb ausdrücklich `force-dynamic`; beide holen keine Daten, es kostet ein
+Template-Rendering.
+
+Eine Ausnahme bleibt: die 404-Seite wird immer vorgerendert, und daran ändert
+keine Segment-Konfiguration etwas. Ihre Skripte laufen nicht. Sie ist deshalb so
+gebaut, dass sie keine braucht — Text und ein Link, nichts, was auf Hydration
+wartet. In der Browserkonsole erscheinen dort blockierte Skripte.
+
+## Wer was ändern darf
+
+Freigabe heißt: jemand Zuständiges hat **diesen Text** gelesen. Daraus folgen
+zwei Regeln, die im Code stehen und getestet sind:
+
+- **Ändern.** Wer etwas geschrieben hat, darf es korrigieren — auch als
+  Mitarbeitend, sonst bliebe der eigene Tippfehler für immer stehen. Ist der
+  Eintrag aber freigegeben und über den persönlichen Zweig hinaus sichtbar,
+  geht er durch die Änderung zurück in die Warteschlange und verliert seine
+  Freigabe. Wessen Rolle ohne Freigabe veröffentlichen darf, ändert direkt.
+- **Archivieren.** Dafür gibt es keine Wiedervorlage — nichts holt den Eintrag
+  auf fremden Beschluss zurück. Autorinnen und Autoren nehmen deshalb nur
+  zurück, was noch ihnen allein gehört: eine persönliche Notiz, ein Entwurf,
+  etwas noch nicht Freigegebenes. Vereinbartes Wissen entfernt nur eine
+  erhöhte Rolle.
+
+## Ein Unternehmen gründen
+
+Wer sich anmeldet und zu keinem Unternehmen gehört — nach einer Anmeldung über
+Google etwa —, landet auf `/organisation` und gründet dort eines. Damit wird das
+Konto Unternehmens-Admin, und der Unternehmenszweig entsteht als Wurzel des
+Baums mit.
+
+Vorher war das nicht erreichbar: `POST /api/organizations` verlangte ein aktives
+Konto, aktiv wurde man aber nur durch den Beitritt zu einem Unternehmen. Jede
+geschützte Seite schickte ein solches Konto zurück auf `/login` — angemeldet und
+trotzdem zur Anmeldung geschickt, in einer Schleife.
+
+## Einladungen
+
+Eingeladene Konten haben kein Passwort und könnten sich sonst nie anmelden.
+`POST /api/users` legt darum zusätzlich eine Einladung an und gibt den Link
+**einmalig** in der Antwort zurück; gespeichert wird nur sein SHA-256-Hash, in
+der `VerificationToken`-Tabelle unter dem Bezeichner `invite:<userId>`. Ein
+geleaktes Datenbankabbild lässt sich damit nicht als Link nachspielen.
+
+Der Link gilt sieben Tage und genau einmal. Beim Einlösen setzt
+`POST /api/invitations/accept` das Passwort, schaltet das Konto auf `ACTIVE`
+und löscht die Einladung — in einer Transaktion. Die Route ist die einzige, die
+Fremde schreibend erreichen, und deshalb rate-limited; sie unterscheidet in der
+Antwort nicht zwischen abgelaufen, verbraucht und nie existiert.
+
+Es wird noch keine Mail versendet. Wer einlädt, gibt den Link selbst weiter.
+
+## Anmeldung im Development
+
+Ein lokaler Credentials-Provider ist aktiv. Läuft PostgreSQL, legt
+`pnpm db:seed` den Demo-User an. Ohne PostgreSQL erlaubt
+`AUTH_DEV_MEMORY_FALLBACK=true` den Login trotzdem; Benutzer und 2FA-Status
+liegen dann in der ignorierten Datei `.dev-auth.json`. Der Fallback ist nur für
+Development gedacht und in Production automatisch aus. Google OAuth ist optional
+und braucht echte Werte für `AUTH_GOOGLE_ID` und `AUTH_GOOGLE_SECRET`.
+
+Passwörter liegen als scrypt-Hash. TOTP-2FA lässt sich im Dashboard einrichten;
+das Secret wird verschlüsselt gespeichert und beim Login serverseitig geprüft.
+Produktive Umgebungen brauchen einen eigenen `AUTH_ENCRYPTION_KEY`.
+
+## Die API
 
 ### Branch API und Server-Tree
 
-Nach der Anmeldung stehen die serverseitig geschützten Phase-3-Routen bereit:
+Nach der Anmeldung stehen die serverseitig geschützten Routen bereit:
 
 ```text
 GET    /api/branches
@@ -78,7 +146,7 @@ GET    /brain/:branchId
 
 ### Knowledge, Sources und Reviews
 
-Phase 4 ist als serverseitiger Domain-Layer vorhanden:
+Der serverseitige Domain-Layer:
 
 ```text
 GET/POST       /api/knowledge
@@ -93,7 +161,7 @@ Persönliche Knowledge Units werden direkt privat gespeichert. Team-, Department
 
 ### Decision Memory
 
-Phase 5 ergänzt serverseitige Entscheidungen mit Gültigkeitsfenstern, Ausnahmen, Quellen und branch-sichtbarer Historie:
+Entscheidungen tragen Gültigkeitsfenstern, Ausnahmen, Quellen und branch-sichtbarer Historie:
 
 ```text
 GET    /api/decisions
@@ -107,7 +175,7 @@ Eine neue Entscheidung ersetzt die alte in einer Transaktion. Die alte Zeile ble
 
 ### Permission-aware Retrieval und AI Chat
 
-Phase 6 filtert zuerst Organisation, Rolle und sichtbare Branches und führt erst danach Retrieval aus. Persönliche Einträge werden zusätzlich auf `createdById` begrenzt; diese Grenze gilt sowohl für den Prisma-Fallback als auch für die pgvector-Rohabfrage.
+Retrieval filtert zuerst Organisation, Rolle und sichtbare Branches und führt erst danach Retrieval aus. Persönliche Einträge werden zusätzlich auf `createdById` begrenzt; diese Grenze gilt sowohl für den Prisma-Fallback als auch für die pgvector-Rohabfrage.
 
 ```text
 GET    /api/search?q=garantiefall&branchId=<uuid>
@@ -117,10 +185,25 @@ POST   /api/knowledge/:id/embed
 
 `/api/chat` liefert bei fehlender Evidenz den expliziten Status `UNKNOWN`, bei widersprüchlichen aktiven Decisions `CONFLICT` und bei fehlendem Server-Key `AI_NOT_CONFIGURED`. Der OpenAI-Key bleibt ausschließlich serverseitig. Mit `OPENAI_API_KEY` werden `text-embedding-3-small` und `gpt-4o-mini` verwendet; ohne Key bleibt der Chat ehrlich deaktiviert, während der berechtigte Retrieval-Kontext weiterhin testbar ist.
 
-Für produktives Vector-Retrieval muss PostgreSQL die `vector`-Extension aktiviert haben. Das Prisma-Feld `KnowledgeUnit.embedding` ist dafür als `Unsupported("vector")` modelliert und wird über sichere Raw-SQL-Statements beschrieben bzw. gelesen.
+Für produktives Vector-Retrieval muss PostgreSQL die `vector`-Extension bereitstellen. Das Prisma-Feld `KnowledgeUnit.embedding` ist als `Unsupported("vector(1536)")` modelliert und wird über parametrisierte Raw-SQL-Statements geschrieben und gelesen. Die Dimension steht fest, weil pgvector eine dimensionslose Spalte nicht indexieren kann.
 
-Vor der ersten Migration einmalig in PostgreSQL ausführen:
+Die Extension und der HNSW-Index werden von der ersten Migration selbst angelegt — ein manuelles `CREATE EXTENSION` ist nicht mehr nötig. Das Image `pgvector/pgvector:pg16` aus `docker-compose.yml` bringt sie mit; eine eigene PostgreSQL-Installation braucht das Paket `pgvector`.
 
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
+## Prüfen
+
+```bash
+pnpm typecheck        # TypeScript, inklusive tests/
+pnpm lint             # ESLint (Flat Config)
+pnpm test             # Vitest, ohne Datenbank
+pnpm test:integration # braucht eine Datenbank mit pgvector
+pnpm build            # Produktionsbuild
 ```
+
+`pnpm test` lässt `tests/integration/` bewusst aus: dort läuft die Vektorsuche
+gegen einen echten HNSW-Index, den keine Entwicklungsmaschine ohne pgvector hat.
+Der Einbettungsdienst ist dabei ein deterministisches Testdouble — geprüft wird
+das SQL dieses Projekts, seine Rechteprüfung und die Verschmelzung beider
+Trefferlisten, nicht OpenAI. Ein API-Schlüssel ist nicht nötig.
+
+Dieselben Schritte laufen in `.github/workflows/ci.yml`, dazu ein zweiter Job, der Migration und Seed gegen eine echte pgvector-Datenbank ausführt und den Seed zweimal startet, um Idempotenz zu prüfen.
+

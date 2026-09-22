@@ -6,18 +6,12 @@
 
 ## 1. Repository analysis
 
-The repository started as a self-contained static product prototype:
-
-```text
-index.html   Premium SaaS UI and demo content
-styles.css   Responsive visual system
-app.js       Client-only navigation and demo interactions
-README.md    Static-server start instructions
-```
-
-The static prototype remains available as a visual reference, while the Next.js/TypeScript/Prisma server implementation now provides the completed Phase 2–6 slices described below.
-
-The prototype is valuable as a visual reference and interaction sketch, but it is not yet a secure Company Brain implementation. Its data is hardcoded in HTML, the interactions are local DOM state, and the chat response is illustrative rather than an OpenAI call. No secrets are present in the client.
+The repository started as a self-contained static prototype (`index.html`,
+`styles.css`, `app.js`). It has been removed. It answered "what does this
+product look like" in a different visual language, a different product
+language, and with hardcoded data — a second source of truth that could only
+mislead. The Next.js/TypeScript/Prisma implementation described below is the
+only one.
 
 ## 2. Architectural direction
 
@@ -85,8 +79,6 @@ tests/
   integration/
   security/
 ```
-
-`index.html`, `styles.css`, and `app.js` remain the current prototype reference until the first Next.js slice is approved. They should not become the source of truth for permissions or data.
 
 ### Current implementation status
 
