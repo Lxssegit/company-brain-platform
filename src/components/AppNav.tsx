@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SignOutButton } from "@/components/SignOutButton";
 
 export type NavLink = { href: string; label: string };
@@ -14,6 +15,7 @@ export type NavLink = { href: string; label: string };
  */
 export function AppNav({ links, user }: { links: NavLink[]; user?: string | null }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const panelId = useId();
   const wrap = useRef<HTMLDivElement>(null);
 
@@ -36,7 +38,18 @@ export function AppNav({ links, user }: { links: NavLink[]; user?: string | null
       <div className="app-nav-panel" id={panelId}>
         {user ? <span className="app-user">{user}</span> : null}
         {links.map((link) => (
-          <Link key={link.href} className="btn btn-ghost" href={link.href} onClick={() => setOpen(false)}>{link.label}</Link>
+          /* startsWith, not equality: /brain/<id> and /person/<id> are still
+             the branch and team destinations, and a bar that forgets where you
+             are the moment you open something is worse than no marker. */
+          <Link
+            key={link.href}
+            className="btn btn-ghost"
+            href={link.href}
+            aria-current={pathname === link.href || pathname.startsWith(`${link.href}/`) ? "page" : undefined}
+            onClick={() => setOpen(false)}
+          >
+            {link.label}
+          </Link>
         ))}
         <SignOutButton />
       </div>

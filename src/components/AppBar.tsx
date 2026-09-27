@@ -22,6 +22,7 @@ export async function AppBar({ context, user }: { context?: string; user?: strin
     ...(hasRolePermission(role, "APPROVE") ? [{ href: "/freigaben", label: "Freigaben" }] : []),
     { href: "/entscheidungen", label: "Entscheidungen" },
     { href: "/brain", label: "Wissensbaum" },
+    { href: "/netz", label: "Netz" },
     ...(hasRolePermission(role, "MANAGE_USERS") ? [{ href: "/team", label: "Team" }] : []),
   ];
 

@@ -370,3 +370,119 @@
   .segmented label { flex: 1; }
   .segmented span { text-align: center; }
 }
+
+/* ---- Person profile -------------------------------------------------------
+   A profile is read in two ways: someone checking who a colleague is, and
+   someone checking what that colleague can reach. The first wants a page; the
+   second wants a list they can scan for the one row that looks wrong. These
+   rules keep both on the same page without either becoming a table. */
+
+.person-head { display: flex; align-items: flex-start; justify-content: space-between; margin: 26px 0 8px; gap: 20px; }
+.person-identity { min-width: 0; }
+.person-title { margin: 6px 0 0; color: var(--ink); font-size: 1.0625rem; }
+.person-facts { display: flex; flex-wrap: wrap; align-items: center; margin: 10px 0 0; gap: 8px; color: var(--ink-subtle); font-size: .875rem; }
+.person-facts a { color: var(--ink-muted); text-decoration: none; }
+.person-facts a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .28em; }
+.person-bio { max-width: var(--measure); margin: 0; color: var(--ink-muted); }
+.person-bio-empty { color: var(--ink-subtle); font-style: italic; }
+
+/* Underline on the current tab rather than a filled pill: the bar sits under a
+   title that is already the loudest thing on the page, and two competing solid
+   shapes read as two headings. */
+.tabs { display: flex; flex-wrap: wrap; margin: 22px 0 26px; gap: 4px; border-bottom: 1px solid var(--rule); }
+.tab { padding: 10px 14px; border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--ink-muted); font-size: .9375rem; font-weight: 500; text-decoration: none; transition: color var(--step) var(--ease), border-color var(--step) var(--ease); }
+.tab:hover { color: var(--ink); }
+.tab[aria-current="page"] { border-bottom-color: var(--accent); color: var(--ink); font-weight: 600; }
+
+.panel-lede { max-width: var(--measure); margin: -6px 0 18px; color: var(--ink-muted); font-size: .9375rem; }
+
+.reporting { display: grid; gap: 22px; }
+.reporting-label { display: block; margin-bottom: 8px; color: var(--ink-subtle); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+.reporting .plain-list { padding-left: 0; list-style: none; }
+.person-line { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 10px; color: var(--ink); text-decoration: none; }
+.person-line:hover .person-line-name { color: var(--accent); text-decoration: underline; text-underline-offset: .28em; }
+.person-line-name { font-weight: 600; }
+.person-line-title { color: var(--ink-subtle); font-size: .875rem; }
+
+/* Indent mirrors the tree the rows describe, so a grant that reaches one level
+   too far is visible as a shape before it is read as a sentence. */
+.access-list { margin: 0; padding: 0; list-style: none; }
+.access-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; padding: 11px 0 11px calc(var(--indent, 0) * 18px); border-top: 1px solid var(--rule); gap: 8px 18px; }
+.access-row:first-child { border-top: 0; }
+.access-branch { display: flex; align-items: baseline; min-width: 0; gap: 2px; }
+.access-branch a { color: var(--ink); font-weight: 500; text-decoration: none; }
+.access-branch a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .28em; }
+.access-reason { color: var(--ink-subtle); font-size: .875rem; text-align: right; }
+.access-row[data-reason="DIRECT"] .access-reason { color: var(--ok); }
+.access-row[data-reason="DENIED"] .access-reason { color: var(--danger); }
+
+@media (max-width: 640px) {
+  .person-head { flex-direction: column; gap: 12px; }
+  .access-row { flex-direction: column; }
+  .access-reason { text-align: left; }
+}
+.member-link { color: inherit; text-decoration: none; }
+.member-link:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .28em; }
+.access-aside { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rule); max-width: var(--measure); }
+
+/* Where you are, marked on the rule the bar already sits on rather than as a
+   filled shape. A pill here competes with the primary button, which is the one
+   thing on any page that should look clickable above everything else. */
+.app-nav-panel .btn-ghost[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.app-nav-panel .btn-ghost[aria-current="page"]::after {
+  position: absolute;
+  right: 12px;
+  bottom: -15px;
+  left: 12px;
+  height: 2px;
+  background: var(--accent);
+  content: "";
+}
+.app-nav-panel .btn-ghost { position: relative; }
+
+@media (max-width: 900px) {
+  /* In the disclosure the bar's underline has nothing to sit on, so the marker
+     moves to the left edge of the row. */
+  .app-nav-panel .btn-ghost[aria-current="page"]::after { top: 6px; right: auto; bottom: 6px; left: 0; width: 2px; height: auto; }
+}
+
+/* ---- Network ---------------------------------------------------------------
+   Drawn, not simulated. The layout is computed on the server and identical on
+   every load, so this only has to colour it and keep the labels readable. */
+
+.net { margin: 0; }
+.net-svg { display: block; width: 100%; height: auto; max-height: 76vh; }
+
+.net-edge { fill: none; stroke: var(--rule-strong); stroke-width: 1; }
+.net-edge-structure { stroke: rgba(25, 20, 16, .22); }
+.net-edge-membership { stroke: rgba(25, 20, 16, .14); }
+/* Authorship is the one line that is not structure, so it is the one line that
+   gets the accent — and a dash, for anyone who cannot rely on the colour. */
+.net-edge-authorship { stroke: var(--accent); stroke-dasharray: 3 4; stroke-width: 1; opacity: .55; }
+
+.net-node circle { stroke: var(--paper); stroke-width: 2; }
+.net-node text { fill: var(--ink-muted); font-size: 13px; }
+.net-node-branch circle { fill: var(--ink); }
+.net-node-branch text { fill: var(--ink); font-weight: 600; }
+.net-node-person circle { fill: var(--accent); }
+.net-node-knowledge circle { fill: var(--ink-subtle); stroke-width: 1.5; }
+
+.net-legend { display: flex; flex-wrap: wrap; margin-top: 18px; gap: 18px; color: var(--ink-subtle); font-size: .8125rem; }
+.net-key { display: inline-flex; align-items: center; gap: 8px; }
+.net-key::before { width: 9px; height: 9px; border-radius: 50%; content: ""; }
+.net-key-branch::before { background: var(--ink); }
+.net-key-person::before { background: var(--accent); }
+.net-key-knowledge::before { background: var(--ink-subtle); }
+
+.net-index { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.net-index summary { color: var(--ink-muted); cursor: pointer; font-size: .875rem; }
+.net-index summary:hover { color: var(--ink); }
+.net-index-list { margin-top: 14px; columns: 2; column-gap: 32px; list-style: none; padding-left: 0; }
+.net-index-list li { break-inside: avoid; margin-bottom: 8px; }
+.net-index-list a { color: var(--ink); text-decoration: none; }
+.net-index-list a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .28em; }
+
+@media (max-width: 640px) {
+  .net-node text { font-size: 16px; }
+  .net-index-list { columns: 1; }
+}
