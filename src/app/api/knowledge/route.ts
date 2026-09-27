@@ -7,6 +7,7 @@ import { requirePermission } from "@/lib/auth/authorize";
 import { canApproveWithoutReview, visibleKnowledgeWhere } from "@/lib/knowledge/access";
 import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
+import { API_ERROR } from "@/lib/i18n/api";
 
 const createSchema = z.object({
   branchId: z.string().uuid().optional(),
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
     const requestedStatus = url.searchParams.get("status") as KnowledgeStatus | null;
     const status = requestedStatus && KNOWLEDGE_STATUS_VALUES.includes(requestedStatus) ? requestedStatus : undefined;
     const where = await visibleKnowledgeWhere(user, branchId, status);
-    if (!where) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!where) return NextResponse.json({ error: API_ERROR.notFound }, { status: 404 });
     const knowledge = await prisma.knowledgeUnit.findMany({ where, include: { branch: { select: { id: true, name: true, kind: true } }, sources: { include: { source: true } } }, orderBy: { updatedAt: "desc" } });
     return NextResponse.json({ knowledge });
   } catch (error) {
@@ -38,14 +39,22 @@ export async function POST(request: Request) {
   try {
     const user = await requirePermission("CREATE");
     const organizationId = user.organizationId;
-    if (!organizationId) return NextResponse.json({ error: "Organization required" }, { status: 403 });
+    if (!organizationId) return NextResponse.json({ error: API_ERROR.organizationRequired }, { status: 403 });
     const body = createSchema.parse(await request.json());
     const branches = await import("@/lib/branches/access").then(({ getVisibleBranches }) => getVisibleBranches(user));
     const personalBranch = branches.find((branch) => branch.kind === "PERSONAL" && branch.ownerUserId === user.id);
+
+    /* Order matters here. What is missing from the request is answered before
+       what is wrong with a branch, and the personal-branch fallback is only
+       consulted for personal knowledge — otherwise a shared post with no target
+       fell through to it and came back as "that branch is not yours", naming a
+       branch the caller never mentioned. */
+    if (body.scope !== "PERSONAL" && !body.branchId) return NextResponse.json({ error: API_ERROR.sharedNeedsBranch }, { status: 422 });
+    if (body.scope === "PERSONAL" && !personalBranch) return NextResponse.json({ error: API_ERROR.noPersonalBranch }, { status: 409 });
+
     const branchId = body.branchId ?? personalBranch?.id;
-    if (!branchId || !branches.some((branch) => branch.id === branchId)) return NextResponse.json({ error: "Branch is outside the authorized context" }, { status: 403 });
-    if (body.scope !== "PERSONAL" && !body.branchId) return NextResponse.json({ error: "Shared knowledge requires a target branch" }, { status: 422 });
-    if (body.scope === "PERSONAL" && personalBranch?.id !== branchId) return NextResponse.json({ error: "Personal knowledge must live in the personal branch" }, { status: 422 });
+    if (!branchId || !branches.some((branch) => branch.id === branchId)) return NextResponse.json({ error: API_ERROR.branchOutsideContext }, { status: 403 });
+    if (body.scope === "PERSONAL" && personalBranch?.id !== branchId) return NextResponse.json({ error: API_ERROR.personalStaysPersonal }, { status: 422 });
 
     const role = user.role?.key;
     const status = body.scope === "PERSONAL" || canApproveWithoutReview(role) ? "APPROVED" : "PENDING_REVIEW";

@@ -1,6 +1,6 @@
 import type { RoleKey } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
-import { resolveVisibleBranchIds } from "@/lib/branches/tree";
+import { resolveAdministrableBranchIds, resolveVisibleBranchIds } from "@/lib/branches/tree";
 
 const elevatedRoles: RoleKey[] = ["SUPER_ADMIN", "COMPANY_ADMIN"];
 
@@ -16,5 +16,24 @@ export async function getVisibleBranches(user: { id: string; organizationId: str
 
 export async function canReadBranch(user: { id: string; organizationId: string | null; role?: { key: RoleKey } | null }, branchId: string) {
   const branches = await getVisibleBranches(user);
+  return branches.some((branch) => branch.id === branchId);
+}
+
+/**
+ * The branches a user may change, as opposed to the ones they may read. See
+ * resolveAdministrableBranchIds for why the two directions differ.
+ */
+export async function getAdministrableBranches(user: { id: string; organizationId: string | null; role?: { key: RoleKey } | null }) {
+  if (!user.organizationId) return [];
+  const branches = await prisma.branch.findMany({ where: { organizationId: user.organizationId }, orderBy: [{ depth: "asc" }, { name: "asc" }] });
+  if (elevatedRoles.includes(user.role?.key as RoleKey)) return branches;
+
+  const grants = await prisma.branchMember.findMany({ where: { userId: user.id, branch: { organizationId: user.organizationId } }, select: { branchId: true, access: true } });
+  const allowedIds = resolveAdministrableBranchIds(branches, grants);
+  return branches.filter((branch) => allowedIds.has(branch.id));
+}
+
+export async function canAdministerBranch(user: { id: string; organizationId: string | null; role?: { key: RoleKey } | null }, branchId: string) {
+  const branches = await getAdministrableBranches(user);
   return branches.some((branch) => branch.id === branchId);
 }

@@ -48,3 +48,35 @@ export function getInheritancePath(branchId: string, branches: BranchNode[]) {
   }
   return path;
 }
+
+function hasDeniedAncestorOrSelf(branchId: string, byId: Map<string, BranchNode>, denied: Set<string>) {
+  return hasDeniedAncestor(branchId, byId, denied);
+}
+
+/**
+ * Reading inherits upward: a grant on a team lets you read the department and
+ * company context above it. Administering must not follow that direction, or a
+ * grant on one team would let its holder rename or delete everything above it.
+ *
+ * Authority flows the other way. An explicit grant lets you administer that
+ * branch and everything nested under it, and an explicit deny still wins.
+ */
+export function resolveAdministrableBranchIds(branches: BranchNode[], grants: BranchGrant[], elevated = false) {
+  if (elevated) return new Set(branches.map((branch) => branch.id));
+
+  const byId = new Map(branches.map((branch) => [branch.id, branch]));
+  const denied = new Set(grants.filter((grant) => grant.access === "DENY").map((grant) => grant.branchId));
+  const roots = grants.filter((grant) => grant.access === "READ" && byId.has(grant.branchId)).map((grant) => grant.branchId);
+  const administrable = new Set<string>();
+
+  for (const branch of branches) {
+    if (hasDeniedAncestorOrSelf(branch.id, byId, denied)) continue;
+    let current: BranchNode | undefined = byId.get(branch.id);
+    while (current) {
+      if (roots.includes(current.id)) { administrable.add(branch.id); break; }
+      current = current.parentId ? byId.get(current.parentId) : undefined;
+    }
+  }
+
+  return administrable;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { signIn } from "next-auth/react";
 
 export function LocalLoginForm() {
@@ -12,20 +12,41 @@ export function LocalLoginForm() {
     setError("");
     setPending(true);
     const form = new FormData(event.currentTarget);
-    const result = await signIn("local", { email: form.get("email"), password: form.get("password"), totpCode: form.get("totpCode"), redirect: false, callbackUrl: "/dashboard" });
-    if (result?.error) {
-      setError("Login fehlgeschlagen. Bitte E-Mail, Passwort und gegebenenfalls den 2FA-Code prüfen.");
+    const result = await signIn("local", {
+      email: form.get("email"),
+      password: form.get("password"),
+      totpCode: form.get("totpCode"),
+      redirect: false,
+      callbackUrl: "/dashboard",
+    });
+    if (!result || result.error) {
+      setError("Das passte zu keinem Konto. Prüfen Sie E-Mail, Passwort und – falls aktiviert – den Zwei-Faktor-Code.");
       setPending(false);
       return;
     }
-    window.location.href = result?.url ?? "/dashboard";
+    window.location.href = result.url ?? "/dashboard";
   }
 
-  return <form className="local-login-form" onSubmit={handleSubmit}>
-    <label>Email<input name="email" type="email" autoComplete="email" placeholder="demo@example-gmbh.local" required /></label>
-    <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
-    <label>2FA-Code <span className="optional-label">optional until enabled</span><input name="totpCode" inputMode="numeric" pattern="[0-9 ]{6,7}" autoComplete="one-time-code" placeholder="123456" /></label>
-    {error ? <p className="login-error" role="alert">{error}</p> : null}
-    <button className="foundation-button primary full" type="submit" disabled={pending}>{pending ? "Signing in…" : "Sign in locally"}</button>
-  </form>;
+  return (
+    <form className="form" onSubmit={handleSubmit} noValidate>
+      <div className="field">
+        <label htmlFor="login-email">E-Mail</label>
+        <input id="login-email" name="email" type="email" autoComplete="email" placeholder="name@firma.example" required disabled={pending} aria-invalid={error ? true : undefined} />
+      </div>
+      <div className="field">
+        <label htmlFor="login-password">Passwort</label>
+        <input id="login-password" name="password" type="password" autoComplete="current-password" required disabled={pending} aria-invalid={error ? true : undefined} />
+      </div>
+      <div className="field field-code">
+        <label htmlFor="login-totp">Zwei-Faktor-Code</label>
+        <input id="login-totp" name="totpCode" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="000000" disabled={pending} />
+        <span className="field-hint">Nur nötig, sobald Sie die Zwei-Faktor-Anmeldung aktiviert haben.</span>
+      </div>
+      {error ? <p className="form-note form-note-error" role="alert">{error}</p> : null}
+      <button className="btn btn-primary btn-block" type="submit" aria-busy={pending} disabled={pending}>
+        <span className="btn-spin" aria-hidden="true" />
+        {pending ? "Wird angemeldet…" : "Anmelden"}
+      </button>
+    </form>
+  );
 }

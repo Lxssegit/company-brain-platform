@@ -2,8 +2,12 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db/prisma";
+import { auditEvent } from "@/lib/audit/write";
 import { errorResponse } from "@/lib/http";
+import { slugify } from "@/lib/domain/slug";
+import { API_ERROR } from "@/lib/i18n/api";
 import type { PermissionKey, RoleKey } from "@prisma/client";
 import { PERMISSION_KEYS, ROLE_KEYS } from "@/lib/domain/enums";
 
@@ -28,10 +32,6 @@ const roleNames: Record<RoleKey, string> = {
   EMPLOYEE: "Employee",
 };
 
-function slugify(value: string) {
-  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
-}
-
 export async function GET() {
   try {
     const session = await auth();
@@ -49,13 +49,23 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user?.id) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
-    if (session.user.organizationId) return NextResponse.json({ error: "User already belongs to an organization" }, { status: 409 });
+    if (!session?.user?.id) return NextResponse.json({ error: API_ERROR.unauthenticated }, { status: 401 });
+    /* session.user.organizationId is minted once at sign-in. Someone who signed
+       in before being assigned an organization could otherwise create a second
+       one and reassign themselves to it as its admin. */
+    const account = await getCurrentUser();
+    if (!account) return NextResponse.json({ error: API_ERROR.unauthenticated }, { status: 401 });
+    /* Not "must be ACTIVE": an account becomes ACTIVE by joining an
+       organization, so requiring it here made founding one impossible for the
+       only people who ever need to — a dead end the route was written for and
+       then locked itself out of. Suspension is the state that must refuse. */
+    if (account.status === "SUSPENDED") return NextResponse.json({ error: API_ERROR.accountInactive }, { status: 403 });
+    if (account.organizationId) return NextResponse.json({ error: API_ERROR.alreadyInOrganization }, { status: 409 });
 
     const body = createOrganizationSchema.parse(await request.json());
     const slug = body.slug ?? slugify(body.name);
     const existing = await prisma.organization.findUnique({ where: { slug } });
-    if (existing) return NextResponse.json({ error: "Slug already exists" }, { status: 409 });
+    if (existing) return NextResponse.json({ error: API_ERROR.slugTaken }, { status: 409 });
 
     const result = await prisma.$transaction(async (tx) => {
       const organization = await tx.organization.create({ data: { name: body.name, slug } });
@@ -69,6 +79,7 @@ export async function POST(request: Request) {
       }
       const adminRole = roles.find((role) => role.key === "COMPANY_ADMIN");
       await tx.user.update({ where: { id: session.user.id }, data: { organizationId: organization.id, roleId: adminRole?.id, status: "ACTIVE" } });
+      await auditEvent(tx, { organizationId: organization.id, actorUserId: session.user.id, action: "ORGANIZATION_CREATED", entityType: "Organization", entityId: organization.id, after: { name: organization.name, slug: organization.slug, founderUserId: session.user.id } });
       return organization;
     });
 
