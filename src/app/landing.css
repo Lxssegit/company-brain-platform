@@ -95,9 +95,18 @@
 
 .actions { display: flex; flex-wrap: wrap; gap: var(--s3); }
 
+/* Both stylesheets are global and both were written as if they were the only
+   one. `.btn`, `.btn-quiet` and `.decision` exist in app.css too, and because
+   this file is imported second it was silently restyling every button in the
+   signed-in application: the pill turned into a black rectangle, the primary
+   button lost its accent, and the decision board lost its card. Scoping these
+   under .site keeps them where they belong. tests/styles.test.ts fails if a
+   name is ever shared again.
+   ------------------------------------------------------------------------- */
+
 /* A button is a filled rectangle with a 2px radius -- enough to not look
    broken, not enough to read as a pill. */
-.btn {
+.site .btn {
   display: inline-flex;
   align-items: center;
   gap: .4em;
@@ -113,10 +122,10 @@
   transition: background .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease);
 }
 
-.btn:hover { border-color: var(--accent); background: var(--accent); }
-.btn-quiet { border-color: var(--rule-strong); background: transparent; color: var(--ink); }
-.btn-quiet:hover { border-color: var(--ink); background: transparent; color: var(--ink); }
-.btn-lg { padding: .85em 1.5em; font-size: 1rem; }
+.site .btn:hover { border-color: var(--accent); background: var(--accent); }
+.site .btn-quiet { border-color: var(--rule-strong); background: transparent; color: var(--ink); }
+.site .btn-quiet:hover { border-color: var(--ink); background: transparent; color: var(--ink); }
+.site .btn-lg { padding: .85em 1.5em; font-size: 1rem; }
 
 /* The document head: four facts under a rule, the way a file card states its
    own terms before the contents begin. */
@@ -188,11 +197,11 @@
 .chip-live { background: var(--ink); color: var(--paper); }
 .chip-past { background: var(--paper-sunk); color: var(--ink-subtle); }
 
-.decision { display: grid; gap: var(--s2); padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); }
-.decision:last-child { padding-bottom: 0; border-bottom: 0; }
-.decision-head { display: flex; align-items: center; gap: var(--s2); }
-.decision-date { color: var(--ink-subtle); font-size: .6875rem; }
-.decision-text { margin: 0; font-size: .8125rem; line-height: 1.45; }
+.site .decision { display: grid; gap: var(--s2); padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); }
+.site .decision:last-child { padding-bottom: 0; border-bottom: 0; }
+.site .decision-head { display: flex; align-items: center; gap: var(--s2); }
+.site .decision-date { color: var(--ink-subtle); font-size: .6875rem; }
+.site .decision-text { margin: 0; font-size: .8125rem; line-height: 1.45; }
 .is-past .decision-text { color: var(--ink-subtle); text-decoration: line-through; text-decoration-color: var(--rule-strong); }
 
 .ask { margin: 0; font-size: .9375rem; font-weight: 600; }
