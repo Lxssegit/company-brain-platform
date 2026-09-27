@@ -6,3 +6,7 @@ node_modules/
 coverage/
 *.log
 tsconfig.tsbuildinfo
+
+# Review screenshots, captured against a local server. Useful to look at,
+# and 1.8 MB of binaries that would be stale the next time anything moves.
+.screenshots/
