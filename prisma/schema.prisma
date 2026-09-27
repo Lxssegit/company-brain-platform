@@ -128,11 +128,24 @@ model User {
   totpEnabled    Boolean      @default(false)
   status         UserStatus   @default(INVITED)
   roleId         String?
+  /* What the person does, as the company words it. The role decides what they
+     may do; this only says what they are called, and the two disagree often
+     enough that one field cannot carry both. */
+  jobTitle       String?
+  bio            String?
+  /* Who they report to. Self-referential and nullable: the top of the company
+     reports to nobody, and a company that has not drawn its lines yet is a
+     company with every line null, not an invalid one. */
+  managerId      String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
   organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   role         Role?         @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  /* SetNull, not Cascade: when a manager leaves, their reports stay and lose a
+     line, rather than being deleted along with them. */
+  manager      User?         @relation("ReportingLine", fields: [managerId], references: [id], onDelete: SetNull)
+  reports      User[]        @relation("ReportingLine")
   accounts     Account[]
   sessions     Session[]
   createdRoles Role[]         @relation("RoleCreatedBy")
@@ -146,6 +159,7 @@ model User {
 
   @@index([organizationId, status])
   @@index([organizationId, roleId])
+  @@index([organizationId, managerId])
 }
 
 model Role {
