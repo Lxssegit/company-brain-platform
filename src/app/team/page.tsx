@@ -27,7 +27,7 @@ export default async function TeamPage() {
       const [rows, branches] = await Promise.all([
         prisma.user.findMany({
           where: { organizationId: account.organizationId! },
-          select: { id: true, name: true, email: true, status: true, createdAt: true, role: { select: { key: true } } },
+          select: { id: true, name: true, email: true, jobTitle: true, status: true, createdAt: true, role: { select: { key: true } } },
           orderBy: [{ status: "asc" }, { createdAt: "desc" }],
         }),
         getAdministrableBranches(account),
@@ -36,12 +36,18 @@ export default async function TeamPage() {
         id: row.id,
         name: row.name ?? row.email,
         email: row.email,
+        jobTitle: row.jobTitle,
         status: row.status,
         roleKey: row.role?.key ?? null,
         isSelf: row.id === account.id,
       }));
       parents = branches.filter((branch) => branch.kind !== "PERSONAL").map((branch) => ({ id: branch.id, name: branch.name, kind: branch.kind }));
-    } catch {
+    } catch (error) {
+      /* The reader gets "not reachable" either way — they cannot act on a
+         Prisma message. Whoever is running the server can, and swallowing it
+         silently turned a stale generated client into ten minutes of guessing
+         at a page that said only that the database was down. */
+      console.error("[team] loading members failed", error);
       unreachable = true;
     }
   }

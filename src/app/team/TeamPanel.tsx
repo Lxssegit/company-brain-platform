@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { BranchKind, RoleKey, UserStatus } from "@prisma/client";
 import { ROLE_KEYS } from "@/lib/domain/enums";
 import { BRANCH_KIND_LABEL, ROLE_LABEL, USER_STATUS_LABEL } from "@/lib/i18n/de";
 
-export type Member = { id: string; name: string; email: string; status: UserStatus; roleKey: RoleKey | null; isSelf: boolean };
+export type Member = { id: string; name: string; email: string; jobTitle: string | null; status: UserStatus; roleKey: RoleKey | null; isSelf: boolean };
 export type ParentBranch = { id: string; name: string; kind: BranchKind };
 
 export function TeamPanel({ initial, parents }: { initial: Member[]; parents: ParentBranch[] }) {
@@ -42,7 +43,7 @@ export function TeamPanel({ initial, parents }: { initial: Member[]; parents: Pa
       return;
     }
     const data = await response.json() as { user: { id: string; name: string | null; email: string; status: UserStatus }; inviteUrl: string };
-    setMembers((current) => [{ id: data.user.id, name: data.user.name ?? data.user.email, email: data.user.email, status: data.user.status, roleKey: role, isSelf: false }, ...current]);
+    setMembers((current) => [{ id: data.user.id, name: data.user.name ?? data.user.email, email: data.user.email, jobTitle: null, status: data.user.status, roleKey: role, isSelf: false }, ...current]);
     setLink({ url: data.inviteUrl, name: data.user.name ?? data.user.email });
     setCopied(false);
     setName("");
@@ -113,8 +114,13 @@ export function TeamPanel({ initial, parents }: { initial: Member[]; parents: Pa
       <ul className="hit-list member-list">
         {members.map((member) => (
           <li className="hit" key={member.id}>
-            <h3>{member.name}{member.isSelf ? " · Sie" : ""}</h3>
+            {/* The name was the one thing on this page that looked like a
+                heading and did nothing. Everything worth knowing about a
+                colleague — and, for whoever may see it, everything they can
+                reach — hangs off this link. */}
+            <h3><Link className="member-link" href={`/person/${member.id}`}>{member.name}</Link>{member.isSelf ? " · Sie" : ""}</h3>
             <p className="hit-meta">
+              {member.jobTitle ? <>{member.jobTitle} · </> : null}
               {member.email} · {member.roleKey ? ROLE_LABEL[member.roleKey] : "ohne Rolle"} · {USER_STATUS_LABEL[member.status]}
             </p>
             {member.status === "INVITED" ? (
