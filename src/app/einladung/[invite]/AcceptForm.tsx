@@ -35,7 +35,7 @@ export function AcceptForm({ invite, name, email }: { invite: string; name: stri
     }
     /* The account exists now, so the person should not have to type the same
        credentials again on a login screen they were just sent to. */
-    const signedIn = await signIn("local", { email, password, redirect: false });
+    const signedIn = await signIn("password", { email, password, redirect: false });
     setBusy(false);
     if (signedIn?.ok) { router.push("/dashboard"); router.refresh(); return; }
     router.push("/login");

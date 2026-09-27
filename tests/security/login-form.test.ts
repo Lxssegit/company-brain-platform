@@ -13,7 +13,7 @@ import { describe, expect, it } from "vitest";
  * attributes would cost more than it guards. Reading the source is enough to
  * catch the regression that matters: someone removing either half of the fix.
  */
-const source = readFileSync(join(process.cwd(), "src/app/login/LocalLoginForm.tsx"), "utf8");
+const source = readFileSync(join(process.cwd(), "src/app/login/PasswordLoginForm.tsx"), "utf8");
 
 describe("login form", () => {
   it("never submits credentials as a GET query string", () => {

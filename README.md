@@ -112,18 +112,40 @@ Antwort nicht zwischen abgelaufen, verbraucht und nie existiert.
 
 Es wird noch keine Mail versendet. Wer einlädt, gibt den Link selbst weiter.
 
-## Anmeldung im Development
+## Anmeldung
 
-Ein lokaler Credentials-Provider ist aktiv. Läuft PostgreSQL, legt
-`pnpm db:seed` den Demo-User an. Ohne PostgreSQL erlaubt
-`AUTH_DEV_MEMORY_FALLBACK=true` den Login trotzdem; Benutzer und 2FA-Status
-liegen dann in der ignorierten Datei `.dev-auth.json`. Der Fallback ist nur für
-Development gedacht und in Production automatisch aus. Google OAuth ist optional
-und braucht echte Werte für `AUTH_GOOGLE_ID` und `AUTH_GOOGLE_SECRET`.
+E-Mail und Passwort gegen die echte Kontentabelle, mit scrypt und TOTP — in
+Development und in Production derselbe Weg. Passwörter liegen als scrypt-Hash.
+TOTP-2FA lässt sich im Dashboard einrichten; das Secret wird verschlüsselt
+gespeichert und beim Login serverseitig geprüft.
 
-Passwörter liegen als scrypt-Hash. TOTP-2FA lässt sich im Dashboard einrichten;
-das Secret wird verschlüsselt gespeichert und beim Login serverseitig geprüft.
-Produktive Umgebungen brauchen einen eigenen `AUTH_ENCRYPTION_KEY`.
+`AUTH_PASSWORD_LOGIN_ENABLED="false"` schaltet ihn ab. Das ist nur sinnvoll,
+wenn jedes Konto über einen OAuth-Provider hereinkommt — wer eine Einladung
+annimmt, wird über denselben Provider angemeldet, mit ihm endet also auch der
+Einladungs-Flow.
+
+Google OAuth ist optional und braucht echte Werte für `AUTH_GOOGLE_ID` und
+`AUTH_GOOGLE_SECRET`.
+
+### Ohne Datenbank starten
+
+Läuft PostgreSQL, legt `pnpm db:seed` das Demo-Konto und sieben Kolleginnen und
+Kollegen an. Ohne PostgreSQL erlaubt `AUTH_DEV_MEMORY_FALLBACK=true` den Login
+trotzdem: Benutzer und 2FA-Status liegen dann in der ignorierten Datei
+`.dev-auth.json`. Dieser Notzugang authentifiziert gegen zwei Umgebungs-
+variablen ohne Datenbank dahinter. Er ist in Production aus, und ihn dort zu
+setzen bricht den Start ab.
+
+### Was Production braucht
+
+Der Server prüft das beim Start und startet nicht, wenn etwas fehlt:
+
+| Variable | |
+| --- | --- |
+| `AUTH_SECRET` | Pflicht, mindestens 32 Zeichen. `openssl rand -base64 48` |
+| `DATABASE_URL` | Pflicht — Konten liegen in der Datenbank |
+| `AUTH_ENCRYPTION_KEY` | Optional, fällt auf `AUTH_SECRET` zurück. Eigener Wert, wenn einer von beiden rotierbar bleiben soll, ohne jede eingerichtete Authenticator-App zu entwerten |
+| `AUTH_DEV_MEMORY_FALLBACK` | Darf nicht gesetzt sein |
 
 ## Die API
 

@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { signIn } from "next-auth/react";
 
-export function LocalLoginForm() {
+export function PasswordLoginForm() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   /* Between first paint and hydration the submit handler below does not exist
@@ -21,7 +21,7 @@ export function LocalLoginForm() {
     setError("");
     setPending(true);
     const form = new FormData(event.currentTarget);
-    const result = await signIn("local", {
+    const result = await signIn("password", {
       email: form.get("email"),
       password: form.get("password"),
       totpCode: form.get("totpCode"),
