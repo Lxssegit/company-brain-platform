@@ -102,20 +102,35 @@
   text-align: center;
 }
 
-/* Vertical light lines. Faint enough to read as structure rather than as a
-   grid, and masked top and bottom so they have no ends to notice. */
+/* Vertical light rays. Not a grid: they are lit by the horizon, so they are
+   masked to be brightest directly above the core and to fade out towards both
+   edges as well as top and bottom. A flat repeating line across the full width
+   read as a table, which is the one thing this section is not. */
 .hero::before {
   content: "";
   position: absolute;
-  inset: 0;
   z-index: -2;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Bounded to the viewport for the same reason the horizon below is: the mask
+     that concentrates the rays over the core is positioned in per cent of this
+     box, and on a hero as tall as its content that put the bright part a
+     screen and a half down. */
+  height: 124vh;
   background-image: repeating-linear-gradient(
     90deg,
-    rgba(255, 255, 255, .085) 0 1px,
-    transparent 1px clamp(64px, 7vw, 104px)
+    rgba(255, 255, 255, .22) 0 1px,
+    transparent 1px clamp(42px, 4.4vw, 68px)
   );
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 72%, transparent 97%);
-  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 72%, transparent 97%);
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 3%, #000 30%, #000 72%, transparent 94%),
+    radial-gradient(ellipse 50% 62% at 50% 66%, #000 0%, rgba(0, 0, 0, .40) 52%, transparent 84%);
+  mask-image:
+    linear-gradient(to bottom, transparent 3%, #000 30%, #000 72%, transparent 94%),
+    radial-gradient(ellipse 50% 62% at 50% 66%, #000 0%, rgba(0, 0, 0, .40) 52%, transparent 84%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 
 /* The horizon. Orange only in the core, blue as it spreads, gone before it
@@ -132,15 +147,27 @@
   content: "";
   position: absolute;
   z-index: -1;
-  top: 20vh;
+  top: 14vh;
   left: 50%;
-  width: min(170%, 1900px);
-  height: 100vh;
+  width: min(185%, 2100px);
+  height: 112vh;
   translate: -50% 0;
+  /* Three passes: a small hot core, the blue body, a wide cold wash.
+
+     The core is listed FIRST because in a multi-layer background the first
+     layer is painted closest to the viewer. Listed last — which is where it
+     reads as "innermost" in prose, and where it sat for two rounds — it ends
+     up underneath both blues and the orange never appears at all. The page
+     looked blue because the warm colour was there the whole time, buried.
+
+     The core carries a touch of near-white at its centre, because an orange
+     that bright with nothing hotter inside it reads as a flat disc rather than
+     as something burning. */
   background:
-    radial-gradient(ellipse 30% 40% at 50% 62%, rgba(252, 115, 77, .92) 0%, rgba(252, 115, 77, .46) 26%, transparent 58%),
-    radial-gradient(ellipse 70% 64% at 50% 66%, rgba(2, 151, 222, .78) 6%, rgba(2, 151, 222, .34) 36%, rgba(2, 151, 222, .10) 60%, transparent 80%);
-  filter: blur(58px);
+    radial-gradient(ellipse 20% 26% at 50% 54%, rgba(255, 230, 214, .80) 0%, rgba(252, 115, 77, 1) 22%, rgba(252, 115, 77, .55) 48%, transparent 76%),
+    radial-gradient(ellipse 52% 50% at 50% 60%, rgba(2, 151, 222, .94) 0%, rgba(2, 151, 222, .48) 38%, transparent 68%),
+    radial-gradient(ellipse 86% 66% at 50% 62%, rgba(2, 151, 222, .42) 0%, rgba(2, 151, 222, .15) 44%, transparent 72%);
+  filter: blur(62px);
   pointer-events: none;
 }
 
@@ -245,14 +272,16 @@
    ground's weight was set by measurement, not by eye. The glow comes through
    the middle card hardest; with a lighter ground the 10px blue labels on it
    measured 3.93:1 and the superseded row 3.20:1, on a card whose own note
-   promises that what was replaced stays readable. At 80% the same labels clear
-   4.5:1 and the glow still colours the card rather than being shut out. */
+   promises that what was replaced stays readable. Brightening the core later
+   pushed those labels back down to 4.42:1, which is how 80% became 88%. The
+   tightest pair on the page now measures 5.00:1 and the glow still colours the
+   card rather than being shut out. */
 .glass {
   border: 1px solid var(--edge);
   border-radius: 14px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)),
-    rgba(2, 7, 10, .80);
+    rgba(2, 7, 10, .88);
   -webkit-backdrop-filter: blur(16px) saturate(130%);
   backdrop-filter: blur(16px) saturate(130%);
 }
@@ -265,20 +294,35 @@
   text-align: left;
 }
 
-.card { padding: 1.15rem 1.25rem 1.3rem; }
-/* The middle card stands a little proud, the way the centre of a spread does. */
-.card-lift { transform: translateY(-14px); }
+.card-slot { display: grid; align-content: start; gap: .7rem; }
+/* The middle slot stands a little proud, the way the centre of a spread does. */
+.card-slot-lift { transform: translateY(-16px); }
 
-.card-head {
-  margin-bottom: .9rem;
-  padding-bottom: .7rem;
-  border-bottom: 1px solid var(--edge);
-  color: var(--ink-faint);
+/* Above the card, not inside it, the way the reference tags each surface. The
+   dot is the smallest marker that still reads as one. */
+.card-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+  padding-left: .2rem;
+  color: var(--ink-soft);
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: .6875rem;
+  font-weight: 400;
   letter-spacing: .13em;
   text-transform: uppercase;
 }
+.card-label::before {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--blue);
+  content: "";
+}
+
+.card { padding: 1.15rem 1.25rem 1.3rem; }
 
 .rows { margin: 0; padding: 0; list-style: none; }
 .rows li {
@@ -486,7 +530,7 @@
   .figures-left, .figures-right { justify-items: center; text-align: center; }
   .figures dd { max-width: 15ch; }
   .cards { grid-template-columns: 1fr; max-width: 30rem; margin-inline: auto; }
-  .card-lift { transform: none; }
+  .card-slot-lift { transform: none; }
 }
 
 @media (max-width: 640px) {

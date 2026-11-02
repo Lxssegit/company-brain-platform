@@ -18,11 +18,16 @@ export function ArrowLeft({ className }: IconProps) {
   return <Icon className={className}><path d="M13 8H3M7 4 3 8l4 4" /></Icon>;
 }
 
+/**
+ * The one mark, for the public page and the application alike. It loads
+ * public/logo.svg rather than drawing itself, so replacing that one file
+ * changes the brand everywhere without touching a component.
+ *
+ * next/image is declined on purpose: there is nothing to optimise in a
+ * 400-byte vector, and routing it through a loader would add a request to the
+ * element that has to paint first on every screen.
+ */
 export function BrandMark({ className = "brand-mark" }: IconProps) {
-  return (
-    <svg className={className} viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-      <path d="M10 18.5V8.4M10 12.2 5.4 9.1M10 13.6l4.4-3M10 8.4 6.6 5.8M10 9.6l3.6-2.6" fill="none" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="10" cy="3.6" r="1.9" fill="currentColor" />
-    </svg>
-  );
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img className={className} src="/logo.svg" alt="" width={22} height={22} />;
 }

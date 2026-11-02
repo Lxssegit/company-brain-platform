@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight } from "@/components/icons";
+import { ArrowUpRight, BrandMark } from "@/components/icons";
 
 /**
  * The public page. Night, with a horizon burning under it: orange at the core,
@@ -52,15 +52,9 @@ const principles = [
 ];
 
 function Wordmark() {
-  /* An <img> rather than an inline component on purpose: public/logo.svg is
-     meant to be swapped for the real mark without touching this file.
-     next/image is declined deliberately — there is nothing to optimise in a
-     400-byte vector, and routing it through a loader would add a request to
-     the one element that must be painted first. */
   return (
     <Link href="/" className="wordmark" aria-label="Company Brain, Startseite">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/logo.svg" alt="" width={28} height={28} className="wordmark-glyph" />
+      <BrandMark className="wordmark-glyph" />
       <span>Company Brain</span>
     </Link>
   );
@@ -74,32 +68,38 @@ function Wordmark() {
 function HeroCards() {
   return (
     <div className="cards" aria-label="Drei Oberflächen aus Company Brain">
-      <figure className="card glass">
-        <figcaption className="card-head">Freigaben</figcaption>
-        <ul className="rows">
-          <li><span>Garantiefall über 24 Monate</span><em className="mark-open">Offene Anfrage</em></li>
-          <li><span>Preisfreigabe Enterprise</span><em className="mark-ok">Freigegeben</em></li>
-          <li><span>Onboarding-Checkliste</span><em className="mark-ok">Freigegeben</em></li>
-        </ul>
-      </figure>
+      <section className="card-slot">
+        <h2 className="card-label">Freigaben</h2>
+        <figure className="card glass">
+          <ul className="rows">
+            <li><span>Garantiefall über 24 Monate</span><em className="mark-open">Offene Anfrage</em></li>
+            <li><span>Preisfreigabe Enterprise</span><em className="mark-ok">Freigegeben</em></li>
+            <li><span>Onboarding-Checkliste</span><em className="mark-ok">Freigegeben</em></li>
+          </ul>
+        </figure>
+      </section>
 
-      <figure className="card glass card-lift">
-        <figcaption className="card-head">Entscheidungen</figcaption>
-        <ul className="rows">
-          <li><span>Rufbereitschaft Stufe 1</span><em className="mark-ok">Gilt</em></li>
-          <li className="row-past"><span>Support nur werktags</span><em className="mark-past">Ersetzt</em></li>
-        </ul>
-        <p className="card-note">Was ersetzt wurde, bleibt lesbar — mit dem Beschluss, der es abgelöst hat.</p>
-      </figure>
+      <section className="card-slot card-slot-lift">
+        <h2 className="card-label">Entscheidungen</h2>
+        <figure className="card glass">
+          <ul className="rows">
+            <li><span>Rufbereitschaft Stufe 1</span><em className="mark-ok">Gilt</em></li>
+            <li className="row-past"><span>Support nur werktags</span><em className="mark-past">Ersetzt</em></li>
+          </ul>
+          <p className="card-note">Was ersetzt wurde, bleibt lesbar — mit dem Beschluss, der es abgelöst hat.</p>
+        </figure>
+      </section>
 
-      <figure className="card glass">
-        <figcaption className="card-head">Fragen</figcaption>
-        <p className="card-answer">Ab 2 Stunden ruft der Service aktiv an — auch außerhalb der Geschäftszeiten.</p>
-        <ol className="sources">
-          <li>Rückruf bei Störungen der Stufe 1</li>
-          <li>Rufbereitschaft, gültig ab 09/2026</li>
-        </ol>
-      </figure>
+      <section className="card-slot">
+        <h2 className="card-label">Fragen</h2>
+        <figure className="card glass">
+          <p className="card-answer">Ab 2 Stunden ruft der Service aktiv an — auch außerhalb der Geschäftszeiten.</p>
+          <ol className="sources">
+            <li>Rückruf bei Störungen der Stufe 1</li>
+            <li>Rufbereitschaft, gültig ab 09/2026</li>
+          </ol>
+        </figure>
+      </section>
     </div>
   );
 }
@@ -191,8 +191,7 @@ export function LandingPage() {
 
       <footer className="footer">
         <span className="footer-mark">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="" width={22} height={22} className="wordmark-glyph" /> Company Brain
+          <BrandMark className="wordmark-glyph" /> Company Brain
         </span>
         <span className="footer-note">Das Betriebsgedächtnis Ihres Unternehmens.</span>
       </footer>

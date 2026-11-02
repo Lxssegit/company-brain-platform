@@ -31,7 +31,7 @@
 
 /* ---------- app bar ---------- */
 
-.app-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px clamp(18px, 4vw, 40px); border-bottom: 1px solid var(--rule); gap: 20px; background: rgba(250, 248, 244, .86); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 20; }
+.app-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px clamp(18px, 4vw, 40px); border-bottom: 1px solid var(--rule); gap: 20px; background: rgba(2, 7, 10, .82); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 20; }
 .app-bar-left { display: flex; min-width: 0; align-items: center; gap: 14px; }
 .app-brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; }
 .app-brand .brand-mark { width: 20px; height: 20px; color: var(--accent); }
@@ -72,7 +72,7 @@
    exactly when it has to say what you cannot do yet. These states are muted and
    solid, and every one of them clears 5:1. */
 .btn:disabled, .btn[aria-disabled="true"] { cursor: not-allowed; }
-.btn-primary:disabled, .btn-primary[aria-disabled="true"] { color: rgba(250, 248, 244, .9); background: rgba(25, 20, 16, .28); }
+.btn-primary:disabled, .btn-primary[aria-disabled="true"] { color: rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .12); }
 .btn-quiet:disabled, .btn-ghost:disabled, .btn-danger:disabled,
 .btn-quiet[aria-disabled="true"], .btn-ghost[aria-disabled="true"], .btn-danger[aria-disabled="true"] {
   border-color: var(--rule); color: var(--ink-subtle); background: transparent;
@@ -85,8 +85,8 @@
 .btn-quiet:not(:disabled):hover { border-color: var(--rule-strong); background: var(--paper-sunk); }
 /* Refusing is not the affirming act, so it does not wear the ember. It carries
    the one cool tint the ramp allows and stays outlined. */
-.btn-danger { border-color: rgba(179, 45, 28, .4); color: var(--danger); }
-.btn-danger:not(:disabled):hover { border-color: var(--danger); background: rgba(179, 45, 28, .08); }
+.btn-danger { border-color: rgba(252, 115, 77, .45); color: var(--danger); }
+.btn-danger:not(:disabled):hover { border-color: var(--danger); background: rgba(252, 115, 77, .12); }
 .btn-ghost { padding: 8px 12px; color: var(--ink-muted); font-weight: 500; }
 .btn-ghost:not(:disabled):hover { color: var(--ink); background: var(--paper-sunk); }
 .btn-block { width: 100%; }
@@ -108,7 +108,7 @@
 
 .pill { display: inline-flex; align-items: center; padding: 4px 11px; border: 1px solid var(--rule); border-radius: 99px; gap: 7px; font-size: .8125rem; white-space: nowrap; }
 .pill::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
-.pill-on { border-color: rgba(31, 122, 77, .4); color: var(--ok); }
+.pill-on { border-color: rgba(2, 151, 222, .45); color: var(--ok); }
 .pill-off { color: var(--ink-subtle); }
 
 /* ---------- facts, not a metric grid ---------- */
@@ -151,12 +151,12 @@
   transition: border-color var(--step) var(--ease), outline-color var(--step) var(--ease);
 }
 .field textarea:hover:not(:disabled) { border-color: var(--rule-strong); }
-.field textarea:focus-visible { border-color: var(--accent); outline: 2px solid rgba(196, 68, 26, .3); outline-offset: 0; }
+.field textarea:focus-visible { border-color: var(--accent); outline: 2px solid rgba(2, 151, 222, .45); outline-offset: 0; }
 .field textarea:disabled { cursor: not-allowed; color: var(--ink-subtle); }
 .field textarea::placeholder { color: var(--ink-subtle); }
 
 .field input:hover:not(:disabled) { border-color: var(--rule-strong); }
-.field input:focus-visible { border-color: var(--accent); outline: 2px solid rgba(196, 68, 26, .3); outline-offset: 0; }
+.field input:focus-visible { border-color: var(--accent); outline: 2px solid rgba(2, 151, 222, .45); outline-offset: 0; }
 .field input:disabled { cursor: not-allowed; color: var(--ink-subtle); }
 /* A read-only field that looks editable invites a click that does nothing. */
 .field input[readonly] { border-style: dashed; color: var(--ink-muted); cursor: default; }
@@ -165,8 +165,8 @@
 .field-code input { font-size: 1.125rem; letter-spacing: .28em; font-variant-numeric: tabular-nums; }
 
 .form-note { display: flex; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--rule); border-radius: var(--radius-sm); gap: 9px; background: var(--paper-sunk); color: var(--ink-muted); font-size: .875rem; }
-.form-note-error { border-color: rgba(179, 45, 28, .4); color: var(--danger); }
-.form-note-ok { border-color: rgba(31, 122, 77, .4); color: var(--ok); }
+.form-note-error { border-color: rgba(252, 115, 77, .45); color: var(--danger); }
+.form-note-ok { border-color: rgba(2, 151, 222, .45); color: var(--ok); }
 
 /* ---------- empty and dead-end states that teach ---------- */
 
@@ -203,9 +203,9 @@
 .tree-dot { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--kind, var(--rule-strong)); }
 .tree-kind { margin-left: 6px; color: var(--ink-subtle); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
 .kind-company { --kind: var(--accent); }
-.kind-department { --kind: #c4441a; }
-.kind-team { --kind: #9a6414; }
-.kind-personal { --kind: #6f6357; }
+.kind-department { --kind: #0297DE; }
+.kind-team { --kind: rgba(2, 151, 222, .62); }
+.kind-personal { --kind: rgba(255, 255, 255, .42); }
 
 .branch-head { display: flex; align-items: flex-start; gap: 14px; }
 .branch-head .tree-dot { width: 13px; height: 13px; margin-top: 6px; }
@@ -238,7 +238,7 @@
   transition: border-color var(--step) var(--ease);
 }
 .field select:hover:not(:disabled) { border-color: var(--rule-strong); }
-.field select:focus-visible { border-color: var(--accent); outline: 2px solid rgba(196, 68, 26, .3); outline-offset: 0; }
+.field select:focus-visible { border-color: var(--accent); outline: 2px solid rgba(2, 151, 222, .45); outline-offset: 0; }
 .field select:disabled { cursor: not-allowed; color: var(--ink-subtle); }
 
 /* Two modes, one control. A dropdown would hide the choice that changes what
@@ -251,14 +251,14 @@
 .segmented input:checked + span { color: var(--paper); background: var(--accent); }
 .segmented input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }
 .segmented input:disabled + span { cursor: not-allowed; color: var(--ink-subtle); }
-.segmented input:disabled:checked + span { color: rgba(250, 248, 244, .9); background: rgba(25, 20, 16, .28); }
+.segmented input:disabled:checked + span { color: rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .12); }
 
 .ask-answer { max-width: var(--measure); font-size: 1.125rem; line-height: 1.62; white-space: pre-wrap; }
 .ask-grounding { max-width: var(--measure); margin-top: 6px; }
 .ask-grounding-meta { color: var(--ink-subtle); font-size: .8125rem; }
 .ask-citations { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule); color: var(--ink-subtle); font-size: .8125rem; }
 
-.panel-warn { border-color: rgba(196, 68, 26, .35); }
+.panel-warn { border-color: rgba(252, 115, 77, .40); }
 .plain-list { margin: 0; padding-left: 18px; color: var(--ink-muted); font-size: .9375rem; }
 .plain-list li + li { margin-top: 8px; }
 
@@ -454,8 +454,8 @@
 .net-svg { display: block; width: 100%; height: auto; max-height: 76vh; }
 
 .net-edge { fill: none; stroke: var(--rule-strong); stroke-width: 1; }
-.net-edge-structure { stroke: rgba(25, 20, 16, .22); }
-.net-edge-membership { stroke: rgba(25, 20, 16, .14); }
+.net-edge-structure { stroke: rgba(255, 255, 255, .22); }
+.net-edge-membership { stroke: rgba(255, 255, 255, .13); }
 /* Authorship is the one line that is not structure, so it is the one line that
    gets the accent — and a dash, for anyone who cannot rely on the colour. */
 .net-edge-authorship { stroke: var(--accent); stroke-dasharray: 3 4; stroke-width: 1; opacity: .55; }

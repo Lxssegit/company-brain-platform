@@ -40,11 +40,3 @@ export const mono = localFont({
   display: "swap",
   fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
 });
-
-/** Interface and reading voice, variable weight 400-900. */
-export const sans = localFont({
-  src: [{ path: "./fonts/schibsted-grotesk-latin-wght-normal.woff2", weight: "400 900", style: "normal" }],
-  variable: "--font-sans",
-  display: "swap",
-  fallback: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Helvetica Neue", "sans-serif"],
-});
