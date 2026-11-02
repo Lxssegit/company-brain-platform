@@ -1,320 +1,500 @@
-/* The public page. A register kept on paper: hairlines carry the structure,
-   numbers carry the order, and the accent appears only where something is
-   actually marked. No shadow anywhere -- depth is drawn, not simulated. */
+/* The public page. Night with a horizon burning under it.
+   ---------------------------------------------------------------------------
+   Everything here hangs off .site, including the palette. globals.css keeps a
+   light :root because the signed-in application reads the same token names, and
+   a dark value up there turned every panel behind the login black the first
+   time these two sheets shared a variable.
+
+   Orange is rationed to three jobs and no others: the core of the glow, the
+   mark on an open request, and the hover of the primary button. It is never a
+   surface. Blue carries everything else that is not text. */
 
 .site {
+  --midnight: #02070A;
+  --blue: #0297DE;
+  --orange: #FC734D;
+
+  /* Text and edges as opacities on white, so a card sitting on the glow picks
+     up the colour under it instead of fighting the gradient with a flat grey. */
+  --ink: rgba(255, 255, 255, .92);
+  --ink-soft: rgba(255, 255, 255, .60);
+  --ink-faint: rgba(255, 255, 255, .38);
+  --edge: rgba(255, 255, 255, .10);
+  --edge-strong: rgba(255, 255, 255, .18);
+
   --gutter: clamp(1.25rem, 5vw, 5rem);
-  --col: minmax(0, 1fr);
-  max-width: 1440px;
-  margin: 0 auto;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+
+  position: relative;
+  min-height: 100vh;
+  background: var(--midnight);
+  color: var(--ink);
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: clip;
 }
+
+.site ::selection { background: rgba(2, 151, 222, .35); color: #fff; }
+.site :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 3px; }
 
 /* ---------- masthead ---------- */
 
 .masthead {
+  position: relative;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--s6);
-  padding: var(--s6) var(--gutter);
-  border-bottom: 1px solid var(--rule);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem var(--gutter);
+  gap: 2rem;
 }
 
 .wordmark {
   display: inline-flex;
-  white-space: nowrap;
   align-items: center;
-  gap: var(--s2);
+  gap: .6rem;
   color: var(--ink);
-  font-size: .9375rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -.01em;
   text-decoration: none;
+  white-space: nowrap;
 }
+.wordmark-glyph { display: block; width: 28px; height: 28px; }
 
-.wordmark-glyph { width: 18px; height: 18px; color: var(--accent); }
+.masthead-nav { display: flex; align-items: center; gap: 2rem; }
+.masthead-nav a:not(.pill) {
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  text-decoration: none;
+  transition: color .2s var(--ease-out);
+}
+.masthead-nav a:not(.pill):hover { color: var(--ink); }
 
-.masthead-nav {
-  display: flex;
+/* The one white shape on the page. It reads as a physical key, which is what
+   signing in is.
+
+   Scoped: app.css uses .pill for the status badges beside panel headings, and
+   this sheet is imported second. Unscoped, every "Aktiv" and "Aus" badge in the
+   signed-in application turned into a white button. */
+.site .pill {
+  display: inline-flex;
   align-items: center;
-  gap: var(--s8);
-  font-size: .875rem;
+  padding: .55rem 1.15rem;
+  border-radius: 99px;
+  background: #fff;
+  color: var(--midnight);
+  font-size: .9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .2s var(--ease-out), transform .2s var(--ease-out);
 }
-
-.masthead-nav a { color: var(--ink-muted); text-decoration: none; transition: color .18s var(--ease); }
-.masthead-nav a:hover { color: var(--ink); }
-
-.link-action { display: inline-flex; align-items: center; gap: .3em; color: var(--ink) !important; font-weight: 550; }
-.link-arrow { width: 13px; height: 13px; transition: transform .22s var(--ease); }
-.link-action:hover .link-arrow { transform: translate(2px, -2px); }
+.site .pill:hover { background: rgba(255, 255, 255, .86); transform: translateY(-1px); }
 
 /* ---------- hero ---------- */
 
-/* Deliberately not a centred stack: the headline owns the left seven columns
-   and the reading copy sits lower and right of it, so the eye travels down a
-   diagonal instead of straight through the middle. */
 .hero {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(3rem, 9vh, 7rem) var(--gutter) clamp(4rem, 10vh, 8rem);
+  text-align: center;
+}
+
+/* Vertical light lines. Faint enough to read as structure rather than as a
+   grid, and masked top and bottom so they have no ends to notice. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, .085) 0 1px,
+    transparent 1px clamp(64px, 7vw, 104px)
+  );
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 72%, transparent 97%);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 72%, transparent 97%);
+}
+
+/* The horizon. Orange only in the core, blue as it spreads, gone before it
+   reaches the edges. Drawn with blurred ellipses rather than stacked shadows so
+   the two colours actually mix instead of banding.
+
+   Measured in vh, not in per cent of the hero. The hero is as tall as its
+   content — well past two screens — so a percentage offset from its top or
+   bottom lands wherever the copy happens to end, and both earlier attempts put
+   the warm core far below the fold. The glow has to sit where the eye is, so
+   it is placed against the viewport: core around four fifths down the first
+   screen, spreading up behind the headline and out past both edges. */
+.hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 20vh;
+  left: 50%;
+  width: min(170%, 1900px);
+  height: 100vh;
+  translate: -50% 0;
+  background:
+    radial-gradient(ellipse 30% 40% at 50% 62%, rgba(252, 115, 77, .92) 0%, rgba(252, 115, 77, .46) 26%, transparent 58%),
+    radial-gradient(ellipse 70% 64% at 50% 66%, rgba(2, 151, 222, .78) 6%, rgba(2, 151, 222, .34) 36%, rgba(2, 151, 222, .10) 60%, transparent 80%);
+  filter: blur(58px);
+  pointer-events: none;
+}
+
+.hero-inner { position: relative; max-width: 1180px; margin: 0 auto; }
+
+.eyebrow {
+  margin: 0 0 clamp(1.75rem, 4vh, 3rem);
+  color: var(--ink-faint);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: .75rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+/* The figures sit level with the headline, not above or below it, so the claim
+   and its evidence are read in one movement. */
+.hero-row {
   display: grid;
-  grid-template-columns: repeat(12, var(--col));
-  column-gap: var(--s6);
-  padding: clamp(var(--s16), 11vw, var(--s48)) var(--gutter) var(--s24);
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 4rem);
 }
 
 .hero h1 {
-  grid-column: 1 / span 7;
   margin: 0;
-  font-size: clamp(2.75rem, 7.2vw, 5.75rem);
-  font-weight: 500;
-  line-height: .96;
-  letter-spacing: -.035em;
+  color: var(--ink);
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-size: clamp(2.5rem, 6.4vw, 5.25rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -.02em;
   text-wrap: balance;
 }
+.hero h1 em { font-style: italic; }
 
-.hero h1 em,
-.register-head h2 em,
-.closing h2 em {
-  font-family: var(--font-display), ui-serif, Georgia, serif;
-  font-style: italic;
+.figures { display: grid; gap: clamp(1.25rem, 3vh, 2.25rem); margin: 0; }
+.figures-left { justify-items: start; text-align: left; }
+.figures-right { justify-items: end; text-align: right; }
+.figures dt {
+  color: var(--ink);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: clamp(1.5rem, 2.4vw, 2.125rem);
   font-weight: 400;
-  letter-spacing: -.02em;
+  line-height: 1;
 }
-
-.hero-side {
-  grid-column: 9 / -1;
-  align-self: end;
-  padding-bottom: var(--s2);
+.figures dd {
+  max-width: 13ch;
+  margin: .45rem 0 0;
+  color: var(--ink-soft);
+  font-size: .8125rem;
+  line-height: 1.35;
 }
 
 .lede {
-  margin: 0 0 var(--s8);
-  max-width: 34ch;
-  color: var(--ink-muted);
-  font-size: 1.0625rem;
-  line-height: 1.55;
+  max-width: 52ch;
+  margin: clamp(1.75rem, 4vh, 2.75rem) auto 0;
+  color: var(--ink-soft);
+  font-size: clamp(1rem, 1.25vw, 1.0625rem);
+  line-height: 1.6;
+  text-wrap: pretty;
 }
 
-.actions { display: flex; flex-wrap: wrap; gap: var(--s3); }
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: clamp(1.75rem, 4vh, 2.5rem);
+  gap: .75rem;
+}
 
-/* Both stylesheets are global and both were written as if they were the only
-   one. `.btn`, `.btn-quiet` and `.decision` exist in app.css too, and because
-   this file is imported second it was silently restyling every button in the
-   signed-in application: the pill turned into a black rectangle, the primary
-   button lost its accent, and the decision board lost its card. Scoping these
-   under .site keeps them where they belong. tests/styles.test.ts fails if a
-   name is ever shared again.
-   ------------------------------------------------------------------------- */
-
-/* A button is a filled rectangle with a 2px radius -- enough to not look
-   broken, not enough to read as a pill. */
+/* Scoped, because app.css owns .btn for the signed-in application and this
+   sheet is imported second. tests/styles.test.ts fails if either name escapes. */
 .site .btn {
   display: inline-flex;
   align-items: center;
-  gap: .4em;
-  padding: .72em 1.15em;
-  border: 1px solid var(--ink);
-  border-radius: 2px;
-  background: var(--ink);
-  color: var(--paper);
+  gap: .45em;
+  padding: .8em 1.4em;
+  border: 1px solid transparent;
+  border-radius: 99px;
   font-size: .9375rem;
-  font-weight: 550;
-  letter-spacing: -.005em;
+  font-weight: 600;
   text-decoration: none;
-  transition: background .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease);
+  white-space: nowrap;
+  transition: background .2s var(--ease-out), border-color .2s var(--ease-out), color .2s var(--ease-out), transform .2s var(--ease-out);
+}
+.site .btn-primary { background: var(--blue); color: #fff; }
+/* The third and last place orange is allowed. Midnight text on it, because
+   white on this orange sits at 2.6:1 and would be a decoration that cannot be
+   read. */
+.site .btn-primary:hover { background: var(--orange); color: var(--midnight); transform: translateY(-1px); }
+.site .btn-quiet { border-color: var(--edge-strong); color: var(--ink); }
+.site .btn-quiet:hover { border-color: var(--ink-soft); background: rgba(255, 255, 255, .05); }
+.site .btn-lg { padding: .95em 1.7em; font-size: 1rem; }
+.link-arrow { width: 1em; height: 1em; }
+
+/* ---------- glass cards ---------- */
+
+/* Translucent rather than filled, so the horizon shows through their edges and
+   they read as resting on it instead of floating over a photograph.
+
+   The sheen sits on a dark ground rather than straight on the page, and the
+   ground's weight was set by measurement, not by eye. The glow comes through
+   the middle card hardest; with a lighter ground the 10px blue labels on it
+   measured 3.93:1 and the superseded row 3.20:1, on a card whose own note
+   promises that what was replaced stays readable. At 80% the same labels clear
+   4.5:1 and the glow still colours the card rather than being shut out. */
+.glass {
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)),
+    rgba(2, 7, 10, .80);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  backdrop-filter: blur(16px) saturate(130%);
 }
 
-.site .btn:hover { border-color: var(--accent); background: var(--accent); }
-.site .btn-quiet { border-color: var(--rule-strong); background: transparent; color: var(--ink); }
-.site .btn-quiet:hover { border-color: var(--ink); background: transparent; color: var(--ink); }
-.site .btn-lg { padding: .85em 1.5em; font-size: 1rem; }
-
-/* The document head: four facts under a rule, the way a file card states its
-   own terms before the contents begin. */
-.colophon {
-  grid-column: 1 / -1;
+.cards {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--s6);
-  margin: var(--s24) 0 0;
-  padding-top: var(--s4);
-  border-top: 1px solid var(--rule);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(3rem, 8vh, 5.5rem);
+  gap: clamp(.75rem, 1.5vw, 1.25rem);
+  text-align: left;
 }
 
-.colophon div { display: flex; flex-direction: column; gap: .15rem; }
-.colophon dt { color: var(--ink-subtle); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
-.colophon dd { margin: 0; font-size: .9375rem; font-weight: 550; }
+.card { padding: 1.15rem 1.25rem 1.3rem; }
+/* The middle card stands a little proud, the way the centre of a spread does. */
+.card-lift { transform: translateY(-14px); }
 
-/* ---------- product stack ---------- */
-
-/* Three surfaces, staggered rather than stacked. Overlapping them the way an
-   ad does cuts every pane behind the front one mid-row, and a half-sentence
-   reads as a rendering fault, not as depth. Offsetting them left, right and
-   centre gives the same layered read while every surface stays legible --
-   which is the point, since these are the product, not decoration. */
-
-.showcase { padding: 0 var(--gutter) var(--s32); }
-
-.stack {
-  display: grid;
-  gap: var(--s4);
-  max-width: 64rem;
-  margin: 0 auto;
+.card-head {
+  margin-bottom: .9rem;
+  padding-bottom: .7rem;
+  border-bottom: 1px solid var(--edge);
+  color: var(--ink-faint);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: .6875rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
 }
 
-.pane {
-  margin: 0;
-  border: 1px solid var(--rule-strong);
-  border-radius: 4px;
-  background: var(--paper-raised);
-  overflow: hidden;
-}
-
-.pane-bar {
+.rows { margin: 0; padding: 0; list-style: none; }
+.rows li {
   display: flex;
-  align-items: center;
-  gap: var(--s2);
-  padding: .55rem var(--s4);
-  border-bottom: 1px solid var(--rule);
-  background: var(--paper-sunk);
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .5rem 0;
+  color: var(--ink);
+  font-size: .8125rem;
+  line-height: 1.35;
+}
+.rows li + li { border-top: 1px solid rgba(255, 255, 255, .055); }
+/* Soft, not faint. The note under this list promises that a replaced decision
+   stays readable, and --ink-faint rendered it at 3.20:1, which is a promise the
+   page was breaking in the same card that made it. */
+.row-past span { color: var(--ink-soft); text-decoration: line-through; text-decoration-thickness: 1px; }
+
+.rows em {
+  flex: none;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: .625rem;
+  font-style: normal;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+/* The second of orange's three jobs: one row, waiting on a person. */
+.mark-open { color: var(--orange); }
+.mark-ok { color: var(--blue); }
+.mark-past { color: var(--ink-faint); }
+
+.card-note {
+  margin: .9rem 0 0;
+  padding-top: .8rem;
+  border-top: 1px solid var(--edge);
+  color: var(--ink-soft);
+  font-size: .75rem;
+  line-height: 1.45;
 }
 
-.pane-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule-strong); }
-.pane-title { color: var(--ink-muted); font-size: .6875rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
-.pane-body { display: grid; gap: var(--s3); padding: var(--s4); }
-
-/* Back two sit inset and to opposite sides; the front one is widest and
-   centred, so the eye lands on the answer with its sources. */
-.pane-back  { width: 74%; justify-self: start; }
-.pane-mid   { width: 74%; justify-self: end; }
-.pane-front { width: 90%; justify-self: center; }
-
-.queue-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); font-size: .8125rem; }
-.queue-row:last-child { padding-bottom: 0; border-bottom: 0; }
-.queue-name { color: var(--ink); }
-
-.chip { padding: .12em .5em; border-radius: 2px; font-size: .6875rem; font-weight: 600; letter-spacing: .02em; white-space: nowrap; }
-.chip-wait { background: var(--accent-wash); color: var(--accent); }
-.chip-ok   { background: rgba(31, 122, 77, .12); color: var(--ok); }
-.chip-live { background: var(--ink); color: var(--paper); }
-.chip-past { background: var(--paper-sunk); color: var(--ink-subtle); }
-
-.site .decision { display: grid; gap: var(--s2); padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); }
-.site .decision:last-child { padding-bottom: 0; border-bottom: 0; }
-.site .decision-head { display: flex; align-items: center; gap: var(--s2); }
-.site .decision-date { color: var(--ink-subtle); font-size: .6875rem; }
-.site .decision-text { margin: 0; font-size: .8125rem; line-height: 1.45; }
-.is-past .decision-text { color: var(--ink-subtle); text-decoration: line-through; text-decoration-color: var(--rule-strong); }
-
-.ask { margin: 0; font-size: .9375rem; font-weight: 600; }
-.answer { padding-top: var(--s3); border-top: 1px solid var(--rule); }
-.answer p { margin: 0 0 var(--s3); font-size: .8125rem; line-height: 1.5; color: var(--ink-muted); }
-.sources { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; }
-.sources li { display: flex; align-items: center; gap: var(--s2); color: var(--ink-subtle); font-size: .6875rem; }
-.src-n {
-  display: grid; place-items: center;
-  width: 15px; height: 15px;
-  border: 1px solid var(--rule-strong); border-radius: 2px;
-  color: var(--accent); font-size: .5625rem; font-weight: 700;
+.card-answer { margin: 0; color: var(--ink); font-size: .8125rem; line-height: 1.5; }
+.sources {
+  margin: .9rem 0 0;
+  padding: .8rem 0 0 1.1rem;
+  border-top: 1px solid var(--edge);
+  color: var(--ink-soft);
+  font-size: .6875rem;
+  line-height: 1.5;
 }
+.sources li::marker { color: var(--blue); }
 
 /* ---------- register ---------- */
 
 .register {
-  display: grid;
-  grid-template-columns: repeat(12, var(--col));
-  column-gap: var(--s6);
-  padding: var(--s24) var(--gutter);
-  border-top: 1px solid var(--rule);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(5rem, 12vh, 9rem) var(--gutter) 0;
 }
 
-.register-head { grid-column: 1 / span 5; position: sticky; top: var(--s12); align-self: start; }
-.register-head h2 { margin: 0 0 var(--s4); font-size: clamp(2rem, 3.4vw, 3.25rem); font-weight: 500; line-height: 1.02; letter-spacing: -.03em; }
-.register-head p { margin: 0; max-width: 30ch; color: var(--ink-muted); font-size: .9375rem; }
-
-.register-list { grid-column: 7 / -1; margin: 0; padding: 0; list-style: none; }
-
-/* Each entry is a row in a ledger: number, name, description, then the rule
-   that closes it. The accent only shows up on hover, on the number. */
-.entry {
-  display: grid;
-  grid-template-columns: 3.5rem minmax(0, 1fr);
-  gap: var(--s2) var(--s4);
-  padding: var(--s6) 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-.entry:first-child { padding-top: 0; }
-
-.entry-n {
-  grid-row: span 2;
-  color: var(--ink-subtle);
+.register-head { max-width: 46ch; }
+.register-head h2,
+.principles-head,
+.closing h2 {
+  margin: 0;
+  color: var(--ink);
   font-family: var(--font-display), ui-serif, Georgia, serif;
-  font-size: 1.5rem;
-  line-height: 1;
-  transition: color .2s var(--ease);
+  font-size: clamp(2rem, 4.2vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -.015em;
+}
+.register-head h2 em,
+.principles-head em,
+.closing h2 em { font-style: italic; }
+.register-head p {
+  max-width: 48ch;
+  margin: 1.1rem 0 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
-.entry:hover .entry-n { color: var(--accent); }
-.entry-label { margin: 0; font-size: 1.0625rem; font-weight: 600; letter-spacing: -.01em; }
-.entry-copy { margin: 0; max-width: 52ch; color: var(--ink-muted); font-size: .9375rem; line-height: 1.55; }
+.register-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
+  padding: 0;
+  gap: 0;
+  list-style: none;
+  border-top: 1px solid var(--edge);
+}
+
+.entry {
+  padding: 1.75rem 1.5rem 2rem 0;
+  border-bottom: 1px solid var(--edge);
+}
+.entry-n {
+  display: block;
+  margin-bottom: .9rem;
+  color: var(--blue);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: .75rem;
+  letter-spacing: .1em;
+}
+.entry-label { margin: 0 0 .5rem; color: var(--ink); font-size: 1.0625rem; font-weight: 600; letter-spacing: -.01em; }
+.entry-copy { max-width: 36ch; margin: 0; color: var(--ink-soft); font-size: .875rem; line-height: 1.6; }
 
 /* ---------- principles ---------- */
 
-.principles { padding: var(--s24) var(--gutter); border-top: 1px solid var(--rule); background: var(--paper-sunk); }
-.principles-head { margin: 0 0 var(--s16); max-width: 20ch; font-size: clamp(1.75rem, 3vw, 2.75rem); font-weight: 500; line-height: 1.05; letter-spacing: -.03em; }
-.principles-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s12); }
-.principle { display: grid; gap: var(--s3); padding-top: var(--s4); border-top: 1px solid var(--rule-strong); }
-.principle-n { color: var(--accent); font-family: var(--font-display), ui-serif, Georgia, serif; font-size: 1.25rem; line-height: 1; }
-.principle h3 { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
-.principle p { margin: 0; color: var(--ink-muted); font-size: .9375rem; line-height: 1.55; }
+.principles {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(5rem, 12vh, 9rem) var(--gutter) 0;
+}
+.principles-head { max-width: 22ch; }
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  gap: clamp(.75rem, 1.5vw, 1.25rem);
+}
+.principle { padding: 1.5rem 1.4rem 1.6rem; }
+.principle-n {
+  display: block;
+  margin-bottom: 1.1rem;
+  color: var(--blue);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: .75rem;
+  letter-spacing: .1em;
+}
+.principle h3 { margin: 0 0 .55rem; color: var(--ink); font-size: 1rem; font-weight: 600; }
+.principle p { margin: 0; color: var(--ink-soft); font-size: .875rem; line-height: 1.6; }
 
 /* ---------- closing ---------- */
 
-.closing { display: grid; justify-items: start; gap: var(--s8); padding: var(--s32) var(--gutter); border-top: 1px solid var(--rule); }
-.closing h2 { margin: 0; font-size: clamp(2.25rem, 5vw, 4.25rem); font-weight: 500; line-height: 1; letter-spacing: -.035em; }
+.closing {
+  position: relative;
+  isolation: isolate;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(6rem, 14vh, 10rem) var(--gutter) clamp(5rem, 12vh, 8rem);
+  text-align: center;
+}
+/* The horizon again, quieter, so the page ends where it began. */
+.closing::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: -10%;
+  left: 50%;
+  width: min(130%, 1200px);
+  aspect-ratio: 3 / 1;
+  translate: -50% 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(2, 151, 222, .30) 0%, rgba(2, 151, 222, .10) 44%, transparent 72%);
+  filter: blur(42px);
+  pointer-events: none;
+}
+.closing h2 { margin-bottom: 2rem; }
 
 /* ---------- footer ---------- */
 
-.footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s4); padding: var(--s6) var(--gutter); border-top: 1px solid var(--rule); color: var(--ink-subtle); font-size: .8125rem; }
-.footer-mark { display: inline-flex; align-items: center; gap: var(--s2); color: var(--ink); font-weight: 600; }
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2rem var(--gutter) 3rem;
+  border-top: 1px solid var(--edge);
+  gap: 1rem;
+}
+.footer-mark { display: inline-flex; align-items: center; gap: .5rem; color: var(--ink); font-size: .875rem; font-weight: 600; }
+.footer-mark .wordmark-glyph { width: 22px; height: 22px; }
+.footer-note { color: var(--ink-faint); font-size: .8125rem; }
 
-/* ---------- one orchestrated load ---------- */
+/* ---------- arrival ---------- */
 
-/* A single staggered reveal on paint. Nothing animates on scroll: the page is
-   a document, and documents do not perform. */
 @media (prefers-reduced-motion: no-preference) {
-  .hero h1, .hero-side, .colophon, .pane {
-    animation: rise .7s var(--ease) backwards;
+  .site .eyebrow,
+  .site .hero-row,
+  .site .lede,
+  .site .actions,
+  .site .cards {
+    animation: rise .7s var(--ease-out) both;
   }
-  .hero h1    { animation-delay: .04s; }
-  .hero-side  { animation-delay: .14s; }
-  .colophon   { animation-delay: .22s; }
-  .pane-back  { animation-delay: .28s; }
-  .pane-mid   { animation-delay: .36s; }
-  .pane-front { animation-delay: .44s; }
+  .site .hero-row { animation-delay: .06s; }
+  .site .lede { animation-delay: .14s; }
+  .site .actions { animation-delay: .2s; }
+  .site .cards { animation-delay: .28s; }
 }
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: none; }
+  to { opacity: 1; transform: none; }
 }
 
-/* ---------- narrow ---------- */
+/* ---------- narrower ---------- */
 
 @media (max-width: 1000px) {
-  .hero h1 { grid-column: 1 / -1; }
-  .hero-side { grid-column: 1 / -1; margin-top: var(--s8); }
-  .register-head, .register-list { grid-column: 1 / -1; }
-  .register-head { position: static; margin-bottom: var(--s12); }
-  .principles-grid { grid-template-columns: 1fr; gap: var(--s8); }
-  .pane-back, .pane-mid, .pane-front { width: 100%; justify-self: stretch; }
+  /* The figures stop flanking the headline and fall underneath it, side by
+     side, rather than shrinking the one thing the page is here to say. */
+  .hero-row { grid-template-columns: 1fr; gap: 2.25rem; }
+  .figures { grid-auto-flow: column; justify-content: center; gap: clamp(2rem, 8vw, 4rem); }
+  .figures-left, .figures-right { justify-items: center; text-align: center; }
+  .figures dd { max-width: 15ch; }
+  .cards { grid-template-columns: 1fr; max-width: 30rem; margin-inline: auto; }
+  .card-lift { transform: none; }
 }
 
 @media (max-width: 640px) {
-  .colophon { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); margin-top: var(--s16); }
-  /* At this width the masthead can hold the wordmark and one action without
-     either of them wrapping. The section link drops; the page still has its
-     own anchor to the same place. */
-  .masthead-nav a:not(.link-action) { display: none; }
-  .entry { grid-template-columns: 2.5rem minmax(0, 1fr); }
-  .actions .btn { flex: 1 1 auto; justify-content: center; }
+  .masthead { padding: 1.1rem var(--gutter); }
+  .masthead-nav { gap: 1rem; }
+  .masthead-nav a:not(.pill) { display: none; }
+  .figures { grid-auto-flow: row; gap: 1.5rem; }
+  .figures-left, .figures-right { grid-auto-flow: column; justify-content: space-between; width: 100%; }
+  .entry { padding-right: 0; }
+  .footer { flex-direction: column; align-items: flex-start; }
 }

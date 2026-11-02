@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { display, sans } from "@/app/fonts";
+import { display, geist, mono, sans } from "@/app/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="de" className={`${display.variable} ${sans.variable}`}><body>{children}</body></html>;
+  return <html lang="de" className={`${display.variable} ${sans.variable} ${geist.variable} ${mono.variable}`}><body>{children}</body></html>;
 }

@@ -9,3 +9,12 @@ Copyright 2023 The Schibsted-Grotesk Project Authors (https://github.com/schibst
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
 http://scripts.sil.org/OFL
+
+Geist Sans and Geist Mono Font
+(C) 2023 Vercel, made in collaboration with basement.studio
+Vendored from the npm packages @fontsource/geist-sans and @fontsource/geist-mono;
+the subsetted latin woff2 files sit beside this notice.
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
