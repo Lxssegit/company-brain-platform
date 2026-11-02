@@ -4,6 +4,41 @@ Das Betriebsgedächtnis eines Unternehmens: eine Next.js-Anwendung, in der Wisse
 Entscheidungen und Kontext an dem Zweig hängen, zu dem sie gehören, und in der
 jede Antwort nur aus dem gebaut wird, was die fragende Person auch sehen darf.
 
+## Die öffentliche Seite: AILVL, Anfrage-Wächter
+
+Auf dem Branch `neue-positionierung` ist die öffentliche Seite (`/`) nicht mehr
+die Startseite von Company Brain, sondern das Angebot von AILVL: ein betreuter
+Dienst für Betriebe mit 20 bis 100 Mitarbeitern. Alles hinter `/login` — Auth,
+Datenbank, Zweige, Wissen, Entscheidungen — ist unverändert geblieben.
+
+Die Benennung liegt in `src/lib/offer.ts`. Angebotsname, Check-Name, Absender und
+Zielgruppe stehen dort je als eine Konstante; ein Umbenennen ist eine Zeile, kein
+Suchen-und-Ersetzen über die Seite.
+
+Entscheidungen, die der Auftrag offengelassen hat:
+
+- **Keine neuen Design-Bausteine.** Jeder Abschnitt benutzt die Klassen, die es
+  schon gab (`.glass`, `.card`, `.figures`, `.register-list`, `.entry`). Neu sind
+  nur vier kleine Klassen für Dinge, die es vorher nicht gab: Quellenangaben an
+  Zahlen und Einträgen, der Hinweis „Beispielansicht" und der Footer-Link.
+- **Quellen stehen an der Zahl, nicht im Kleingedruckten.** Die zwei Zahlen aus
+  fremden Tests tragen einen Link auf ihre Quelle, die zwei eigenen Zusagen
+  tragen keinen. So ist ohne genaues Lesen sichtbar, was gemessen und was
+  versprochen ist.
+- **Die Beispielkarten sind als Beispiel beschriftet.** Eine Attrappe, die ein
+  skeptischer Leser für einen echten Screenshot nimmt und später als Attrappe
+  erkennt, kostet mehr Vertrauen, als das Bild je gebracht hat.
+- **`/login` bleibt erreichbar, aber nicht beworben.** Aus Navigation, Hero und
+  Abschluss ist der Link entfernt; im Footer steht „Kundenlogin". Der Login
+  funktioniert, deshalb ist der Link gesetzt und nicht weggelassen.
+- **Die Seite liefert kein Client-JavaScript.** Die Navigation sind Anker, das
+  Scrollen macht der Browser. Damit bleibt die nonce-gebundene CSP ohne Ausnahme.
+
+Der Kontrast ist nicht geschätzt, sondern gemessen: alle Textebenen der Seite
+liegen über 4,5:1 auf dem Grund, auf dem sie wirklich stehen. Darum sitzen die
+Kartenlabel in der Karte und nicht darüber — über dem heißen Kern des Glühens
+erreichte 60 % Weiß nur 3,24:1.
+
 ## Starten
 
 ```bash
