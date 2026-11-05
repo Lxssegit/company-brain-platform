@@ -1,0 +1,25 @@
+-- Stellt den HNSW-Index auf KnowledgeUnit.embedding wieder her.
+--
+-- Die Migration 20260927163938_user_profile_and_reporting_line beginnt mit
+--
+--   DROP INDEX "KnowledgeUnit_embedding_hnsw_idx";
+--
+-- und das war keine Absicht. Jene Migration fügt dem User Biografie und
+-- Vorgesetzten hinzu und hat mit KnowledgeUnit nichts zu tun. Der Grund ist
+-- die Art, wie Prisma Migrationen erzeugt: die Spalte embedding ist im Schema
+-- als Unsupported("vector(1536)") deklariert, der handgeschriebene
+-- HNSW-Index taucht im Datenmodell also nirgends auf. Beim Abgleich hält
+-- Prisma ihn für überzählig und schreibt ein DROP dagegen, bei jeder
+-- beliebigen anderen Änderung.
+--
+-- Die Folge war nicht sichtbar, aber teuer: ohne den Index läuft jede
+-- Vektorsuche über einen sequenziellen Scan der ganzen Tabelle.
+--
+-- Die alte Migration bleibt unverändert. Eine bereits angewandte Migration
+-- nachträglich zu ändern bricht die Prüfsumme auf jeder Datenbank, die sie
+-- schon hat. Der Index wird deshalb hier neu angelegt.
+--
+-- Für die Zukunft: jede von Prisma erzeugte Migration, die KnowledgeUnit
+-- berührt, vor dem Commit auf ein DROP INDEX gegen diesen Namen prüfen.
+CREATE INDEX IF NOT EXISTS "KnowledgeUnit_embedding_hnsw_idx"
+  ON "KnowledgeUnit" USING hnsw ("embedding" vector_cosine_ops);

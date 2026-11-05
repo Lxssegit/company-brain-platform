@@ -121,6 +121,13 @@ npm-Paket. Sobald die Dateien vorliegen: woff2 nach `public/fonts`, `@font-face`
   kein Parallax.
 - `/login` und alles dahinter: Auth, Formularlogik und Sicherheitsverhalten werden nicht
   verändert. Dort ändern sich nur Farben, Schrift und Benennung.
+- **Jede von Prisma erzeugte Migration, die `KnowledgeUnit` berührt, vor dem Commit auf
+  ein `DROP INDEX "KnowledgeUnit_embedding_hnsw_idx"` prüfen.** Die Spalte `embedding`
+  steht im Schema als `Unsupported("vector(1536)")`, der handgeschriebene HNSW-Index
+  taucht im Datenmodell also nirgends auf. Beim Abgleich hält Prisma ihn für überzählig
+  und schreibt ein DROP dagegen, auch bei einer völlig anderen Änderung. Genau das ist
+  einmal passiert und blieb unbemerkt, bis die CI es gemeldet hat; ohne den Index läuft
+  jede Vektorsuche über einen sequenziellen Scan.
 - `tests/styles.test.ts` prüft zeilenweise auf Klassennamen-Kollisionen zwischen
   `app.css` und `landing.css`. Die Formatierung „eine Regel pro Zeile" ist dafür tragend
   und darf nicht aufgelöst werden.
