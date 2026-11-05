@@ -1,43 +1,121 @@
-# Company Brain
+# Anfrage-Wächter
 
-Das Betriebsgedächtnis eines Unternehmens: eine Next.js-Anwendung, in der Wissen,
-Entscheidungen und Kontext an dem Zweig hängen, zu dem sie gehören, und in der
-jede Antwort nur aus dem gebaut wird, was die fragende Person auch sehen darf.
+Software von AILVL für Betriebe, die für Kundenanfragen bezahlen. Sie beantwortet jede
+neue Anfrage innerhalb von 2 Minuten mit einem Rückruftermin, sorgt dafür, dass keine
+Anfrage liegen bleibt, und zeigt pro Portal, was sich rechnet.
 
-## Die öffentliche Seite: AILVL, Anfrage-Wächter
+Das Projekt besteht aus zwei Teilen: der öffentlichen Seite unter `/` und der
+angemeldeten Anwendung hinter `/login`. Beide teilen sich Palette und Schrift, folgen
+aber unterschiedlich strengen Regeln, siehe unten.
 
-Auf dem Branch `neue-positionierung` ist die öffentliche Seite (`/`) nicht mehr
-die Startseite von Company Brain, sondern das Angebot von AILVL: ein betreuter
-Dienst für Betriebe mit 20 bis 100 Mitarbeitern. Alles hinter `/login` — Auth,
-Datenbank, Zweige, Wissen, Entscheidungen — ist unverändert geblieben.
+**Die Gestaltungsregeln stehen in [CLAUDE.md](./CLAUDE.md) und sind verbindlich.** Wer
+hier etwas ändert, liest sie vorher. Sie enthalten eine Verbotsliste mit 20 Punkten, die
+Farbwerte, die Schriftregeln und die Textregeln.
 
-Die Benennung liegt in `src/lib/offer.ts`. Angebotsname, Check-Name, Absender und
-Zielgruppe stehen dort je als eine Konstante; ein Umbenennen ist eine Zeile, kein
-Suchen-und-Ersetzen über die Seite.
+## Entscheidungen, die der Auftrag offengelassen hat
 
-Entscheidungen, die der Auftrag offengelassen hat:
+Der Auftrag sagte: wenn etwas unklar ist, im Sinne der Vorlage und der Verbotsliste
+entscheiden und hier notieren. Das ist diese Liste.
 
-- **Keine neuen Design-Bausteine.** Jeder Abschnitt benutzt die Klassen, die es
-  schon gab (`.glass`, `.card`, `.figures`, `.register-list`, `.entry`). Neu sind
-  nur vier kleine Klassen für Dinge, die es vorher nicht gab: Quellenangaben an
-  Zahlen und Einträgen, der Hinweis „Beispielansicht" und der Footer-Link.
-- **Quellen stehen an der Zahl, nicht im Kleingedruckten.** Die zwei Zahlen aus
-  fremden Tests tragen einen Link auf ihre Quelle, die zwei eigenen Zusagen
-  tragen keinen. So ist ohne genaues Lesen sichtbar, was gemessen und was
-  versprochen ist.
-- **Die Beispielkarten sind als Beispiel beschriftet.** Eine Attrappe, die ein
-  skeptischer Leser für einen echten Screenshot nimmt und später als Attrappe
-  erkennt, kostet mehr Vertrauen, als das Bild je gebracht hat.
-- **`/login` bleibt erreichbar, aber nicht beworben.** Aus Navigation, Hero und
-  Abschluss ist der Link entfernt; im Footer steht „Kundenlogin". Der Login
-  funktioniert, deshalb ist der Link gesetzt und nicht weggelassen.
-- **Die Seite liefert kein Client-JavaScript.** Die Navigation sind Anker, das
-  Scrollen macht der Browser. Damit bleibt die nonce-gebundene CSP ohne Ausnahme.
+### Die Schrift ist nicht General Sans
 
-Der Kontrast ist nicht geschätzt, sondern gemessen: alle Textebenen der Seite
-liegen über 4,5:1 auf dem Grund, auf dem sie wirklich stehen. Darum sitzen die
-Kartenlabel in der Karte und nicht darüber — über dem heißen Kern des Glühens
-erreichte 60 % Weiß nur 3,24:1.
+Vorgesehen war General Sans von Fontshare. **Fontshare ist aus dieser Build-Umgebung
+nicht erreichbar**: der Egress-Proxy beantwortet jedes CONNECT an `api.fontshare.com` und
+`cdn.fontshare.com` mit 403, und ein npm-Paket für General Sans gibt es nicht.
+
+An seiner Stelle steht **Plus Jakarta Sans**: dieselbe Gattung, echte 300er für die große
+leichte Headline, als woff2 lokal unter `public/fonts`. Keine Verbindung zu einem
+externen Schriftserver.
+
+Der Tausch ist klein gehalten: die Dateien nach `public/fonts`, die vier `@font-face`
+in `src/app/globals.css` auf die neuen Pfade, und `FONT_FAMILY` in `src/lib/brand.ts`.
+
+### Die Verbotsliste gilt in der Anwendung nur zur Hälfte
+
+Öffentlich gilt sie vollständig. Hinter `/login` gelten Palette, Schrift und die Punkte zu
+Kursiv, Display-Serifen, negativer Laufweite, Icon-Kacheln, Monospace, Großbuchstaben und
+Pillenform.
+
+**Nicht** übernommen sind dort die Punkte 6 und 8, also das Verbot von Trennlinien und
+von Rahmen um Container. Die Anwendung zeigt Listen, Zweigbäume und Zugriffstabellen; dort
+gliedern Linien Daten und dekorieren nicht. Ohne sie wird aus einer Tabelle eine Textwand.
+Die Liste ist für eine Website geschrieben, nicht für eine datendichte Oberfläche.
+
+### Kein Einblenden beim Scrollen
+
+Der Auftrag erlaubte höchstens ein dezentes Einblenden, 300 ms. Es war gebaut, über
+`animation-timeline: view()` und damit ohne JavaScript, und ist wieder entfernt worden.
+
+Grund: eine `view()`-Zeitachse braucht einen Scroll-Überhang. Gibt es keinen, weil das
+Fenster höher ist als die Seite, bleibt der Fortschritt bei null, der Füllmodus hält den
+Ausgangszustand fest, und **jeder Abschnitt steht auf Deckkraft null**. Das war in der
+Vollseiten-Aufnahme sofort sichtbar und träfe auch Besucher mit sehr hohem Fenster.
+Unsichtbarer Inhalt wiegt schwerer als ein fehlender Übergang.
+
+Die einzige Bewegung ist jetzt die sehr langsame Drift der Kugel im Hero, 20 Sekunden,
+wenige Pixel, abgeschaltet bei `prefers-reduced-motion`.
+
+### Das Bildmotiv ist gezeichnet, nicht gefiltert
+
+Naheliegend wäre `backdrop-filter` mit einer `feDisplacementMap` gewesen. Das funktioniert
+nicht verlässlich, weil sich SVG-Filter nicht auf den Hintergrund hinter einem Element
+anwenden lassen.
+
+Stattdessen trägt jeder der sieben Glasstreifen **eine eigene Kopie der Kugel**, horizontal
+um wenige Pixel versetzt und auf den Streifen beschnitten. Weil jede Kopie anders versetzt
+ist, bricht die Silhouette an jeder Kante, wie hinter Riffelglas. Das funktioniert in jedem
+Browser, kostet keinen Request und ist bis auf den Pixel steuerbar. Kein WebGL.
+
+### `public/hero.webp` ist ein Schalter, keine Datei
+
+Die Bilddatei liegt nicht bei; eine erfundene webp wäre schlechter als keine. Der Weg
+dorthin ist aber gebaut: eigenes Bild nach `public/hero.webp` legen und in
+`src/lib/brand.ts` `HERO_IMAGE` auf `"/hero.webp"` setzen. `HeroMotif` zeigt dann das Bild
+statt der gezeichneten Kugel.
+
+### Mobile Navigation bricht um, sie klappt nicht auf
+
+Unter 600 px rücken die vier Links in eine zweite Zeile. Kein Menü hinter einem Klick:
+das wäre entweder JavaScript, das die Seite sonst nirgends braucht, oder ein
+`details`-Element, das an dieser Stelle wie ein Bedienelement aussieht, wo die Vorlage
+nur Text zeigt. Bei vier Links trägt der Umbruch.
+
+### 301 statt 308 für die alten Branchenseiten
+
+`/energietechnik` und `/industrie` haben als Routen **nie existiert**, das waren Anker in
+einer früheren Navigation. Die Weiterleitungen sind trotzdem angelegt, wie verlangt.
+Next setzt für `permanent: true` ein 308; verlangt war 301, deshalb steht der Statuscode
+direkt in `next.config.ts`.
+
+### Impressum und Datenschutzerklärung sind Platzhalter
+
+Beide Seiten existieren, weil Footer und die Pflicht-Checkbox im Formular darauf zeigen
+müssen. Der Inhalt ist eine rechtlich verbindliche Erklärung und wird nicht erfunden; die
+Lücken sind als `[PLATZHALTER]` markiert und beide Seiten stehen auf `noindex`, solange
+sie leer sind. `/datenschutz` listet zusätzlich auf, welche Datenflüsse die Seite heute
+tatsächlich auslöst, damit die Erklärung nichts übersieht.
+
+### Die Kontaktadresse ist geraten
+
+`CONTACT_EMAIL` in `src/lib/brand.ts` steht auf `kontakt@ailvl.de`. Vor dem Livegang
+bestätigen oder durch die Adresse ersetzen, die wirklich gelesen wird.
+
+### Koralle in der Anwendung
+
+Öffentlich ist Koralle dem Hauptbutton vorbehalten. In der Anwendung trägt sie zusätzlich
+die zerstörende Aktion, weil die Palette sonst keine warme Farbe hat, die jemanden anhält.
+
+## Was noch gefüllt werden muss
+
+| Wo | Was |
+|---|---|
+| `src/app/LandingPage.tsx` | `[LAUFZEIT UND KÜNDIGUNG]` und `[MAXIMALE ANFRAGEN PRO MONAT]` im Preisabschnitt |
+| `src/app/LandingPage.tsx` | `[FOTO]` und `[3 BIS 4 SÄTZE ÜBER MICH]` im Abschnitt „Über mich" |
+| `src/app/impressum/page.tsx` | das vollständige Impressum |
+| `src/app/datenschutz/page.tsx` | die vollständige Datenschutzerklärung |
+| Umgebung | `N8N_WEBHOOK_URL`, sonst läuft die Testzugang-Anfrage ins Leere und die Seite meldet einen Fehler |
+| `public/logo.svg` | die eigene Wortmarke; die Navigation zeigt bis dahin den Schriftzug „ailvl" |
+| `public/hero.webp` | optional, siehe oben |
 
 ## Starten
 

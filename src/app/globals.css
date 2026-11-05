@@ -1,50 +1,87 @@
 @import "./app.css";
 @import "./landing.css";
 
+/* Eine Groteskschrift, lokal, kein externer Schriftserver. Vorgesehen war
+   General Sans von Fontshare; Fontshare ist aus der Build-Umgebung nicht
+   erreichbar und hat kein npm-Paket, deshalb steht Plus Jakarta Sans an seiner
+   Stelle. Der Tausch ist später ein Pfad hier und eine Konstante in
+   src/lib/brand.ts.
+
+   Vier Schnitte und keiner mehr: 300 trägt die große Headline, 400 den Text,
+   500 Buttons und Zwischenüberschriften, 600 die Wortmarke. Keine kursiven
+   Schnitte, weil die Seite keine Kursive kennt. */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans-300.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  /* Midnight, not paper. The whole product shares the public page's palette
-     now, so these names keep their meaning and change their values: --paper is
-     still "the ground", it is simply no longer light. Every rule in app.css
-     reads through these, which is why the switch is a change of values rather
-     than a rewrite.
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
-     Three colours and white, and no fourth. Midnight #02070A carries the
-     ground, Electric Blue #0297DE every accent, and Cantaloupe Orange #FC734D
-     is spent only where something wants a person. */
-  --paper: #02070A;
-  --paper-raised: #0b1216;
-  --paper-sunk: #070d11;
-  --paper-deep: #000306;
+  /* Hell, nicht Mitternacht. Die Namen behalten ihre Bedeutung und wechseln
+     ihre Werte: --paper ist weiter „der Grund", er ist nur nicht mehr dunkel.
+     Jede Regel in app.css liest durch diese Tokens, deshalb ist der Wechsel
+     ein Austausch von Werten und keine Neufassung.
 
-  --accent: #0297DE;
-  --accent-hover: #35aee6;
-  --accent-wash: rgba(2, 151, 222, .12);
+     Feste Hex-Werte, keine Deckkraft. Text über opacity abzustufen ist in
+     CLAUDE.md verboten, und zwar aus einem praktischen Grund: eine Farbe mit
+     Alpha hat keinen Kontrastwert, bis man weiß, worauf sie liegt. */
+  --paper: #FFFFFF;
+  --paper-raised: #FFFFFF;
+  --paper-sunk: #E6F3FE;
+  --paper-deep: #DCEEFA;
 
-  /* Ink is white at three strengths. --ink-subtle is the floor: it is used in
-     36 places and every one of them has to clear 4.5:1 on --paper, which white
-     at 60% does and white at 45% does not. */
-  --ink: rgba(255, 255, 255, .92);
-  --ink-muted: rgba(255, 255, 255, .72);
-  --ink-subtle: rgba(255, 255, 255, .60);
+  --accent: #0F305D;
+  --accent-hover: #020C1E;
+  --accent-wash: #DCEEFA;
 
-  /* Structure is drawn, not shadowed. Every division is a rule of exactly one
-     device pixel — now light on dark rather than dark on light. */
-  --rule: rgba(255, 255, 255, .10);
-  --rule-strong: rgba(255, 255, 255, .20);
+  /* Zwei Textfarben, mehr erlaubt die Palette nicht. Die dritte Stufe, die das
+     dunkle Design hatte, fällt ersatzlos weg: Rangfolge entsteht ab hier über
+     Größe und Schriftstärke, nicht über blassere Farbe. */
+  --ink: #020C1E;
+  --ink-muted: #475F71;
+  --ink-subtle: #475F71;
 
-  /* Approved is the ordinary good state and gets the ordinary accent; it does
-     not need a hue of its own. Orange is the only warm colour in the palette,
-     so it carries the two things that want a person to stop: a destructive
-     action, and a request still waiting on somebody. Green and red were
-     dropped rather than kept as a fourth and fifth hue. */
-  --ok: #0297DE;
-  --danger: #FC734D;
+  /* In der Anwendung gliedern Linien Daten und bleiben deshalb bestehen; auf
+     der öffentlichen Seite gibt es keine. Beide Werte sind jetzt Flächenfarben
+     der Palette statt Weiß mit Deckkraft. */
+  --rule: #DCEEFA;
+  --rule-strong: #7FAAD2;
+
+  /* Der gute Normalfall bekommt den gewöhnlichen Akzent. Koralle ist die
+     einzige warme Farbe und auf der öffentlichen Seite dem Hauptbutton
+     vorbehalten; in der Anwendung trägt sie zusätzlich die zerstörende
+     Aktion, weil es sonst keine Farbe gäbe, die jemanden anhält. */
+  --ok: #0F305D;
+  --danger: #E86A7F;
 
   --ease: cubic-bezier(.16, 1, .3, 1);
   --measure: 62ch;
 
-  /* One spacing scale, in fourths of the body line. Sections breathe at the
-     top of it; nothing on the page uses a value from outside it. */
   --s1: .25rem;
   --s2: .5rem;
   --s3: .75rem;
@@ -57,7 +94,7 @@
   --s32: 8rem;
   --s48: 12rem;
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -67,7 +104,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-geist), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -84,9 +121,9 @@ body {
    page stays the browser's default white. */
 html { background: var(--paper); }
 
-::selection { color: #fff; background: rgba(2, 151, 222, .40); }
+::selection { color: #FFFFFF; background: #0F305D; }
 :focus-visible { border-radius: 4px; outline: 2px solid var(--accent); outline-offset: 3px; }
-html { scrollbar-color: rgba(255, 255, 255, .22) var(--paper); }
+html { scrollbar-color: #7FAAD2 #FFFFFF; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

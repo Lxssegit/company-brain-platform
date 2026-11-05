@@ -1,32 +1,38 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { AUDIENCE, COMPANY, OFFER } from "@/lib/offer";
+import { OFFER, PRICE_EUR, TRIAL } from "@/lib/brand";
 
-export const alt = `${OFFER} von ${COMPANY}: Keine Anfrage bleibt mehr liegen`;
+export const alt = `${OFFER}: Als Erster auf bezahlte Anfragen antworten`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /**
- * The share card, drawn with the page's own palette rather than screenshotted
- * from it: a screenshot of a page that scrolls crops badly at 1200×630, and it
- * goes stale the first time a margin moves.
+ * Die Teilen-Karte, gezeichnet statt von der Seite abfotografiert: ein
+ * Screenshot schneidet bei 1200 mal 630 schlecht und ist veraltet, sobald sich
+ * ein Abstand ändert.
  *
- * Satori, which renders this, supports neither CSS filters nor mask-image, so
- * the horizon cannot be the page's blurred ellipse. It is built instead from a
- * stack of concentric radial gradients — the same colours, in the same order,
- * with the hot core on top, reaching the same effect by a route the renderer
- * can actually take.
+ * Satori, das hier rendert, kennt weder CSS-Filter noch mask-image und keine
+ * Container-Einheiten. Das Motiv ist deshalb nicht dasselbe wie auf der Seite,
+ * sondern dieselbe Idee auf einem Weg, den der Renderer gehen kann: die Kugel
+ * aus geschichteten Radialverläufen, die Glasstreifen als halbdurchsichtige
+ * Rechtecke mit je eigener Helligkeit.
  */
 export default async function Image() {
-  /* TTF, not the woff2 the page itself loads: Satori reads ttf, otf and woff
-     and rejects woff2 outright ("Unsupported OpenType signature wOF2"). These
-     two are the same faces, decompressed once and kept beside the originals.
-     They are read on the server at build time and never reach a browser. */
-  const [display, geist] = await Promise.all([
-    readFile(join(process.cwd(), "src/app/fonts/instrument-serif-400.ttf")),
-    readFile(join(process.cwd(), "src/app/fonts/geist-sans-500.ttf")),
+  /* woff, nicht das woff2 der Seite: Satori liest ttf, otf und woff und weist
+     woff2 mit „Unsupported OpenType signature wOF2" ab. Dieselben zwei
+     Schnitte, nur unkomprimiert, direkt neben den Originalen. */
+  const [light, medium] = await Promise.all([
+    readFile(join(process.cwd(), "public/fonts/plus-jakarta-sans-300.woff")),
+    readFile(join(process.cwd(), "public/fonts/plus-jakarta-sans-500.woff")),
   ]);
+
+  /* Die Streifen: linke Kante, Breite, Helligkeit. Unterschiedlich breit, wie
+     auf der Seite, damit sie nicht als Raster lesen. */
+  const strips: [number, number, number][] = [
+    [612, 26, 0.34], [646, 14, 0.16], [668, 34, 0.42],
+    [710, 18, 0.2], [736, 46, 0.3], [790, 22, 0.14], [820, 30, 0.26],
+  ];
 
   return new ImageResponse(
     (
@@ -38,38 +44,41 @@ export default async function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "64px 72px",
-          background: "#02070A",
+          background: "linear-gradient(180deg, #E6F3FE 0%, #DCEEFA 44%, #7FAAD2 68%, #0F305D 82%, #0F305D 100%)",
+          fontFamily: "Jakarta",
           position: "relative",
         }}
       >
-        {/* The horizon, from the widest wash inward to the core. */}
-        <div style={{ position: "absolute", left: "-20%", right: "-20%", bottom: "-58%", height: "118%", background: "radial-gradient(ellipse at 50% 100%, rgba(2,151,222,0.42) 0%, rgba(2,151,222,0.14) 44%, rgba(2,7,10,0) 72%)", display: "flex" }} />
-        <div style={{ position: "absolute", left: "8%", right: "8%", bottom: "-44%", height: "92%", background: "radial-gradient(ellipse at 50% 100%, rgba(2,151,222,0.92) 0%, rgba(2,151,222,0.40) 38%, rgba(2,7,10,0) 70%)", display: "flex" }} />
-        <div style={{ position: "absolute", left: "33%", right: "33%", bottom: "-26%", height: "58%", background: "radial-gradient(ellipse at 50% 100%, rgba(255,230,214,0.80) 0%, rgba(252,115,77,0.96) 24%, rgba(252,115,77,0.45) 52%, rgba(2,7,10,0) 78%)", display: "flex" }} />
+        {/* Die Kugel, von der hellen Spitzlichtseite nach innen. */}
+        <div style={{ position: "absolute", right: -150, top: 95, width: 620, height: 620, borderRadius: 310, display: "flex", background: "linear-gradient(142deg, #CACCEC 0%, #7FAAD2 38%, #0D224E 86%)" }} />
+        <div style={{ position: "absolute", right: 60, top: 150, width: 300, height: 300, borderRadius: 150, display: "flex", background: "radial-gradient(circle at 40% 36%, rgba(231,179,202,0.95) 0%, rgba(231,179,202,0) 70%)" }} />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 14, color: "rgba(255,255,255,0.92)", fontFamily: "Geist", fontSize: 26, letterSpacing: "-0.01em" }}>
-          <svg width="30" height="30" viewBox="0 0 28 28">
-            <path d="M3 19.5c3.4 0 4.1-5 7.5-5s4.1 5 7.5 5 4.1-8 7-8" fill="none" stroke="#0297DE" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="25" cy="11.5" r="2.1" fill="#0297DE" />
-          </svg>
-          <span>ailvl</span>
+        {/* Die Glasstreifen davor. */}
+        {strips.map(([x, w, a]) => (
+          <div key={x} style={{ position: "absolute", left: x, top: 0, width: w, height: 630, display: "flex", background: `rgba(255,255,255,${a})` }} />
+        ))}
+
+        <div style={{ display: "flex", color: "#020C1E", fontSize: 26, fontWeight: 600 }}>ailvl</div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 24, maxWidth: 620 }}>
+          <div style={{ display: "flex", color: "#020C1E", fontSize: 86, fontWeight: 300, lineHeight: 1.05 }}>
+            Als Erster antworten
+          </div>
+          <div style={{ display: "flex", color: "#020C1E", fontSize: 27, fontWeight: 400, lineHeight: 1.45 }}>
+            Jede bezahlte Anfrage in 2 Minuten beantwortet, mit Rückruftermin
+          </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <div style={{ display: "flex", color: "rgba(255,255,255,0.92)", fontFamily: "Instrument", fontSize: 92, lineHeight: 1.04, letterSpacing: "-0.02em" }}>
-            Keine Anfrage bleibt mehr liegen.
-          </div>
-          <div style={{ display: "flex", color: "rgba(255,255,255,0.60)", fontFamily: "Geist", fontSize: 27, lineHeight: 1.45, maxWidth: 820 }}>
-            Für {AUDIENCE}. Nur lesend, Verarbeitung in der EU.
-          </div>
+        <div style={{ display: "flex", color: "#E6F3FE", fontSize: 23, fontWeight: 500 }}>
+          {TRIAL} kostenlos testen, danach {PRICE_EUR} € pro Monat
         </div>
       </div>
     ),
     {
       ...size,
       fonts: [
-        { name: "Instrument", data: display, style: "normal", weight: 400 },
-        { name: "Geist", data: geist, style: "normal", weight: 500 },
+        { name: "Jakarta", data: light, style: "normal", weight: 300 },
+        { name: "Jakarta", data: medium, style: "normal", weight: 500 },
       ],
     },
   );

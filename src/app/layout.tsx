@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
-import { display, geist, mono } from "@/app/fonts";
-import { AUDIENCE, COMPANY, OFFER } from "@/lib/offer";
+import { OFFER } from "@/lib/brand";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: `${OFFER} von ${COMPANY}: Keine Anfrage bleibt mehr liegen`,
+  title: `${OFFER}: Als Erster auf bezahlte Anfragen antworten`,
   description:
-    `Wir melden jede offene Kundenanfrage, bevor der Kunde woanders kauft. Für ${AUDIENCE}. ` +
-    "Nur lesend, Verarbeitung in der EU.",
+    "Jede Portal-Anfrage in 2 Minuten beantwortet, mit Rückruftermin. Für Betriebe, " +
+    "die für Anfragen bezahlen. Verarbeitung in der EU. 1 Woche kostenlos testen.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="de" className={`${display.variable} ${geist.variable} ${mono.variable}`}><body>{children}</body></html>;
+  return (
+    <html lang="de">
+      <head>
+        {/* Nur die zwei Schnitte, die über der Falte stehen. Die Schrift liegt
+            lokal unter public/fonts, der Rest wird nachgeladen, wenn er
+            gebraucht wird. */}
+        <link rel="preload" href="/fonts/plus-jakarta-sans-300.woff2" as="font" type="font/woff2" crossOrigin="" />
+        <link rel="preload" href="/fonts/plus-jakarta-sans-400.woff2" as="font" type="font/woff2" crossOrigin="" />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
 }

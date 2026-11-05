@@ -33,7 +33,7 @@ export default async function AskPage() {
         <div className="app-head">
           <div>
             <h1 className="page-title">Was möchten Sie wissen?</h1>
-            <p>Gesucht wird ausschließlich in dem Wissen, das Ihre Organisation, Ihre Rolle und Ihre Freigaben zulassen. Findet sich keine belastbare Grundlage, sagt Company Brain das — statt etwas zu erfinden.</p>
+            <p>Gesucht wird ausschließlich in dem Wissen, das Ihre Organisation, Ihre Rolle und Ihre Freigaben zulassen. Findet sich keine belastbare Grundlage, sagt der Anfrage-Wächter das, statt etwas zu erfinden.</p>
           </div>
         </div>
         <AskPanel branches={branches} branchesUnreachable={unreachable} />

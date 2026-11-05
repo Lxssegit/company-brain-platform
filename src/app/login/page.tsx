@@ -30,9 +30,9 @@ export default function LoginPage() {
   return (
     <main className="app auth-shell">
       <div className="auth-card">
-        <Link className="auth-back" href="/"><ArrowLeft /> Zurück zu Company Brain</Link>
+        <Link className="auth-back" href="/"><ArrowLeft /> Zurück zur Startseite</Link>
         <BrandMark />
-        <h1 className="page-title">Anmelden.</h1>
+        <h1 className="page-title">Anmelden</h1>
         <p className="auth-lede">Organisation und Rolle werden auf dem Server aufgelöst. Der Browser darf sie nie behaupten.</p>
 
         {problems.length > 0 ? (

@@ -28,8 +28,8 @@ export default async function DashboardPage() {
       <main className="app-main">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Willkommen zurück, {name}.</h1>
-            <p>Das ist die angemeldete Seite von Company Brain. Was Sie hier sehen, ist genau das, was Ihre Organisation und Ihre Rolle erlauben.</p>
+            <h1 className="page-title">Willkommen zurück, {name}</h1>
+            <p>Das ist die angemeldete Seite des Anfrage-Wächters. Was Sie hier sehen, ist genau das, was Ihre Organisation und Ihre Rolle erlauben.</p>
           </div>
         </div>
 
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
           <div className="panel-head">
             <div>
               <h2>Eine Frage stellen</h2>
-              <p>Durchsucht wird nur, was Ihre Organisation, Ihre Rolle und Ihre Freigaben zulassen. Ohne belastbare Grundlage sagt Company Brain das, statt zu raten.</p>
+              <p>Durchsucht wird nur, was Ihre Organisation, Ihre Rolle und Ihre Freigaben zulassen. Ohne belastbare Grundlage sagt der Anfrage-Wächter das, statt zu raten.</p>
             </div>
           </div>
           <Link className="btn btn-primary" href="/fragen">Zu den Fragen <ArrowUpRight /></Link>

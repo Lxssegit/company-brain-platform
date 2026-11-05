@@ -35,7 +35,7 @@ export default async function InvitationPage({ params }: { params: Promise<{ inv
     <div className="app">
       <header className="app-bar">
         <div className="app-bar-left">
-          <Link className="app-brand" href="/"><BrandMark /><span>Company Brain</span></Link>
+          <Link className="app-brand" href="/"><BrandMark /><span>Anfrage-Wächter</span></Link>
         </div>
       </header>
       <main className="app-main app-main-narrow">
@@ -44,14 +44,14 @@ export default async function InvitationPage({ params }: { params: Promise<{ inv
         {standing.kind === "unreachable" ? (
           <div className="app-head">
             <div>
-              <h1 className="page-title">Die Einladung lässt sich gerade nicht prüfen.</h1>
+              <h1 className="page-title">Die Einladung lässt sich gerade nicht prüfen</h1>
               <p>Der Speicher hat nicht geantwortet. Versuchen Sie es in ein paar Minuten noch einmal — der Link bleibt gültig.</p>
             </div>
           </div>
         ) : standing.kind === "invalid" ? (
           <div className="app-head">
             <div>
-              <h1 className="page-title">Diese Einladung gilt nicht mehr.</h1>
+              <h1 className="page-title">Diese Einladung gilt nicht mehr</h1>
               <p>Einladungen laufen nach sieben Tagen ab, und jede lässt sich nur einmal einlösen. Bitten Sie die Person, die Sie eingeladen hat, um einen neuen Link.</p>
               <p style={{ marginTop: 18 }}><Link className="btn btn-quiet" href="/login">Zur Anmeldung</Link></p>
             </div>

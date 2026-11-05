@@ -29,7 +29,7 @@ export async function AppBar({ context, user }: { context?: string; user?: strin
   return (
     <header className="app-bar">
       <div className="app-bar-left">
-        <Link className="app-brand" href="/dashboard"><BrandMark /><span>Company Brain</span></Link>
+        <Link className="app-brand" href="/dashboard"><BrandMark /><span>Anfrage-Wächter</span></Link>
         {context ? <><span className="app-bar-sep" aria-hidden="true" /><span className="app-bar-context">{context}</span></> : null}
       </div>
       <AppNav links={links} user={user} />

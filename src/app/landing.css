@@ -1,666 +1,361 @@
-/* The public page. Night with a horizon burning under it.
-   ---------------------------------------------------------------------------
-   Everything here hangs off .site, including the palette. globals.css keeps a
-   light :root because the signed-in application reads the same token names, and
-   a dark value up there turned every panel behind the login black the first
-   time these two sheets shared a variable.
-
-   Orange is rationed to three jobs and no others: the core of the glow, the
-   mark on an open request, and the hover of the primary button. It is never a
-   surface. Blue carries everything else that is not text. */
+/* Die öffentliche Seite.
+ *
+ * Jede Regel ist unter .site gescopet. Das ist keine Kosmetik: app.css und
+ * diese Datei teilen sich den globalen Namensraum, app.css wird zuerst
+ * importiert, und ein ungescoptes .form oder .field hier würde jedes Formular
+ * in der Anwendung umlackieren. tests/styles.test.ts prüft genau das, zeilenweise.
+ *
+ * Die Gestaltungsregeln stehen in CLAUDE.md und sind verbindlich. Was fehlt,
+ * fehlt mit Absicht: keine Trennlinien, keine Rahmen um Flächen, keine Pillen,
+ * keine Kursive, keine Großbuchstabenzeilen, keine Deckkraft-Abstufungen bei
+ * Text, keine Verläufe außerhalb von Hero und Bildmotiv. */
 
 .site {
-  --midnight: #02070A;
-  --blue: #0297DE;
-  --orange: #FC734D;
+  --tint: #E6F3FE;
+  --tint-deep: #DCEEFA;
+  --mid: #7FAAD2;
+  --deep: #0F305D;
 
-  /* Text and edges as opacities on white, so a card sitting on the glow picks
-     up the colour under it instead of fighting the gradient with a flat grey. */
-  --ink: rgba(255, 255, 255, .92);
-  --ink-soft: rgba(255, 255, 255, .60);
-  --ink-faint: rgba(255, 255, 255, .38);
-  --edge: rgba(255, 255, 255, .10);
-  --edge-strong: rgba(255, 255, 255, .18);
+  --head: #020C1E;
+  --body: #475F71;
+  --head-on-deep: #E6F3FE;
+  --body-on-deep: #C9DAEA;
+
+  --coral: #EF8092;
+  --coral-hover: #E86A7F;
+
+  --rose: #E7B3CA;
+  --lavender: #CACCEC;
+  --navy: #0D224E;
 
   --gutter: clamp(1.25rem, 5vw, 5rem);
-  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --measure: 60ch;
 
-  /* The distance from one light ray to the next. Halved against the first
-     pass, which doubles how many of them cross the screen. Twice the lines is
-     twice the ink, so the stroke below is dimmed to match — at the old 22 %
-     the denser field stopped reading as light and started reading as a grid. */
-  --ray-gap: clamp(21px, 2.2vw, 34px);
-
-  position: relative;
-  /* A stacking context of its own, so the ray layer below can sit at z-index
-     -1: above this background, beneath every child. Without it the rays were
-     painted over the problem section's copy and the footer, because that text
-     is statically positioned and a positioned pseudo-element at z-index 0 wins
-     against it. Faint white lines across body text is not texture, it is a
-     legibility bug. */
-  isolation: isolate;
-  min-height: 100vh;
-  background: var(--midnight);
-  color: var(--ink);
-  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  overflow-x: clip;
+  background: #FFFFFF;
+  color: var(--body);
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.6;
 }
 
-.site ::selection { background: rgba(2, 151, 222, .35); color: #fff; }
-.site :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 3px; }
+.site h1,
+.site h2,
+.site h3 { color: var(--head); font-weight: 400; letter-spacing: normal; margin: 0; }
 
-/* ---------- masthead ---------- */
+.site h1 { font-size: clamp(3rem, 7.4vw, 6rem); font-weight: 300; line-height: 1.05; }
+.site h2 { font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1.15; }
+.site h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.3; }
+.site p { margin: 0; max-width: var(--measure); }
+.site a { color: inherit; }
 
-.masthead {
+/* Buttons sind Rechtecke mit 6 px Radius. Der Text ist dunkel, nicht weiß:
+   weiß auf Koralle erreicht nur knapp 2:1 und fällt damit durch. */
+.site .button {
+  display: inline-block;
+  padding: .75rem 1.25rem;
+  border-radius: 6px;
+  background: var(--coral);
+  color: var(--head);
+  font-size: .9375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 160ms ease-out;
+}
+.site .button:hover { background: var(--coral-hover); }
+.site .button-large { padding: 1rem 1.75rem; font-size: 1.0625rem; }
+
+/* ---------- Navigation ---------- */
+
+.site .masthead {
   position: relative;
-  z-index: 3;
+  z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 1.5rem var(--gutter);
-  gap: 2rem;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding: 1.75rem var(--gutter);
 }
-
-.wordmark {
-  display: inline-flex;
-  align-items: center;
-  gap: .6rem;
-  color: var(--ink);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -.01em;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.wordmark-glyph { display: block; width: 28px; height: 28px; }
-
-.masthead-nav { display: flex; align-items: center; gap: 2rem; }
-.masthead-nav a:not(.pill) {
-  color: var(--ink-soft);
-  font-size: .9375rem;
-  text-decoration: none;
-  transition: color .2s var(--ease-out);
-}
-.masthead-nav a:not(.pill):hover { color: var(--ink); }
-
-/* The one white shape on the page. It reads as a physical key, which is what
-   signing in is.
-
-   Scoped: app.css uses .pill for the status badges beside panel headings, and
-   this sheet is imported second. Unscoped, every "Aktiv" and "Aus" badge in the
-   signed-in application turned into a white button. */
-.site .pill {
-  display: inline-flex;
-  align-items: center;
-  padding: .55rem 1.15rem;
-  border-radius: 99px;
-  background: #fff;
-  color: var(--midnight);
-  font-size: .9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background .2s var(--ease-out), transform .2s var(--ease-out);
-}
-.site .pill:hover { background: rgba(255, 255, 255, .86); transform: translateY(-1px); }
-
-/* ---------- hero ---------- */
-
-.hero {
-  position: relative;
-  isolation: isolate;
-  padding: clamp(3rem, 9vh, 7rem) var(--gutter) clamp(4rem, 10vh, 8rem);
-  text-align: center;
-}
-
-/* Vertical light rays. Not a grid: they are lit by the horizon, so they are
-   masked to be brightest across the middle of the screen and to fade out
-   towards both edges as well as top and bottom. A flat repeating line across
-   the full width read as a table, which is the one thing this section is not.
-
-   Fixed to the viewport rather than parked in the hero. Bound to the hero they
-   ended where it ended, so everything below the fold — the problem section,
-   the footer — sat on flat black and the page fell apart into a lit top and a
-   dead bottom. Fixed, they come along for the whole scroll.
-
-   They also drift sideways as you go. Vertical lines cannot show vertical
-   movement — shifting them up or down leaves the picture identical — so the
-   travel has to be across. One gap width over the length of the page: enough
-   that the light reads as alive, little enough that nobody catches it sliding.
-   The drift is a scroll-driven animation, which needs no JavaScript and so
-   leaves the nonce-bound CSP with nothing to allow. */
-.site::before {
-  content: "";
-  position: fixed;
-  z-index: -1;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(
-    90deg,
-    rgba(255, 255, 255, .14) 0 1px,
-    transparent 1px var(--ray-gap)
-  );
-  /* Two masks intersected: a vertical fade so the rays do not butt against the
-     top and bottom edges, and a centre-weighted ellipse so they are brightest
-     where the horizon is and gone before they reach the gutters. */
-  -webkit-mask-image:
-    linear-gradient(to bottom, transparent 0%, #000 22%, #000 74%, transparent 100%),
-    radial-gradient(ellipse 52% 70% at 50% 58%, #000 0%, rgba(0, 0, 0, .40) 54%, transparent 86%);
-  mask-image:
-    linear-gradient(to bottom, transparent 0%, #000 22%, #000 74%, transparent 100%),
-    radial-gradient(ellipse 52% 70% at 50% 58%, #000 0%, rgba(0, 0, 0, .40) 54%, transparent 86%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
-}
-
-@supports (animation-timeline: scroll()) {
-  .site::before {
-    animation: ray-drift linear both;
-    animation-timeline: scroll(root block);
-  }
-}
-
-@keyframes ray-drift {
-  from { background-position-x: 0; }
-  to { background-position-x: calc(-1 * var(--ray-gap)); }
-}
-
-/* Motion that nobody asked for is motion somebody has to endure. */
-@media (prefers-reduced-motion: reduce) {
-  .site::before { animation: none; }
-}
-
-/* The horizon. Orange only in the core, blue as it spreads, gone before it
-   reaches the edges. Drawn with blurred ellipses rather than stacked shadows so
-   the two colours actually mix instead of banding.
-
-   Measured in vh, not in per cent of the hero. The hero is as tall as its
-   content — well past two screens — so a percentage offset from its top or
-   bottom lands wherever the copy happens to end, and both earlier attempts put
-   the warm core far below the fold. The glow has to sit where the eye is, so
-   it is placed against the viewport: core around four fifths down the first
-   screen, spreading up behind the headline and out past both edges. */
-.hero::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: 14vh;
-  left: 50%;
-  width: min(185%, 2100px);
-  height: 112vh;
-  translate: -50% 0;
-  /* Three passes: a small hot core, the blue body, a wide cold wash.
-
-     The core is listed FIRST because in a multi-layer background the first
-     layer is painted closest to the viewer. Listed last — which is where it
-     reads as "innermost" in prose, and where it sat for two rounds — it ends
-     up underneath both blues and the orange never appears at all. The page
-     looked blue because the warm colour was there the whole time, buried.
-
-     The core carries a touch of near-white at its centre, because an orange
-     that bright with nothing hotter inside it reads as a flat disc rather than
-     as something burning.
-
-     The core does not fade straight to transparent any more. Fading out, it
-     handed the picture to the blue underneath by stacking two alphas, and a
-     half-transparent orange over a half-transparent blue averages to brown-grey:
-     the rim where the two met went muddy, which is exactly the join the
-     reference gets right. So the warm layer now carries the whole way across
-     itself — orange, through a warm pink, through a violet, into blue — and
-     the colours interpolate as hue instead of colliding as opacity. The
-     intermediate stops are what keep saturation up through the middle; a
-     direct orange-to-blue ramp passes through grey in sRGB, which is the
-     muddiness it is meant to avoid. */
-  background:
-    radial-gradient(ellipse 24% 30% at 50% 54%,
-      rgba(255, 236, 222, .88) 0%,
-      rgba(255, 164, 104, 1) 10%,
-      rgba(252, 115, 77, 1) 20%,
-      rgba(252, 115, 77, 1) 36%,
-      rgba(226, 92, 108, .78) 50%,
-      rgba(138, 84, 182, .48) 64%,
-      rgba(2, 151, 222, .28) 78%,
-      transparent 92%),
-    radial-gradient(ellipse 52% 50% at 50% 60%, rgba(2, 151, 222, .90) 0%, rgba(2, 151, 222, .46) 38%, transparent 68%),
-    radial-gradient(ellipse 86% 66% at 50% 62%, rgba(2, 151, 222, .40) 0%, rgba(2, 151, 222, .14) 44%, transparent 72%);
-  filter: blur(62px);
-  pointer-events: none;
-}
-
-.hero-inner { position: relative; max-width: 1180px; margin: 0 auto; }
-
-.eyebrow {
-  margin: 0 0 clamp(1.75rem, 4vh, 3rem);
-  /* --ink-soft, not --ink-faint: at 38 % this measured 3.45:1 on the page
-     ground, short of the 4.5:1 that text this size needs. */
-  color: var(--ink-soft);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: .75rem;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-}
-
-/* The figures sit level with the headline, not above or below it, so the claim
-   and its evidence are read in one movement. */
-.hero-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(1.5rem, 4vw, 4rem);
-}
-
-.hero h1 {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--font-display), ui-serif, Georgia, serif;
-  font-size: clamp(2.5rem, 6.4vw, 5.25rem);
-  font-weight: 400;
-  line-height: 1.04;
-  letter-spacing: -.02em;
-  text-wrap: balance;
-}
-.hero h1 em { font-style: italic; }
-
-.figures { display: grid; gap: clamp(1.25rem, 3vh, 2.25rem); margin: 0; }
-.figures-left { justify-items: start; text-align: left; }
-.figures-right { justify-items: end; text-align: right; }
-.figures dt {
-  color: var(--ink);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: clamp(1.5rem, 2.4vw, 2.125rem);
-  font-weight: 400;
-  line-height: 1;
-}
-.figures dd {
-  max-width: 17ch;
-  margin: .45rem 0 0;
-  color: var(--ink-soft);
-  font-size: .8125rem;
-  line-height: 1.35;
-}
-
-.lede {
-  max-width: 52ch;
-  margin: clamp(1.75rem, 4vh, 2.75rem) auto 0;
-  color: var(--ink-soft);
-  font-size: clamp(1rem, 1.25vw, 1.0625rem);
-  line-height: 1.6;
-  text-wrap: pretty;
-}
-
-.actions {
+.site .wordmark { font-size: 1.125rem; font-weight: 600; color: var(--head); text-decoration: none; }
+.site .masthead-nav {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  margin-top: clamp(1.75rem, 4vh, 2.5rem);
-  gap: .75rem;
-}
-
-/* Scoped, because app.css owns .btn for the signed-in application and this
-   sheet is imported second. tests/styles.test.ts fails if either name escapes. */
-.site .btn {
-  display: inline-flex;
   align-items: center;
-  gap: .45em;
-  padding: .8em 1.4em;
-  border: 1px solid transparent;
-  border-radius: 99px;
+  gap: clamp(1rem, 2.4vw, 2.25rem);
+  margin-left: auto;
+}
+.site .masthead-nav a { font-size: .9375rem; font-weight: 400; color: var(--head); text-decoration: none; }
+.site .masthead-nav a:hover { text-decoration: underline; }
+.site .masthead-nav .button:hover { text-decoration: none; }
+
+/* ---------- Hero ---------- */
+
+/* Der einzige Verlauf auf der Seite, von sehr hell oben nach sehr dunkel
+   unten. Die dunkle Zone beginnt bewusst erst spät: oberhalb davon steht
+   dunkler Text auf Hell, in ihr heller Text auf Dunkel, und dazwischen steht
+   nichts. Ein Mittelton trägt weder das eine noch das andere. */
+.site .hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100svh;
+  margin-top: -5.5rem;
+  padding: 9rem var(--gutter) 2.5rem;
+  background: linear-gradient(180deg, #E6F3FE 0%, #DCEEFA 40%, #7FAAD2 76%, #0F305D 90%, #0F305D 100%);
+}
+.site .hero-text { position: relative; z-index: 1; width: min(50%, 36rem); display: grid; justify-items: start; gap: 1.75rem; }
+.site .hero-lede { font-size: 1.125rem; line-height: 1.6; }
+/* Die Zeile steht schon im abdunkelnden Teil des Verlaufs; der Fliesstext
+   erreicht dort gemessen nur 3,66:1. Mit der Headline-Farbe sind es ueber 10:1,
+   und die Rangfolge traegt weiter die Schriftgroesse. */
+.site .hero-price { font-size: .9375rem; margin-top: -1.25rem; color: var(--head); }
+.site .hero-foot {
+  position: relative;
+  z-index: 1;
+  margin: auto 0 0;
+  padding-top: 3rem;
+  max-width: none;
+  color: var(--head-on-deep);
   font-size: .9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background .2s var(--ease-out), border-color .2s var(--ease-out), color .2s var(--ease-out), transform .2s var(--ease-out);
 }
-.site .btn-primary { background: var(--blue); color: #fff; }
-/* The third and last place orange is allowed. Midnight text on it, because
-   white on this orange sits at 2.6:1 and would be a decoration that cannot be
-   read. */
-.site .btn-primary:hover { background: var(--orange); color: var(--midnight); transform: translateY(-1px); }
-.site .btn-quiet { border-color: var(--edge-strong); color: var(--ink); }
-.site .btn-quiet:hover { border-color: var(--ink-soft); background: rgba(255, 255, 255, .05); }
-.site .btn-lg { padding: .95em 1.7em; font-size: 1rem; }
-.link-arrow { width: 1em; height: 1em; }
 
-/* ---------- glass cards ---------- */
+/* ---------- Bildmotiv ---------- */
 
-/* Translucent rather than filled, so the horizon shows through their edges and
-   they read as resting on it instead of floating over a photograph.
+/* container-type, damit die Streifen und die Kugelkopien in ihnen in cqw
+   rechnen können, also im Koordinatensystem des Motivs statt in dem des
+   jeweiligen Streifens. */
+.site .motif {
+  --sphere-x: 18cqw;
+  --sphere-w: 100cqw;
+  container-type: inline-size;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  overflow: hidden;
+}
+.site .motif-image { width: 100%; height: 100%; object-fit: cover; }
 
-   The sheen sits on a dark ground rather than straight on the page, and the
-   ground's weight was set by measurement, not by eye. The glow comes through
-   the middle card hardest; with a lighter ground the 10px blue labels on it
-   measured 3.93:1 and the superseded row 3.20:1, on a card whose own note
-   promises that what was replaced stays readable. Brightening the core later
-   pushed those labels back down to 4.42:1, which is how 80% became 88%. The
-   tightest pair on the page now measures 5.00:1 and the glow still colours the
-   card rather than being shut out. */
-.glass {
-  border: 1px solid var(--edge);
-  border-radius: 14px;
+.site .motif-sphere {
+  position: absolute;
+  top: 50%;
+  left: var(--sphere-x);
+  width: var(--sphere-w);
+  aspect-ratio: 1;
+  translate: 0 -50%;
+  border-radius: 50%;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)),
-    rgba(2, 7, 10, .88);
-  -webkit-backdrop-filter: blur(16px) saturate(130%);
-  backdrop-filter: blur(16px) saturate(130%);
+    radial-gradient(circle at 26% 20%, #E7B3CA 0%, rgba(231, 179, 202, 0) 42%),
+    radial-gradient(circle at 48% 32%, #CACCEC 0%, rgba(202, 204, 236, 0) 52%),
+    linear-gradient(145deg, #CACCEC 0%, #7FAAD2 26%, #0D224E 68%, #0D224E 100%);
+  animation: site-sphere-drift 20s ease-in-out infinite alternate;
 }
 
-.cards {
+/* Die Streifen. Jeder schneidet seine eigene Kugelkopie zu, die um --shift
+   versetzt liegt; dadurch bricht die Silhouette an jeder Kante. */
+.site .motif-glass { position: absolute; inset: 0; }
+.site .motif-strip {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--x);
+  width: var(--w);
+  overflow: hidden;
+}
+.site .motif-strip .motif-sphere-in-strip {
+  left: calc(var(--sphere-x) - var(--x) + var(--shift));
+  animation: none;
+}
+.site .motif-strip-soft .motif-sphere-in-strip { filter: blur(2px); }
+
+/* Der Zylinderglanz: hell an der linken Kante, dunkel an der rechten. Erst
+   dadurch liest der Streifen als gewölbtes Glas und nicht als Schnitt. */
+.site .motif-strip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .30) 0%, rgba(255, 255, 255, .04) 38%, rgba(13, 34, 78, .08) 76%, rgba(13, 34, 78, .18) 100%);
+}
+
+@keyframes site-sphere-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-10px, 6px, 0); }
+}
+
+/* ---------- Abschnitte ---------- */
+
+/* Flächen wechseln zwischen Weiß und Hellblau, jede einfarbig. Keine Linie
+   dazwischen: der Farbwechsel ist die Trennung. */
+.site .band { padding: clamp(4rem, 9vh, 7.5rem) var(--gutter); background: #FFFFFF; }
+.site .band-tint { background: var(--tint); }
+.site .band-dark { background: var(--deep); color: var(--body-on-deep); }
+.site .band-dark h2 { color: var(--head-on-deep); }
+.site .measure { max-width: 68rem; margin: 0 auto; display: grid; gap: 1.5rem; justify-items: start; }
+.site .band h2 + p { margin-top: -.25rem; }
+
+.site .sources { display: grid; gap: .35rem; font-size: .9375rem; }
+.site .sources a { color: var(--body); }
+.site .band-dark .sources a { color: var(--body-on-deep); }
+
+.site .steps {
+  max-width: 68rem;
+  margin: 2.5rem auto 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: clamp(3rem, 8vh, 5.5rem);
-  gap: clamp(.75rem, 1.5vw, 1.25rem);
-  text-align: left;
+  gap: clamp(2rem, 4vw, 3.5rem);
 }
+.site .steps h3 { margin-bottom: .75rem; }
+.site .steps p { font-size: 1rem; }
 
-.card-slot { display: grid; align-content: start; }
-/* The middle slot stands a little proud, the way the centre of a spread does. */
-.card-slot-lift { transform: translateY(-16px); }
+.site .plain { margin: 0; padding: 0; list-style: none; display: grid; gap: .6rem; }
+.site .plain li { max-width: var(--measure); }
 
-/* Inside the card, as its first line, rather than floating above it. Above the
-   card the label sat on the hot core of the glow, where 60 % white measures
-   3.24:1 and even 92 % reaches only about 5:1 — the brightness is the design,
-   so the type moved instead of the glow. On the card's own ground it measures
-   above 7:1, and label and surface now read as one object. The dot is the
-   smallest marker that still reads as one. */
-.card-label {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  margin: 0 0 .9rem;
-  padding-bottom: .8rem;
-  border-bottom: 1px solid var(--edge);
-  color: var(--ink-soft);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: .6875rem;
-  font-weight: 400;
-  letter-spacing: .13em;
-  text-transform: uppercase;
+.site .price { display: flex; align-items: baseline; gap: .75rem; flex-wrap: wrap; }
+.site .price-figure { font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 300; line-height: 1; color: var(--head); }
+.site .price-unit { font-size: 1.125rem; }
+.site .price-honest { font-size: 1rem; }
+
+/* Platzhalter sollen auffallen, ohne einen Rahmen zu bekommen. Eine Fläche
+   reicht dafür. */
+.site .placeholder {
+  padding: .6rem .9rem;
+  border-radius: 6px;
+  background: var(--tint-deep);
+  color: var(--head);
+  font-size: .9375rem;
 }
-.card-label::before {
-  width: 5px;
-  height: 5px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--blue);
-  content: "";
+.site .band-tint .placeholder { background: #FFFFFF; }
+
+.site .about { width: 100%; grid-template-columns: 14rem minmax(0, 1fr); gap: clamp(2rem, 4vw, 3rem); align-items: start; }
+.site .about-photo {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  border-radius: 6px;
+  background: var(--tint-deep);
+  color: var(--head);
+  font-size: .9375rem;
 }
+.site .about-name { font-size: 1.125rem; color: var(--head); margin-top: .5rem; }
 
-.card { padding: 1.15rem 1.25rem 1.3rem; }
+/* ---------- FAQ ---------- */
 
-.rows { margin: 0; padding: 0; list-style: none; }
-.rows li {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: .75rem;
+/* details statt eines aufgeklappten Skripts. Keine Linie zwischen den Fragen,
+   der Abstand macht die Gliederung. */
+.site .faq { display: grid; gap: .5rem; width: 100%; max-width: 48rem; }
+.site .faq details { padding: .35rem 0; }
+.site .faq summary {
+  cursor: pointer;
+  color: var(--head);
+  font-size: 1.125rem;
+  font-weight: 500;
   padding: .5rem 0;
-  color: var(--ink);
-  font-size: .8125rem;
-  line-height: 1.35;
 }
-.rows li + li { border-top: 1px solid rgba(255, 255, 255, .055); }
-/* Soft, not faint. The note under this list promises that a replaced decision
-   stays readable, and --ink-faint rendered it at 3.20:1, which is a promise the
-   page was breaking in the same card that made it. */
-.row-past span { color: var(--ink-soft); text-decoration: line-through; text-decoration-thickness: 1px; }
+.site .faq p { margin: .25rem 0 .75rem; font-size: 1rem; }
 
-.rows em {
-  flex: none;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: .625rem;
-  font-style: normal;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+/* ---------- Formular ---------- */
+
+.site .form {
+  width: 100%;
+  max-width: 44rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-top: .75rem;
 }
-/* The second of orange's three jobs: one row, waiting on a person. */
-.mark-open { color: var(--orange); }
-.mark-ok { color: var(--blue); }
-.mark-past { color: var(--ink-faint); }
-
-.card-note {
-  margin: .9rem 0 0;
-  padding-top: .8rem;
-  border-top: 1px solid var(--edge);
-  color: var(--ink-soft);
-  font-size: .75rem;
-  line-height: 1.45;
-}
-
-.card-answer { margin: 0; color: var(--ink); font-size: .8125rem; line-height: 1.5; }
-.sources {
-  margin: .9rem 0 0;
-  padding: .8rem 0 0 1.1rem;
-  border-top: 1px solid var(--edge);
-  color: var(--ink-soft);
-  font-size: .6875rem;
-  line-height: 1.5;
-}
-.sources li::marker { color: var(--blue); }
-
-/* ---------- register ---------- */
-
-.register {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: clamp(5rem, 12vh, 9rem) var(--gutter) 0;
-}
-
-.register-head { max-width: 46ch; }
-.register-head h2,
-.principles-head,
-.closing h2 {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--font-display), ui-serif, Georgia, serif;
-  font-size: clamp(2rem, 4.2vw, 3.25rem);
-  font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: -.015em;
-}
-.register-head h2 em,
-.principles-head em,
-.closing h2 em { font-style: italic; }
-.register-head p {
-  max-width: 48ch;
-  margin: 1.1rem 0 0;
-  color: var(--ink-soft);
+.site .field { display: grid; gap: .4rem; border: 0; padding: 0; margin: 0; min-width: 0; }
+.site .field-wide { grid-column: 1 / -1; }
+.site .field > span,
+.site .field legend { font-size: .9375rem; color: var(--body-on-deep); padding: 0; }
+.site .field input,
+.site .field select {
+  font: inherit;
   font-size: 1rem;
-  line-height: 1.6;
+  padding: .7rem .85rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--tint);
+  color: var(--head);
+  width: 100%;
+  min-width: 0;
+}
+.site .choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .5rem .75rem; margin-top: .35rem; }
+.site .choice { display: flex; align-items: flex-start; gap: .6rem; font-size: 1rem; color: var(--body-on-deep); }
+.site .choice input { accent-color: var(--coral); width: 1.1rem; height: 1.1rem; margin-top: .3rem; flex: none; }
+.site .choice a { color: var(--head-on-deep); }
+.site .form .button { grid-column: 1 / -1; justify-self: start; }
+
+.site .form-result { max-width: 44rem; color: var(--head-on-deep); font-size: 1.125rem; }
+.site .form-result-error {
+  grid-column: 1 / -1;
+  padding: .75rem 1rem;
+  border-radius: 6px;
+  background: var(--coral);
+  color: var(--head);
+  font-size: 1rem;
 }
 
-.register-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
-  padding: 0;
-  gap: 0;
-  list-style: none;
-  border-top: 1px solid var(--edge);
-}
+/* Honigtopf: für Menschen nicht sichtbar und nicht erreichbar, für ein Skript,
+   das stumpf jedes Feld ausfüllt, aber sehr wohl da. Kein display:none, weil
+   genau darauf die verbreiteten Ausfüller prüfen. */
+.site .trap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-.entry {
-  padding: 1.75rem 1.5rem 2rem 0;
-  border-bottom: 1px solid var(--edge);
-}
-.entry-n {
-  display: block;
-  margin-bottom: .9rem;
-  color: var(--blue);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: .75rem;
-  letter-spacing: .1em;
-}
-.entry-label { margin: 0 0 .5rem; color: var(--ink); font-size: 1.0625rem; font-weight: 600; letter-spacing: -.01em; }
-.entry-copy { max-width: 36ch; margin: 0; color: var(--ink-soft); font-size: .875rem; line-height: 1.6; }
+/* ---------- Footer ---------- */
 
-/* ---------- principles ---------- */
-
-.principles {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: clamp(5rem, 12vh, 9rem) var(--gutter) 0;
-}
-.principles-head { max-width: 22ch; }
-.principles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  margin-top: clamp(2.5rem, 6vh, 4rem);
-  gap: clamp(.75rem, 1.5vw, 1.25rem);
-}
-.principle { padding: 1.5rem 1.4rem 1.6rem; }
-.principle-n {
-  display: block;
-  margin-bottom: 1.1rem;
-  color: var(--blue);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: .75rem;
-  letter-spacing: .1em;
-}
-.principle h3 { margin: 0 0 .55rem; color: var(--ink); font-size: 1rem; font-weight: 600; }
-.principle p { margin: 0; color: var(--ink-soft); font-size: .875rem; line-height: 1.6; }
-
-/* ---------- closing ---------- */
-
-.closing {
-  position: relative;
-  isolation: isolate;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: clamp(6rem, 14vh, 10rem) var(--gutter) clamp(5rem, 12vh, 8rem);
-  text-align: center;
-}
-/* The horizon again, quieter, so the page ends where it began. */
-.closing::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  bottom: -10%;
-  left: 50%;
-  width: min(130%, 1200px);
-  aspect-ratio: 3 / 1;
-  translate: -50% 0;
-  background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(2, 151, 222, .30) 0%, rgba(2, 151, 222, .10) 44%, transparent 72%);
-  filter: blur(42px);
-  pointer-events: none;
-}
-.closing h2 { margin-bottom: 2rem; }
-
-/* ---------- footer ---------- */
-
-.footer {
+.site .footer {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 2rem var(--gutter) 3rem;
-  border-top: 1px solid var(--edge);
-  gap: 1rem;
+  gap: 1rem 2rem;
+  padding: 2.5rem var(--gutter) 3.5rem;
+  background: #FFFFFF;
+  font-size: .9375rem;
 }
-.footer-mark { display: inline-flex; align-items: center; gap: .5rem; color: var(--ink); font-size: .875rem; font-weight: 600; }
-.footer-mark .wordmark-glyph { width: 22px; height: 22px; }
-.footer-note { color: var(--ink-faint); font-size: .8125rem; }
+.site .footer-mark { font-weight: 600; color: var(--head); }
+.site .footer-nav { display: flex; flex-wrap: wrap; gap: 1rem 1.75rem; margin-left: auto; }
+.site .footer-nav a { color: var(--body); text-decoration: none; }
+.site .footer-nav a:hover { text-decoration: underline; }
 
-/* ---------- arrival ---------- */
+/* ---------- Schmale Fenster ---------- */
 
-@media (prefers-reduced-motion: no-preference) {
-  .site .eyebrow,
-  .site .hero-row,
-  .site .lede,
-  .site .actions,
-  .site .cards {
-    animation: rise .7s var(--ease-out) both;
-  }
-  .site .hero-row { animation-delay: .06s; }
-  .site .lede { animation-delay: .14s; }
-  .site .actions { animation-delay: .2s; }
-  .site .cards { animation-delay: .28s; }
-}
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
+@media (max-width: 900px) {
+  .site .hero { justify-content: flex-start; min-height: 0; padding-bottom: 2.5rem; }
+  .site .hero-text { width: 100%; }
+  /* Die Kugel wird kleiner statt nur beschnitten: bei voller Groesse reicht sie
+     oben und unten weit aus dem flachen Band heraus und liest dann als Streifen
+     statt als Kugel. */
+  .site .motif { --sphere-x: 26cqw; --sphere-w: 66cqw; position: relative; order: 2; width: calc(100% + 2 * var(--gutter)); height: 320px; margin: 2.5rem 0 0 calc(-1 * var(--gutter)); }
+  .site .hero-foot { margin-top: 2.5rem; padding-top: 0; order: 3; }
+  .site .steps { grid-template-columns: minmax(0, 1fr); }
+  .site .about { grid-template-columns: minmax(0, 1fr); }
+  .site .about-photo { max-width: 14rem; }
+  .site .form { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* ---------- narrower ---------- */
-
-@media (max-width: 1000px) {
-  /* The figures stop flanking the headline and fall underneath it, side by
-     side, rather than shrinking the one thing the page is here to say. */
-  .hero-row { grid-template-columns: 1fr; gap: 2.25rem; }
-  .figures { grid-auto-flow: column; justify-content: center; gap: clamp(2rem, 8vw, 4rem); }
-  .figures-left, .figures-right { justify-items: center; text-align: center; }
-  .figures dd { max-width: 15ch; }
-  .cards { grid-template-columns: 1fr; max-width: 30rem; margin-inline: auto; }
-  .card-slot-lift { transform: none; }
+@media (max-width: 600px) {
+  .site .masthead { flex-wrap: wrap; gap: .75rem 1.25rem; }
+  .site .masthead-nav { margin-left: 0; width: 100%; }
 }
 
-@media (max-width: 640px) {
-  .masthead { padding: 1.1rem var(--gutter); }
-  .masthead-nav { gap: 1rem; }
-  .masthead-nav a:not(.pill) { display: none; }
-  .figures { grid-auto-flow: row; gap: 1.5rem; }
-  .figures-left, .figures-right { grid-auto-flow: column; justify-content: space-between; width: 100%; }
-  .entry { padding-right: 0; }
-  .footer { flex-direction: column; align-items: flex-start; }
+/* ---------- Bewegung ---------- */
+
+/* Hier stand ein Einblenden beim Scrollen über animation-timeline: view().
+   Es ist wieder raus, und zwar nicht aus Geschmack: eine view()-Zeitachse
+   braucht einen Scroll-Überhang. Gibt es keinen, weil das Fenster höher ist
+   als die Seite oder weil gerade eine Vollseiten-Aufnahme läuft, bleibt der
+   Fortschritt bei null, der Füllmodus hält den Ausgangszustand fest, und jeder
+   Abschnitt steht auf Deckkraft null. Unsichtbarer Inhalt ist ein schwererer
+   Fehler, als ein fehlender Übergang ein Verlust wäre.
+
+   Die einzige Bewegung auf der Seite ist damit die sehr langsame Drift der
+   Kugel im Hero, und die steht bei prefers-reduced-motion still. */
+
+@media (prefers-reduced-motion: reduce) {
+  .site .motif-sphere { animation: none; }
 }
-
-/* ---- citations and labels -------------------------------------------------
-   The page asks a sceptical reader to believe four numbers. Two of them were
-   measured by somebody else, and those carry their source where the number is,
-   not in a footnote nobody scrolls to. The other two are this service's own
-   commitments and deliberately carry no link, so the difference between a
-   published finding and a promise is visible without reading carefully. */
-
-.figure-source {
-  display: block;
-  margin-top: .35rem;
-  /* Subordinated by size and the hairline rule rather than by opacity: at
-     38 % it measured 3.30:1 over the glow's outer wash. */
-  color: var(--ink-soft);
-  font-size: .6875rem;
-  text-decoration: none;
-  border-bottom: 1px solid var(--edge);
-  width: fit-content;
-  transition: color .2s var(--ease-out), border-color .2s var(--ease-out);
-}
-.figures-right .figure-source,
-.figures-left .figure-source { margin-left: auto; margin-right: 0; }
-.figures-left .figure-source { margin-left: 0; margin-right: auto; }
-.figure-source:hover { color: var(--ink-soft); border-color: var(--ink-faint); }
-
-.entry-source { margin: .9rem 0 0; }
-.entry-source a {
-  display: inline-flex;
-  align-items: center;
-  gap: .35em;
-  color: var(--ink-faint);
-  font-size: .75rem;
-  text-decoration: none;
-  transition: color .2s var(--ease-out);
-}
-.entry-source a:hover { color: var(--blue); }
-
-/* The example cards are mock-ups. A sceptical reader who takes one for a real
-   screenshot and later finds out loses more trust than the picture ever won,
-   so each one says what it is, quietly, on its own first line. */
-.card-label-aside {
-  /* Held apart from the label by case and letter-spacing rather than by
-     opacity: at 38 % it measured 3.56:1, and this note is the one line a
-     sceptical reader most needs to be able to read. */
-  color: var(--ink-soft);
-  letter-spacing: .06em;
-  text-transform: none;
-}
-/* Pushed to the far edge of the card's head, the way a header sets a name
-   against its status. Beside the name with a dot it wrapped in the two outer
-   cards, which put the dot at the start of a line where it read as a bullet.
-   The rule under the head is what ties the two sides together, so the gap no
-   longer reads as two separate labels. */
-.card-label-aside { margin-left: auto; padding-left: .75rem; white-space: nowrap; font-size: .625rem; }
-
-.footer-login { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--edge); }
-.footer-login:hover { color: var(--blue); border-color: var(--blue); }

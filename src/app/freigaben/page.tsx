@@ -60,7 +60,7 @@ export default async function ReviewsPage() {
       <main className="app-main app-main-narrow">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Was auf Freigabe wartet.</h1>
+            <h1 className="page-title">Was auf Freigabe wartet</h1>
             <p>Wissen, das über den persönlichen Zweig hinausgeht, wird erst nach Freigabe sichtbar. Bis dahin sieht es niemand außer der Person, die es geschrieben hat, und Ihnen.</p>
           </div>
         </div>

@@ -1,217 +1,310 @@
 import Link from "next/link";
-import { ArrowUpRight, BrandMark } from "@/components/icons";
-import { AUDIENCE, CHECK, COMPANY, OFFER, SOURCES } from "@/lib/offer";
+import { HeroMotif } from "@/app/HeroMotif";
+import { COMPANY, CONTACT_EMAIL, FOUNDER, OFFER, PRICE_EUR, SOURCES, TRIAL } from "@/lib/brand";
 
 /**
- * The public page. Night, with a horizon burning under it: orange at the core,
- * blue as it spreads, nothing above the fold but a sentence and the numbers
- * that back it.
+ * Die öffentliche Seite.
  *
- * It is read by managing directors who arrived from a personal message, have
- * little time, and have heard an AI promise before. So the page leads with a
- * published figure rather than a claim, names what the service does not do as
- * plainly as what it does, and asks for one small thing.
+ * Gelesen wird sie von Geschäftsführern kleiner Betriebe, die für Anfragen
+ * Geld bezahlen und wenig Zeit haben. Deshalb steht oben eine Aussage und kein
+ * Versprechen, deshalb nennt die Seite den Preis, statt ihn zu verstecken, und
+ * deshalb sagt sie beim Stand der Software die Wahrheit.
  *
- * The palette is deliberately narrow — one background, one accent, one
- * surprise — and the surprise is rationed. Orange appears in exactly three
- * places: the core of the glow, the mark on a request still waiting, and the
- * hover of the one button that matters. Spent anywhere else it stops meaning
- * anything.
+ * Sie bringt keinen eigenen Client-Code mit: keine Client-Komponente, kein
+ * Event-Handler, kein Zustand im Browser. Die Navigation sind Anker, das FAQ
+ * ist ein details-Element, und das Formular ist ein normales form-Element an
+ * einen Route Handler. Next laedt seine eigene Laufzeit weiterhin, aber nichts
+ * davon stammt von dieser Seite, und die nonce-gebundene
+ * Content-Security-Policy braucht keine Ausnahme.
  *
- * It ships no client JavaScript. Everything that moves is a CSS load
- * animation, so the page is interactive the moment it paints and the
- * nonce-bound Content-Security-Policy has nothing to allow. The two buttons
- * that "scroll to the form" are plain anchors for the same reason: the browser
- * already does this, smoothly, without being asked.
+ * Die Gestaltungsregeln stehen in CLAUDE.md und sind verbindlich. Was hier
+ * fehlt, fehlt mit Absicht: keine Pillen, keine Trennlinien, keine Rahmen,
+ * keine Kursive, keine Großbuchstabenzeilen, keine Icons.
  */
 
-type Figure = { value: string; label: string; note?: string; href?: string };
-
-/* Flanking the headline, the way a plaque carries its facts. The first two are
-   measured by somebody else and say so; the second two are what this service
-   commits to. Mixing the four without marking which is which would borrow the
-   authority of a published test for a promise, so the sourced ones carry a
-   link and the others do not. */
-const figuresLeft: Figure[] = [
-  { value: "37 von 100", label: "Dachdeckern antworten auf Anfragen", note: SOURCES.aroundhome.label, href: SOURCES.aroundhome.href },
-  { value: "85 %", label: "rufen nicht zurück, wenn niemand abnimmt", note: SOURCES.matelso.label, href: SOURCES.matelso.href },
+const STEPS = [
+  {
+    title: "Antwort in 2 Minuten",
+    body: "Jede Anfrage bekommt sofort eine Antwort mit Rückruftermin, rund um die Uhr. Der Kunde hat einen Termin, bevor die Konkurrenz am Montag anruft.",
+  },
+  {
+    title: "Keine Anfrage bleibt liegen",
+    body: "Jede Anfrage hat einen Zuständigen. Bleibt sie liegen, kommt eine Erinnerung und danach eine Nachricht an den Chef.",
+  },
+  {
+    title: "Sie sehen, welches Portal sich lohnt",
+    body: "Pro Portal sehen Sie Kosten, Termine und Aufträge. So erkennen Sie, wo Ihr Geld verbrennt.",
+  },
 ];
 
-const figuresRight: Figure[] = [
-  { value: "8 Wochen", label: "Pilot mit Vorher-Nachher-Messung" },
-  { value: "0", label: "Auswertungen über Mitarbeitende" },
+const INCLUDED = [
+  "Sofortantwort mit Rückruftermin",
+  "Erinnerungen und Eskalation",
+  "Antwortentwürfe in Outlook",
+  "Auswertung pro Portal",
+  "Wochenüberblick",
+  "Persönliche Einrichtung",
 ];
 
-function Wordmark() {
-  return (
-    <Link href="/" className="wordmark" aria-label={`${COMPANY}, Startseite`}>
-      <BrandMark className="wordmark-glyph" />
-      <span>ailvl</span>
-    </Link>
-  );
-}
+const FAQ = [
+  {
+    q: "Brauchen wir neue Software?",
+    a: `Nein. Der ${OFFER} arbeitet mit Ihrem Outlook, Ihrem Kontaktformular und den Mails der Portale.`,
+  },
+  {
+    q: "Schickt die KI einfach Antworten raus?",
+    a: "Nur die Sofortantwort mit dem Terminlink, und die schalten Sie selbst ein. Alles andere ist ein Entwurf, den Ihr Team freigibt.",
+  },
+  {
+    q: "Was braucht die Einrichtung?",
+    a: "Die Zustimmung Ihres Microsoft-365-Admins und rund 30 Minuten gemeinsam per Videocall.",
+  },
+  {
+    q: "Was passiert nach der Testwoche?",
+    a: "Sie entscheiden. Ohne Abo endet der Zugriff, und Ihre Daten werden gelöscht.",
+  },
+  {
+    q: "Wo werden die Daten verarbeitet?",
+    a: "Ausschließlich in EU-Rechenzentren, ohne Training mit Ihren Daten.",
+  },
+];
 
-/**
- * Three surfaces from the service, drawn in DOM rather than captured as an
- * image: sharp at any density, no asset to ship, and they cannot go stale
- * against the product. Each is labelled as an example, because a mock-up a
- * sceptical reader mistakes for a real screenshot costs more trust than it
- * ever buys.
- */
-function HeroCards() {
-  return (
-    <div className="cards" aria-label={`Drei Beispielansichten aus dem ${OFFER}`}>
-      <section className="card-slot">
-        <figure className="card glass">
-          <h2 className="card-label">{OFFER} <span className="card-label-aside">Beispielansicht</span></h2>
-          <ul className="rows">
-            <li><span>Anfrage Wärmepumpe, offen seit 26 h</span><em className="mark-open">Offene Anfrage</em></li>
-            <li><span>Angebotsanfrage Blechteile</span><em className="mark-ok">Antwort freigegeben</em></li>
-            <li><span>Rückfrage Liefertermin</span><em className="mark-ok">Beantwortet in 2 h</em></li>
-          </ul>
-        </figure>
-      </section>
+const CHANNELS = ["Aroundhome", "MyHammer", "Check24", "Google oder Werbung", "eigene Website", "Sonstiges"];
+const VOLUMES = ["unter 20", "20 bis 50", "50 bis 100", "über 100"];
+const M365 = ["Ja", "Nein", "Weiß nicht"];
 
-      <section className="card-slot card-slot-lift">
-        <figure className="card glass">
-          <h2 className="card-label">Kundensignale <span className="card-label-aside">Beispielansicht</span></h2>
-          <ul className="rows">
-            <li><span>Fragen zu Lieferzeiten: 6 in 14 Tagen, sonst 1</span><em className="mark-open">Auffällig</em></li>
-            <li><span>Speicher-Nachrüstung: 4 Anfragen in 14 Tagen</span><em className="mark-ok">Neu</em></li>
-          </ul>
-          <p className="card-note">Signale melden sich nur, wenn ein Thema deutlich vom Normalzustand abweicht.</p>
-        </figure>
-      </section>
-
-      <section className="card-slot">
-        <figure className="card glass">
-          <h2 className="card-label">Wochenüberblick <span className="card-label-aside">Beispielansicht</span></h2>
-          <p className="card-answer">Wochenüberblick KW 46</p>
-          <ol className="sources">
-            <li>Zwei Anfragen über 24 h offen — Vertrieb</li>
-            <li>Lieferzeiten häufen sich — Geschäftsführung</li>
-            <li>Speicher-Nachrüstung nimmt zu — Vertrieb</li>
-          </ol>
-          <p className="card-note">Höchstens drei Punkte. Wenn sich nichts geändert hat, kommt nichts.</p>
-        </figure>
-      </section>
-    </div>
-  );
-}
-
-export function LandingPage() {
+export function LandingPage({ status }: { status?: "ok" | "fehler" }) {
   return (
     <div className="site">
       <header className="masthead">
-        <Wordmark />
+        {/* Platzhalter für public/logo.svg. Bis die Datei da ist, steht hier der Name. */}
+        <Link href="/" className="wordmark">ailvl</Link>
         <nav className="masthead-nav">
           <a href="#so-funktioniert-es">So funktioniert es</a>
-          <a href="#zusagen">Unsere Zusagen</a>
-          <a href="#ablauf">Ablauf</a>
+          <a href="#preis">Preis</a>
+          <a href="#datenschutz">Datenschutz</a>
           <a href="#faq">FAQ</a>
-          <a href="#energietechnik">Energietechnik</a>
-          <a href="#industrie">Industrie</a>
-          <a href="#check" className="pill">Check anfragen</a>
+          <a href="#testzugang" className="button">{TRIAL} kostenlos testen</a>
         </nav>
       </header>
 
       <main>
         <section className="hero">
-          <div className="hero-inner">
-            <p className="eyebrow">Für {AUDIENCE}</p>
-
-            <div className="hero-row">
-              <dl className="figures figures-left">
-                {figuresLeft.map((f) => <FigureItem key={f.label} figure={f} />)}
-              </dl>
-
-              <h1>
-                Keine Anfrage bleibt<br />
-                mehr <em>liegen.</em>
-              </h1>
-
-              <dl className="figures figures-right">
-                {figuresRight.map((f) => <FigureItem key={f.label} figure={f} />)}
-              </dl>
-            </div>
-
-            <p className="lede">
-              Wir melden jede offene Kundenanfrage, bevor der Kunde woanders kauft. Und Sie erfahren jede
-              Woche, was Ihre Kunden wirklich wollen.
+          <div className="hero-text">
+            <h1>Als Erster<br />antworten</h1>
+            <p className="hero-lede">
+              Der {OFFER} beantwortet jede bezahlte Anfrage in 2 Minuten mit einem Rückruftermin.
+              Auch am Wochenende und auch, wenn alle auf der Baustelle sind.
             </p>
+            <a href="#testzugang" className="button button-large">{TRIAL} kostenlos testen</a>
+            <p className="hero-price">Danach {PRICE_EUR} € pro Monat</p>
+          </div>
 
-            <div className="actions">
-              <a href="#check" className="btn btn-primary">Kostenlosen {CHECK} anfragen <ArrowUpRight className="link-arrow" /></a>
-              <a href="#so-funktioniert-es" className="btn btn-quiet">So funktioniert es</a>
-            </div>
+          <HeroMotif />
 
-            <HeroCards />
+          <p className="hero-foot">Funktioniert mit Outlook und Microsoft 365</p>
+        </section>
+
+        <section className="band band-tint">
+          <div className="measure">
+            <h2>Sie bezahlen die Anfrage, zwei Wettbewerber bekommen sie auch</h2>
+            <p>
+              Portale wie Aroundhome vermitteln jede Anfrage an bis zu drei Fachbetriebe und schreiben
+              selbst: „First come, first serve&ldquo;. Bei Testanfragen 2026 antworteten von je 100 Betrieben
+              nur 37 Dachdecker, 57 Heizungsbauer und 76 Fensterbauer.
+            </p>
+            <p className="sources">
+              <a href={SOURCES.aroundhome.href} target="_blank" rel="noopener noreferrer">{SOURCES.aroundhome.label}</a>
+              <a href={SOURCES.dhz.href} target="_blank" rel="noopener noreferrer">{SOURCES.dhz.label}</a>
+            </p>
           </div>
         </section>
 
-        <section className="register" id="problem">
-          <div className="register-head">
-            <h2>Der Kunde wartet nicht,<br /><em>er kauft woanders.</em></h2>
+        <section className="band" id="so-funktioniert-es">
+          <div className="measure">
+            <h2>So funktioniert es</h2>
+          </div>
+          <div className="steps">
+            {STEPS.map((s) => (
+              <div key={s.title}>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="band band-tint">
+          <div className="measure">
+            <h2>Kein Termin, von dem niemand weiß</h2>
             <p>
-              Zwei unabhängige Tests haben nachgemessen, wie Betriebe auf Anfragen reagieren. Die Zahlen
-              stammen nicht von uns.
+              Termine sind erst vorgemerkt, Ihr Team bestätigt mit einem Klick. Sie legen Vorlauf,
+              Zeiten und die Höchstzahl pro Tag fest.
+            </p>
+            <p>
+              Antworten schreibt die KI als Entwurf in Outlook, gesendet wird erst nach Ihrer Freigabe.
             </p>
           </div>
+        </section>
 
-          <ol className="register-list">
-            <li className="entry">
-              <span className="entry-n">01</span>
-              <h3 className="entry-label">Die meisten antworten gar nicht</h3>
-              <p className="entry-copy">
-                Bei je 100 Testanfragen antworteten nur 37 Dachdecker, 57 Heizungsbauer und 76 Fensterbauer.
+        <section className="band" id="datenschutz">
+          <div className="measure">
+            <h2>Ihre Daten bleiben in der EU</h2>
+            <ul className="plain">
+              <li>Verarbeitung ausschließlich in EU-Rechenzentren</li>
+              <li>Kein Training mit Ihren Daten</li>
+              <li>Auftragsverarbeitungsvertrag inklusive</li>
+              <li>Nur Ihr Anfrage-Postfach wird gelesen</li>
+              <li>Keine Auswertung einzelner Mitarbeiter</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="band band-tint" id="preis">
+          <div className="measure">
+            <h2>Ein Preis, ohne Kleingedrucktes</h2>
+            <p className="price">
+              <span className="price-figure">{PRICE_EUR} €</span>
+              <span className="price-unit">pro Monat</span>
+            </p>
+            <p>
+              {TRIAL} kostenlos testen. Die Testwoche beginnt, sobald Ihr Postfach verbunden ist.
+            </p>
+            <ul className="plain">
+              {INCLUDED.map((i) => <li key={i}>{i}</li>)}
+            </ul>
+            <p className="placeholder">[LAUFZEIT UND KÜNDIGUNG]</p>
+            <p className="placeholder">[MAXIMALE ANFRAGEN PRO MONAT]</p>
+            <a href="#testzugang" className="button button-large">{TRIAL} kostenlos testen</a>
+            <p className="price-honest">
+              Der {OFFER} ist neu. Wir starten mit wenigen Betrieben und richten jeden persönlich ein.
+            </p>
+          </div>
+        </section>
+
+        <section className="band">
+          <div className="measure about">
+            <div className="about-photo">[FOTO]</div>
+            <div>
+              <h2>Über mich</h2>
+              <p className="about-name">{FOUNDER}, Gründer von {COMPANY}</p>
+              <p className="placeholder">[3 BIS 4 SÄTZE ÜBER MICH]</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="band band-tint" id="faq">
+          <div className="measure">
+            <h2>Häufige Fragen</h2>
+            <div className="faq">
+              {FAQ.map((f) => (
+                <details key={f.q}>
+                  <summary>{f.q}</summary>
+                  <p>{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="band band-dark" id="testzugang">
+          <div className="measure">
+            <h2>Testen Sie eine Woche, wer zuerst antwortet</h2>
+
+            {status === "ok" ? (
+              <p className="form-result">
+                Danke. Wir melden uns innerhalb von 24 Stunden und richten Ihren Testzugang gemeinsam
+                mit Ihnen ein
               </p>
-              <p className="entry-source">
-                <a href={SOURCES.aroundhome.href} target="_blank" rel="noopener noreferrer">
-                  {SOURCES.aroundhome.label} <ArrowUpRight className="link-arrow" />
-                </a>
-              </p>
-            </li>
-            <li className="entry">
-              <span className="entry-n">02</span>
-              <h3 className="entry-label">Wer nicht durchkommt, kommt nicht wieder</h3>
-              <p className="entry-copy">
-                23 % der telefonischen Anfragen bei Firmen aus Bau, Maschinenbau, IT und Kfz blieben
-                unbeantwortet. 85 % der Anrufer, die niemanden erreichen, rufen nicht wieder an.
-              </p>
-              <p className="entry-source">
-                <a href={SOURCES.matelso.href} target="_blank" rel="noopener noreferrer">
-                  {SOURCES.matelso.label} <ArrowUpRight className="link-arrow" />
-                </a>
-              </p>
-            </li>
-          </ol>
+            ) : (
+              <form className="form" method="post" action="/api/testzugang">
+                {status === "fehler" ? (
+                  <p className="form-result form-result-error">
+                    Das hat nicht geklappt. Bitte prüfen Sie Ihre Angaben und versuchen Sie es erneut.
+                    Sie erreichen uns auch unter {CONTACT_EMAIL}
+                  </p>
+                ) : null}
+
+                <label className="field">
+                  <span>Firma</span>
+                  <input name="firma" required autoComplete="organization" />
+                </label>
+
+                <label className="field">
+                  <span>Name</span>
+                  <input name="name" required autoComplete="name" />
+                </label>
+
+                <label className="field">
+                  <span>E-Mail</span>
+                  <input name="email" type="email" required autoComplete="email" />
+                </label>
+
+                <label className="field">
+                  <span>Telefon (optional)</span>
+                  <input name="telefon" type="tel" autoComplete="tel" />
+                </label>
+
+                <fieldset className="field field-wide">
+                  <legend>Über welche Wege bekommen Sie Anfragen?</legend>
+                  <div className="choices">
+                    {CHANNELS.map((c) => (
+                      <label key={c} className="choice">
+                        <input type="checkbox" name="wege" value={c} />
+                        <span>{c}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <label className="field">
+                  <span>Anfragen pro Monat</span>
+                  <select name="menge" required defaultValue="">
+                    <option value="" disabled>Bitte wählen</option>
+                    {VOLUMES.map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </label>
+
+                <label className="field">
+                  <span>Nutzen Sie Microsoft 365?</span>
+                  <select name="microsoft365" required defaultValue="">
+                    <option value="" disabled>Bitte wählen</option>
+                    {M365.map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </label>
+
+                {/* Honigtopf. Menschen sehen das Feld nicht und springen es nicht an;
+                    automatische Ausfüller tragen hier ein und verraten sich. Kein
+                    display:none, weil genau das die bekannten Bots erkennen. */}
+                <div className="trap" aria-hidden="true">
+                  <label htmlFor="webseite">Bitte nicht ausfüllen</label>
+                  <input id="webseite" name="webseite" type="text" tabIndex={-1} autoComplete="off" />
+                </div>
+
+                <label className="choice field-wide">
+                  <input type="checkbox" name="datenschutz" value="ja" required />
+                  <span>
+                    Ich habe die <Link href="/datenschutz">Datenschutzerklärung</Link> gelesen und bin
+                    mit der Verarbeitung meiner Angaben einverstanden
+                  </span>
+                </label>
+
+                <button type="submit" className="button button-large">Testzugang anfragen</button>
+              </form>
+            )}
+          </div>
         </section>
       </main>
 
       <footer className="footer">
-        <span className="footer-mark">
-          <BrandMark className="wordmark-glyph" /> {COMPANY}
-        </span>
-        <span className="footer-note">
-          {OFFER} für {AUDIENCE}.
-          {" "}
-          <Link className="footer-login" href="/login">Kundenlogin</Link>
-        </span>
+        <span className="footer-mark">ailvl</span>
+        <nav className="footer-nav">
+          <Link href="/impressum">Impressum</Link>
+          <Link href="/datenschutz">Datenschutz</Link>
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          <Link href="/login">Kundenlogin</Link>
+        </nav>
       </footer>
-    </div>
-  );
-}
-
-function FigureItem({ figure }: { figure: Figure }) {
-  return (
-    <div>
-      <dt>{figure.value}</dt>
-      <dd>
-        {figure.label}
-        {figure.note && figure.href ? (
-          <a className="figure-source" href={figure.href} target="_blank" rel="noopener noreferrer">{figure.note}</a>
-        ) : null}
-      </dd>
     </div>
   );
 }

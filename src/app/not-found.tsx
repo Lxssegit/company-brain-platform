@@ -11,13 +11,13 @@ export default function NotFound() {
     <div className="app">
       <header className="app-bar">
         <div className="app-bar-left">
-          <Link className="app-brand" href="/"><BrandMark /><span>Company Brain</span></Link>
+          <Link className="app-brand" href="/"><BrandMark /><span>Anfrage-Wächter</span></Link>
         </div>
       </header>
       <main className="app-main app-main-narrow">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Hier ist nichts.</h1>
+            <h1 className="page-title">Hier ist nichts</h1>
             <p>Diese Adresse führt zu keiner Seite. Entweder hat sich ein Zeichen verirrt, oder das, was hier lag, gibt es nicht mehr.</p>
             <p style={{ marginTop: 18 }}><Link className="btn btn-quiet" href="/dashboard">Zur Übersicht</Link></p>
           </div>

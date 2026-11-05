@@ -43,6 +43,22 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  /**
+   * Die beiden Branchenseiten gibt es nicht mehr. Sie haben als eigene Routen
+   * nie existiert, nur als Anker in einer früheren Navigation, aber eine
+   * dauerhafte Weiterleitung kostet nichts und fängt jeden Link ab, der
+   * irgendwo noch darauf zeigt.
+   */
+  async redirects() {
+    /* statusCode statt permanent: true. Next setzt fuer permanent ein 308, das
+       die Methode erhaelt; verlangt war ein 301. Fuer zwei aufgerufene
+       Marketing-Adressen ist 301 das Richtige und das, was Suchmaschinen und
+       alte Lesezeichen erwarten. */
+    return [
+      { source: "/energietechnik", destination: "/", statusCode: 301 },
+      { source: "/industrie", destination: "/", statusCode: 301 },
+    ];
+  },
 };
 
 export default nextConfig;

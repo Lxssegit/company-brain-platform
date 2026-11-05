@@ -25,7 +25,7 @@ export default async function FoundOrganizationPage() {
     <div className="app">
       <header className="app-bar">
         <div className="app-bar-left">
-          <Link className="app-brand" href="/"><BrandMark /><span>Company Brain</span></Link>
+          <Link className="app-brand" href="/"><BrandMark /><span>Anfrage-Wächter</span></Link>
         </div>
         {/* Somebody who lands here and does not want to found anything needs a
             way out. Without this the page was a dead end with one exit. */}
@@ -34,7 +34,7 @@ export default async function FoundOrganizationPage() {
       <main className="app-main app-main-narrow">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Ihr Konto gehört noch zu keinem Unternehmen.</h1>
+            <h1 className="page-title">Ihr Konto gehört noch zu keinem Unternehmen</h1>
             <p>Entweder Sie gründen hier eines — dann verwalten Sie es und laden die anderen ein — oder Sie warten auf einen Einladungslink von jemandem, der schon eines hat.</p>
           </div>
         </div>

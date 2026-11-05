@@ -70,7 +70,7 @@ export default async function DecisionsPage() {
       <main className="app-main app-main-narrow">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Was gilt, und seit wann.</h1>
+            <h1 className="page-title">Was gilt, und seit wann</h1>
             <p>Eine Entscheidung ist keine Notiz, sondern eine Regel mit einem Anfang und oft einem Ende. Wer sie kennt, weiß nicht automatisch, ob sie noch gilt — deshalb steht das hier.</p>
           </div>
         </div>

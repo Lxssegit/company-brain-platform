@@ -55,7 +55,7 @@ export default async function BrainPage() {
       <main className="app-main">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Ihr berechtigter Kontext.</h1>
+            <h1 className="page-title">Ihr berechtigter Kontext</h1>
             <p>Jeder Zweig hier unten wurde auf dem Server gegen Ihre Organisation, Ihre Rolle und Ihre Freigaben gefiltert. Einen Zweig, den Sie nicht lesen dürfen, gibt es auf dieser Seite gar nicht.</p>
           </div>
         </div>

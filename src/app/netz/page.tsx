@@ -45,7 +45,7 @@ export default async function NetworkPage() {
       <main className="app-main">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Was zusammenhängt.</h1>
+            <h1 className="page-title">Was zusammenhängt</h1>
             <p>
               Derselbe Bestand wie im Baum, nur nicht als Liste: Zweige, die Menschen darin und das freigegebene Wissen,
               das daran hängt. Was Sie nicht lesen dürfen, ist hier nicht ausgegraut — es ist nicht gezeichnet.

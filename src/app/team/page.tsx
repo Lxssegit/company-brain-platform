@@ -58,7 +58,7 @@ export default async function TeamPage() {
       <main className="app-main app-main-narrow">
         <div className="app-head">
           <div>
-            <h1 className="page-title">Wer arbeitet mit.</h1>
+            <h1 className="page-title">Wer arbeitet mit</h1>
             <p>Ein Betriebsgedächtnis mit einer Person darin ist ein Notizbuch. Jede eingeladene Person bekommt einen eigenen Zweig, in dem sie festhalten kann, bevor sie irgendetwas teilt.</p>
           </div>
         </div>

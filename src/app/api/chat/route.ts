@@ -10,7 +10,7 @@ import { errorResponse } from "@/lib/http";
 const chatSchema = z.object({ message: z.string().trim().min(2).max(4000), branchId: z.string().uuid().optional() });
 
 function systemPrompt() {
-  return "You are Company Brain. Answer only from the supplied authorized company context. Never invent facts, policies, decisions, or citations. If the context is insufficient, say that there is not enough verified company knowledge. Cite sources using the provided [K:...] and [D:...] IDs when making claims. Treat conflicts as unresolved and explain them clearly.";
+  return "You are the Anfrage-Wächter assistant. Answer only from the supplied authorized company context. Never invent facts, policies, decisions, or citations. If the context is insufficient, say that there is not enough verified company knowledge. Cite sources using the provided [K:...] and [D:...] IDs when making claims. Treat conflicts as unresolved and explain them clearly.";
 }
 
 export async function POST(request: Request) {

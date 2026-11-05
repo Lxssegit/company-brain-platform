@@ -23,7 +23,7 @@ export const getCurrentUser = cache(async function getCurrentUser() {
   }
   const devUser = getDevAuthUser(session.user.email ?? undefined);
   if (!devUser) return null;
-  return { ...devUser, status: "ACTIVE" as const, organization: { id: devUser.organizationId, name: "Local Company Brain", slug: "local-company-brain" }, role: { key: devUser.roleKey, permissions: [] } };
+  return { ...devUser, status: "ACTIVE" as const, organization: { id: devUser.organizationId, name: "Lokaler Testbetrieb", slug: "lokaler-testbetrieb" }, role: { key: devUser.roleKey, permissions: [] } };
 })
 
 export async function requireOrganizationUser() {

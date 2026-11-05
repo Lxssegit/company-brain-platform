@@ -19,7 +19,7 @@
   background: var(--paper);
 }
 
-.app :where(h1, h2, h3) { margin: 0; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+.app :where(h1, h2, h3) { margin: 0; font-weight: 600; letter-spacing: normal; line-height: 1.2; }
 .app h1 { font-size: 1.75rem; }
 .app h2 { font-size: 1.375rem; }
 .app h3 { font-size: 1.125rem; }
@@ -27,13 +27,13 @@
 
 /* The one place the brand voice is allowed into the app: a page's own title,
    never a label, a control or a value. */
-.page-title { font-family: var(--font-display), ui-serif, Georgia, serif; font-size: 2.25rem; font-weight: 400; letter-spacing: -.02em; }
+.page-title { font-size: 2.25rem; font-weight: 300; letter-spacing: normal; }
 
 /* ---------- app bar ---------- */
 
-.app-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px clamp(18px, 4vw, 40px); border-bottom: 1px solid var(--rule); gap: 20px; background: rgba(2, 7, 10, .82); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 20; }
+.app-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px clamp(18px, 4vw, 40px); border-bottom: 1px solid var(--rule); gap: 20px; background: #FFFFFF; position: sticky; top: 0; z-index: 20; }
 .app-bar-left { display: flex; min-width: 0; align-items: center; gap: 14px; }
-.app-brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; }
+.app-brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); font-size: .9375rem; font-weight: 600; letter-spacing: normal; text-decoration: none; }
 .app-brand .brand-mark { width: 20px; height: 20px; color: var(--accent); }
 .app-bar-sep { width: 1px; height: 18px; background: var(--rule); }
 /* Capped so a long branch name truncates on its own budget instead of
@@ -56,7 +56,7 @@
   justify-content: center;
   padding: 10px 16px;
   border: 1px solid transparent;
-  border-radius: 99px;
+  border-radius: 6px;
   gap: .5em;
   background: transparent;
   cursor: pointer;
@@ -72,7 +72,7 @@
    exactly when it has to say what you cannot do yet. These states are muted and
    solid, and every one of them clears 5:1. */
 .btn:disabled, .btn[aria-disabled="true"] { cursor: not-allowed; }
-.btn-primary:disabled, .btn-primary[aria-disabled="true"] { color: rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .12); }
+.btn-primary:disabled, .btn-primary[aria-disabled="true"] { color: #475F71; background: #DCEEFA; }
 .btn-quiet:disabled, .btn-ghost:disabled, .btn-danger:disabled,
 .btn-quiet[aria-disabled="true"], .btn-ghost[aria-disabled="true"], .btn-danger[aria-disabled="true"] {
   border-color: var(--rule); color: var(--ink-subtle); background: transparent;
@@ -85,8 +85,8 @@
 .btn-quiet:not(:disabled):hover { border-color: var(--rule-strong); background: var(--paper-sunk); }
 /* Refusing is not the affirming act, so it does not wear the ember. It carries
    the one cool tint the ramp allows and stays outlined. */
-.btn-danger { border-color: rgba(252, 115, 77, .45); color: var(--danger); }
-.btn-danger:not(:disabled):hover { border-color: var(--danger); background: rgba(252, 115, 77, .12); }
+.btn-danger { border-color: #E86A7F; color: var(--danger); }
+.btn-danger:not(:disabled):hover { border-color: var(--danger); background: #FCEDF0; }
 .btn-ghost { padding: 8px 12px; color: var(--ink-muted); font-weight: 500; }
 .btn-ghost:not(:disabled):hover { color: var(--ink); background: var(--paper-sunk); }
 .btn-block { width: 100%; }
@@ -106,9 +106,9 @@
    .hit-meta, say — is not outranked into the wrong step of the scale. */
 .panel-head :where(p) { max-width: var(--measure); margin-top: 8px; color: var(--ink-muted); font-size: .9375rem; }
 
-.pill { display: inline-flex; align-items: center; padding: 4px 11px; border: 1px solid var(--rule); border-radius: 99px; gap: 7px; font-size: .8125rem; white-space: nowrap; }
+.pill { display: inline-flex; align-items: center; padding: 4px 11px; border: 1px solid var(--rule); border-radius: 6px; gap: 7px; font-size: .8125rem; white-space: nowrap; }
 .pill::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
-.pill-on { border-color: rgba(2, 151, 222, .45); color: var(--ok); }
+.pill-on { border-color: #0F305D; color: var(--ok); }
 .pill-off { color: var(--ink-subtle); }
 
 /* ---------- facts, not a metric grid ---------- */
@@ -151,12 +151,12 @@
   transition: border-color var(--step) var(--ease), outline-color var(--step) var(--ease);
 }
 .field textarea:hover:not(:disabled) { border-color: var(--rule-strong); }
-.field textarea:focus-visible { border-color: var(--accent); outline: 2px solid rgba(2, 151, 222, .45); outline-offset: 0; }
+.field textarea:focus-visible { border-color: var(--accent); outline: 2px solid #0F305D; outline-offset: 0; }
 .field textarea:disabled { cursor: not-allowed; color: var(--ink-subtle); }
 .field textarea::placeholder { color: var(--ink-subtle); }
 
 .field input:hover:not(:disabled) { border-color: var(--rule-strong); }
-.field input:focus-visible { border-color: var(--accent); outline: 2px solid rgba(2, 151, 222, .45); outline-offset: 0; }
+.field input:focus-visible { border-color: var(--accent); outline: 2px solid #0F305D; outline-offset: 0; }
 .field input:disabled { cursor: not-allowed; color: var(--ink-subtle); }
 /* A read-only field that looks editable invites a click that does nothing. */
 .field input[readonly] { border-style: dashed; color: var(--ink-muted); cursor: default; }
@@ -165,15 +165,15 @@
 .field-code input { font-size: 1.125rem; letter-spacing: .28em; font-variant-numeric: tabular-nums; }
 
 .form-note { display: flex; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--rule); border-radius: var(--radius-sm); gap: 9px; background: var(--paper-sunk); color: var(--ink-muted); font-size: .875rem; }
-.form-note-error { border-color: rgba(252, 115, 77, .45); color: var(--danger); }
-.form-note-ok { border-color: rgba(2, 151, 222, .45); color: var(--ok); }
+.form-note-error { border-color: #E86A7F; color: var(--danger); }
+.form-note-ok { border-color: #0F305D; color: var(--ok); }
 
 /* ---------- empty and dead-end states that teach ---------- */
 
 .state { display: grid; padding: 34px; border: 1px dashed var(--rule); border-radius: var(--radius); gap: 12px; justify-items: start; }
 .state h3 { font-size: 1.125rem; }
 .state p { max-width: 56ch; color: var(--ink-muted); font-size: .9375rem; }
-.state code, .code-block { border-radius: 6px; background: var(--paper-sunk); color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8125rem; }
+.state code, .code-block { border-radius: 6px; background: var(--paper-sunk); color: var(--ink); font-size: .8125rem; }
 .state code { padding: 1px 5px; }
 .code-block { display: block; width: 100%; padding: 13px 15px; border: 1px solid var(--rule); overflow-x: auto; line-height: 1.75; white-space: pre; }
 
@@ -201,15 +201,15 @@
 .tree-link:hover { background: var(--paper-sunk); }
 .tree-link[aria-current="page"] { background: var(--accent-wash); color: var(--accent); }
 .tree-dot { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--kind, var(--rule-strong)); }
-.tree-kind { margin-left: 6px; color: var(--ink-subtle); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+.tree-kind { margin-left: 6px; color: var(--ink-subtle); font-size: .8125rem; }
 .kind-company { --kind: var(--accent); }
 .kind-department { --kind: #0297DE; }
-.kind-team { --kind: rgba(2, 151, 222, .62); }
-.kind-personal { --kind: rgba(255, 255, 255, .42); }
+.kind-team { --kind: #7FAAD2; }
+.kind-personal { --kind: #475F71; }
 
 .branch-head { display: flex; align-items: flex-start; gap: 14px; }
 .branch-head .tree-dot { width: 13px; height: 13px; margin-top: 6px; }
-.branch-kind-label { margin-bottom: 4px; color: var(--ink-subtle); font-size: .8125rem; letter-spacing: .06em; text-transform: uppercase; }
+.branch-kind-label { margin-bottom: 4px; color: var(--ink-subtle); font-size: .875rem; }
 .crumbs { display: flex; flex-wrap: wrap; align-items: center; margin: 0; padding: 0; gap: 6px; list-style: none; font-size: .875rem; }
 .crumbs li { display: flex; align-items: center; gap: 6px; color: var(--ink-subtle); }
 .crumbs li:not(:first-child)::before { color: var(--ink-subtle); content: "/"; }
@@ -238,27 +238,27 @@
   transition: border-color var(--step) var(--ease);
 }
 .field select:hover:not(:disabled) { border-color: var(--rule-strong); }
-.field select:focus-visible { border-color: var(--accent); outline: 2px solid rgba(2, 151, 222, .45); outline-offset: 0; }
+.field select:focus-visible { border-color: var(--accent); outline: 2px solid #0F305D; outline-offset: 0; }
 .field select:disabled { cursor: not-allowed; color: var(--ink-subtle); }
 
 /* Two modes, one control. A dropdown would hide the choice that changes what
    the page costs and what it promises. */
-.segmented { display: flex; margin: 0; padding: 3px; border: 1px solid var(--rule); border-radius: 99px; gap: 2px; }
+.segmented { display: flex; margin: 0; padding: 3px; border: 1px solid var(--rule); border-radius: 6px; gap: 2px; }
 .segmented label { position: relative; }
 .segmented input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-.segmented span { display: block; padding: 8px 15px; border-radius: 99px; color: var(--ink-muted); cursor: pointer; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: background var(--step) var(--ease), color var(--step) var(--ease); }
+.segmented span { display: block; padding: 8px 15px; border-radius: 6px; color: var(--ink-muted); cursor: pointer; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: background var(--step) var(--ease), color var(--step) var(--ease); }
 .segmented label:hover span { color: var(--ink); background: var(--paper-sunk); }
 .segmented input:checked + span { color: var(--paper); background: var(--accent); }
 .segmented input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }
 .segmented input:disabled + span { cursor: not-allowed; color: var(--ink-subtle); }
-.segmented input:disabled:checked + span { color: rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .12); }
+.segmented input:disabled:checked + span { color: #475F71; background: #DCEEFA; }
 
 .ask-answer { max-width: var(--measure); font-size: 1.125rem; line-height: 1.62; white-space: pre-wrap; }
 .ask-grounding { max-width: var(--measure); margin-top: 6px; }
 .ask-grounding-meta { color: var(--ink-subtle); font-size: .8125rem; }
 .ask-citations { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule); color: var(--ink-subtle); font-size: .8125rem; }
 
-.panel-warn { border-color: rgba(252, 115, 77, .40); }
+.panel-warn { border-color: #E86A7F; }
 .plain-list { margin: 0; padding-left: 18px; color: var(--ink-muted); font-size: .9375rem; }
 .plain-list li + li { margin-top: 8px; }
 
@@ -384,7 +384,7 @@
 .person-facts a { color: var(--ink-muted); text-decoration: none; }
 .person-facts a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .28em; }
 .person-bio { max-width: var(--measure); margin: 0; color: var(--ink-muted); }
-.person-bio-empty { color: var(--ink-subtle); font-style: italic; }
+.person-bio-empty { color: var(--ink-subtle); }
 
 /* Underline on the current tab rather than a filled pill: the bar sits under a
    title that is already the loudest thing on the page, and two competing solid
@@ -397,7 +397,7 @@
 .panel-lede { max-width: var(--measure); margin: -6px 0 18px; color: var(--ink-muted); font-size: .9375rem; }
 
 .reporting { display: grid; gap: 22px; }
-.reporting-label { display: block; margin-bottom: 8px; color: var(--ink-subtle); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+.reporting-label { display: block; margin-bottom: 8px; color: var(--ink-subtle); font-size: .875rem; font-weight: 500; }
 .reporting .plain-list { padding-left: 0; list-style: none; }
 .person-line { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 10px; color: var(--ink); text-decoration: none; }
 .person-line:hover .person-line-name { color: var(--accent); text-decoration: underline; text-underline-offset: .28em; }
@@ -454,8 +454,8 @@
 .net-svg { display: block; width: 100%; height: auto; max-height: 76vh; }
 
 .net-edge { fill: none; stroke: var(--rule-strong); stroke-width: 1; }
-.net-edge-structure { stroke: rgba(255, 255, 255, .22); }
-.net-edge-membership { stroke: rgba(255, 255, 255, .13); }
+.net-edge-structure { stroke: #7FAAD2; }
+.net-edge-membership { stroke: #DCEEFA; }
 /* Authorship is the one line that is not structure, so it is the one line that
    gets the accent — and a dash, for anyone who cannot rely on the colour. */
 .net-edge-authorship { stroke: var(--accent); stroke-dasharray: 3 4; stroke-width: 1; opacity: .55; }

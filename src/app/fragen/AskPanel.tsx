@@ -150,7 +150,7 @@ export function AskPanel({ branches, branchesUnreachable }: { branches: Array<{ 
 
       {result?.conflicts.length ? (
         <section className="panel panel-warn" aria-live="polite">
-          <div className="panel-head"><div><h2>Widersprüchliche Entscheidungen</h2><p>Company Brain wählt hier bewusst keine Seite aus.</p></div></div>
+          <div className="panel-head"><div><h2>Widersprüchliche Entscheidungen</h2><p>Der Anfrage-Wächter wählt hier bewusst keine Seite aus.</p></div></div>
           <ul className="plain-list">
             {result.conflicts.map((conflict) => <li key={conflict.key}>{conflict.explanation}</li>)}
           </ul>
@@ -201,7 +201,7 @@ export function AskPanel({ branches, branchesUnreachable }: { branches: Array<{ 
           <div className="state">
             <h3>Dazu gibt es kein geprüftes Wissen</h3>
             <p>Für „{asked}“ findet sich in Ihrem berechtigten Kontext nichts Belastbares. Das kann zwei Dinge heißen: Es wurde nie erfasst — oder es liegt in einem Zweig, der Ihnen nicht freigegeben ist.</p>
-            <p>Company Brain rät an dieser Stelle bewusst nicht.</p>
+            <p>Der Anfrage-Wächter rät an dieser Stelle bewusst nicht.</p>
           </div>
         </section>
       ) : null}
