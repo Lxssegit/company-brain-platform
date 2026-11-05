@@ -12,13 +12,34 @@ export const OFFER = "Anfrage-Wächter";
 export const PRICE_EUR = 249;
 export const TRIAL = "1 Woche";
 
-/**
- * Platzhalter. Vor dem Livegang bestätigen oder durch die Adresse ersetzen,
- * die tatsächlich gelesen wird.
- */
-export const CONTACT_EMAIL = "kontakt@ailvl.de";
+export const CONTACT_EMAIL = "lasse.lorenzen@ailvl.de";
+export const CONTACT_PHONE = "+49 173 4442008";
 
 export const FOUNDER = "Lasse Lorenzen";
+
+/**
+ * Die Angaben aus dem Impressum. Sie stehen hier und nicht in der Seite, weil
+ * Anschrift und Rufnummer auf mehreren Seiten erscheinen und eine Adresse, die
+ * an zwei Stellen gepflegt wird, irgendwann an einer Stelle falsch ist.
+ */
+export const LEGAL = {
+  name: "Lasse Lorenzen",
+  street: "Beimoorweg 22F",
+  postalCode: "22926",
+  city: "Ahrensburg",
+  country: "Deutschland",
+} as const;
+
+/**
+ * Die Aufsichtsbehörde, die für den Verantwortlichen zuständig ist.
+ */
+export const SUPERVISORY_AUTHORITY = {
+  name: "Unabhängiges Landeszentrum für Datenschutz Schleswig-Holstein",
+  street: "Holstenstraße 98",
+  city: "24103 Kiel",
+  phone: "0431 988-1200",
+  email: "mail@datenschutzzentrum.de",
+} as const;
 
 /**
  * Die Schriftfamilie, wie sie in public/fonts liegt und in globals.css per

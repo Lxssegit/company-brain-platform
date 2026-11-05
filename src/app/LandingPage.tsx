@@ -73,7 +73,7 @@ const CHANNELS = ["Aroundhome", "MyHammer", "Check24", "Google oder Werbung", "e
 const VOLUMES = ["unter 20", "20 bis 50", "50 bis 100", "über 100"];
 const M365 = ["Ja", "Nein", "Weiß nicht"];
 
-export function LandingPage({ status }: { status?: "ok" | "fehler" }) {
+export function LandingPage({ status }: { status?: "ok" | "fehler" | "zuviel" }) {
   return (
     <div className="site">
       <header className="masthead">
@@ -222,6 +222,13 @@ export function LandingPage({ status }: { status?: "ok" | "fehler" }) {
                   <p className="form-result form-result-error">
                     Das hat nicht geklappt. Bitte prüfen Sie Ihre Angaben und versuchen Sie es erneut.
                     Sie erreichen uns auch unter {CONTACT_EMAIL}
+                  </p>
+                ) : null}
+
+                {status === "zuviel" ? (
+                  <p className="form-result form-result-error">
+                    Von Ihrem Anschluss kamen gerade mehrere Anfragen. Bitte versuchen Sie es in ein
+                    paar Minuten erneut oder schreiben Sie uns direkt an {CONTACT_EMAIL}
                   </p>
                 ) : null}
 

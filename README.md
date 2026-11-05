@@ -87,18 +87,34 @@ einer früheren Navigation. Die Weiterleitungen sind trotzdem angelegt, wie verl
 Next setzt für `permanent: true` ein 308; verlangt war 301, deshalb steht der Statuscode
 direkt in `next.config.ts`.
 
-### Impressum und Datenschutzerklärung sind Platzhalter
+### Impressum übernommen, Datenschutzerklärung angepasst statt kopiert
 
-Beide Seiten existieren, weil Footer und die Pflicht-Checkbox im Formular darauf zeigen
-müssen. Der Inhalt ist eine rechtlich verbindliche Erklärung und wird nicht erfunden; die
-Lücken sind als `[PLATZHALTER]` markiert und beide Seiten stehen auf `noindex`, solange
-sie leer sind. `/datenschutz` listet zusätzlich auf, welche Datenflüsse die Seite heute
-tatsächlich auslöst, damit die Erklärung nichts übersieht.
+Das Impressum ist wörtlich das von ailvl.de. Stammdaten stehen als Konstanten in
+`src/lib/brand.ts`, damit Anschrift und Rufnummer nicht an zwei Stellen gepflegt werden.
 
-### Die Kontaktadresse ist geraten
+Die Datenschutzerklärung ist **nicht** kopiert. Aufbau, Rechtsgrundlagen und
+Formulierungen stammen von ailvl.de, der Inhalt ist aber auf das abgeglichen, was diese
+Seite tatsächlich tut. Die Unterschiede:
 
-`CONTACT_EMAIL` in `src/lib/brand.ts` steht auf `kontakt@ailvl.de`. Vor dem Livegang
-bestätigen oder durch die Adresse ersetzen, die wirklich gelesen wird.
+| ailvl.de | diese Seite |
+|---|---|
+| Formular mit Branche, Herausforderungen, Unternehmensgröße, Zeithorizont | Formular mit Firma, Name, E-Mail, Telefon, Anfragewegen, Anfragemenge, Microsoft 365 |
+| Formulardaten in Supabase, EU Frankfurt | Formulardaten an einen Automatisierungsdienst, Anbieter noch als Platzhalter |
+| Reichweitenmessung mit Umami nach Einwilligung | keine Reichweitenmessung |
+| Chat mit Tidio nach Einwilligung | kein Chat |
+| `ailvl.consent` und `ailvl.funnel` im Browserspeicher | nichts im Browserspeicher, die öffentlichen Seiten führen keinen eigenen Code aus |
+| kein Login | Kundenlogin mit scrypt-Hashes, optionaler Zwei-Faktor-Anmeldung und Sitzungs-Cookie |
+
+Eine kopierte Erklärung hätte die Verarbeitung verschwiegen, die hier wirklich
+stattfindet. Das ist bei einer Seite, die mit Verarbeitung in der EU wirbt, der teuerste
+denkbare Fehler.
+
+**Offen bleibt genau ein Punkt**: der Anbieter hinter `N8N_WEBHOOK_URL`. Name, Anschrift,
+Serverstandort und der Vertrag zur Auftragsverarbeitung stehen als sichtbarer Platzhalter
+in `/datenschutz`. Ohne diese Angabe ist die Erklärung unvollständig.
+
+Kommt der Tidio-Chat dazu, braucht die Seite zusätzlich einen Abschnitt dazu, einen
+Einwilligungsbanner und den Widerruf. Abschnitt 5 sagt das heute ausdrücklich.
 
 ### Koralle in der Anwendung
 
@@ -111,8 +127,7 @@ die zerstörende Aktion, weil die Palette sonst keine warme Farbe hat, die jeman
 |---|---|
 | `src/app/LandingPage.tsx` | `[LAUFZEIT UND KÜNDIGUNG]` und `[MAXIMALE ANFRAGEN PRO MONAT]` im Preisabschnitt |
 | `src/app/LandingPage.tsx` | `[FOTO]` und `[3 BIS 4 SÄTZE ÜBER MICH]` im Abschnitt „Über mich" |
-| `src/app/impressum/page.tsx` | das vollständige Impressum |
-| `src/app/datenschutz/page.tsx` | die vollständige Datenschutzerklärung |
+| `src/app/datenschutz/page.tsx` | Anbieter hinter `N8N_WEBHOOK_URL`: Name, Anschrift, Serverstandort, Auftragsverarbeitungsvertrag |
 | Umgebung | `N8N_WEBHOOK_URL`, sonst läuft die Testzugang-Anfrage ins Leere und die Seite meldet einen Fehler |
 | `public/logo.svg` | die eigene Wortmarke; die Navigation zeigt bis dahin den Schriftzug „ailvl" |
 | `public/hero.webp` | optional, siehe oben |

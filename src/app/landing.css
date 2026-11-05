@@ -244,6 +244,19 @@
 }
 .site .about-name { font-size: 1.125rem; color: var(--head); margin-top: .5rem; }
 
+/* ---------- Rechtstexte ---------- */
+
+/* Impressum und Datenschutzerklaerung sind Fliesstext, kein Verkaufsstueck.
+   Die H1 der Startseite ist hier fehl am Platz, und die Abschnittsabstaende
+   muessen die Gliederung tragen, weil es keine Trennlinien gibt. */
+.site .legal { gap: 0; max-width: 44rem; }
+.site .legal h1 { font-size: clamp(2.25rem, 4.4vw, 3.25rem); margin-bottom: 1.5rem; }
+.site .legal h2 { font-size: 1.5rem; font-weight: 500; margin-top: 3rem; margin-bottom: .75rem; }
+.site .legal h3 { font-size: 1.125rem; margin-top: 1.75rem; margin-bottom: .5rem; }
+.site .legal p { margin-bottom: 1rem; max-width: none; }
+.site .legal ul { margin-bottom: 1rem; }
+.site .legal .placeholder { margin-top: .5rem; }
+
 /* ---------- FAQ ---------- */
 
 /* details statt eines aufgeklappten Skripts. Keine Linie zwischen den Fragen,

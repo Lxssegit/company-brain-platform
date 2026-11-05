@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { clientKey, rateLimit } from "@/lib/security/rate-limit";
 
 /**
  * Die Anfrage für einen Testzugang.
@@ -29,13 +30,25 @@ const Eingabe = z.object({
   datenschutz: z.literal("ja"),
 });
 
-function zurueck(request: Request, ergebnis: "ok" | "fehler") {
+function zurueck(request: Request, ergebnis: "ok" | "fehler" | "zuviel") {
   /* 303 und nicht 302: nach einem POST muss der Browser die Folge-Anfrage als
      GET stellen, sonst landet ein Neuladen wieder im Handler. */
   return NextResponse.redirect(new URL(`/?testzugang=${ergebnis}#testzugang`, request.url), 303);
 }
 
 export async function POST(request: Request) {
+  /* Ein offenes Formular, das an einen Webhook weiterreicht, ist sonst ein
+     Verstaerker: wer es in einer Schleife abschickt, flutet das Postfach und
+     verbrennt fremde Kontingente. Fuenf Einsendungen je zehn Minuten und
+     Anschluss reichen fuer jeden echten Absender.
+
+     Der Zaehler liegt im Arbeitsspeicher der Instanz und faellt beim naechsten
+     Deployment zurueck; bei mehreren Instanzen gilt das Limit entsprechend
+     oefter. Das ist die kleine Variante, und sie ist immer noch der
+     Unterschied zwischen begrenzt und unbegrenzt. */
+  const begrenzt = rateLimit(clientKey(request, "testzugang"), 5, 10 * 60_000);
+  if (!begrenzt.ok) return zurueck(request, "zuviel");
+
   let daten: FormData;
   try {
     daten = await request.formData();

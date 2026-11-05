@@ -17,6 +17,9 @@ export default async function Home({
   searchParams: Promise<{ testzugang?: string }>;
 }) {
   const { testzugang } = await searchParams;
-  const status = testzugang === "ok" || testzugang === "fehler" ? testzugang : undefined;
+  const bekannt = ["ok", "fehler", "zuviel"] as const;
+  const status = (bekannt as readonly string[]).includes(testzugang ?? "")
+    ? (testzugang as (typeof bekannt)[number])
+    : undefined;
   return <LandingPage status={status} />;
 }
