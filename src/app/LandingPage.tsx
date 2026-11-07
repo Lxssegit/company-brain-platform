@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { HeroMotif } from "@/app/HeroMotif";
-import { COMPANY, CONTACT_EMAIL, FOUNDER, OFFER, PRICE_EUR, SOURCES, TRIAL } from "@/lib/brand";
+import {
+  COMPANY, CONTACT_EMAIL, FOUNDER, FOUNDER_PHOTO, FOUNDER_PHOTO_ALT,
+  OFFER, PRICE_EUR, SOURCES, TRIAL,
+} from "@/lib/brand";
 
 /**
  * Die öffentliche Seite.
@@ -184,7 +187,12 @@ export function LandingPage({ status }: { status?: "ok" | "fehler" | "zuviel" })
 
         <section className="band">
           <div className="measure about">
-            <div className="about-photo">[FOTO]</div>
+            {/* eslint-disable-next-line @next/next/no-img-element --
+                Ein festes, quadratisches Portraet in bekannter Groesse. next/image
+                brauchte hier Layout-Logik und einen Optimierungs-Request fuer ein
+                Bild, das immer dieselbe Flaeche fuellt und schon auf 560 Pixel
+                verkleinert ist. */}
+            <img className="about-photo" src={FOUNDER_PHOTO} alt={FOUNDER_PHOTO_ALT} width={560} height={560} />
             <div>
               <h2>Über mich</h2>
               <p className="about-name">{FOUNDER}, Gründer von {COMPANY}</p>

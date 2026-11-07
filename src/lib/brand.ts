@@ -18,6 +18,15 @@ export const CONTACT_PHONE = "+49 173 4442008";
 export const FOUNDER = "Lasse Lorenzen";
 
 /**
+ * Das Portraet, uebernommen aus dem Repo von ailvl.de und auf 560 Pixel
+ * verkleinert: im Entwurf steht es hoechstens 224 Pixel breit, 560 deckt auch
+ * doppelte Pixeldichte ab. Das Original mit 886 Pixeln waere viermal so gross
+ * gewesen fuer dieselbe Flaeche.
+ */
+export const FOUNDER_PHOTO = "/lasse-lorenzen.jpg";
+export const FOUNDER_PHOTO_ALT = `${FOUNDER}, Gründer von ${COMPANY}`;
+
+/**
  * Die Angaben aus dem Impressum. Sie stehen hier und nicht in der Seite, weil
  * Anschrift und Rufnummer auf mehreren Seiten erscheinen und eine Adresse, die
  * an zwei Stellen gepflegt wird, irgendwann an einer Stelle falsch ist.

@@ -126,7 +126,7 @@ die zerstörende Aktion, weil die Palette sonst keine warme Farbe hat, die jeman
 | Wo | Was |
 |---|---|
 | `src/app/LandingPage.tsx` | `[LAUFZEIT UND KÜNDIGUNG]` und `[MAXIMALE ANFRAGEN PRO MONAT]` im Preisabschnitt |
-| `src/app/LandingPage.tsx` | `[FOTO]` und `[3 BIS 4 SÄTZE ÜBER MICH]` im Abschnitt „Über mich" |
+| `src/app/LandingPage.tsx` | `[3 BIS 4 SÄTZE ÜBER MICH]` im Abschnitt „Über mich"; das Portrait ist übernommen |
 | `src/app/datenschutz/page.tsx` | Anbieter hinter `N8N_WEBHOOK_URL`: Name, Anschrift, Serverstandort, Auftragsverarbeitungsvertrag |
 | Umgebung | `N8N_WEBHOOK_URL`, sonst läuft die Testzugang-Anfrage ins Leere und die Seite meldet einen Fehler |
 | `public/logo.svg` | die eigene Wortmarke; die Navigation zeigt bis dahin den Schriftzug „ailvl" |
