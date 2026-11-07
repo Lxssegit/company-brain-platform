@@ -233,15 +233,20 @@
 .site .band-tint .placeholder { background: #FFFFFF; }
 
 .site .about { width: 100%; grid-template-columns: 14rem minmax(0, 1fr); gap: clamp(2rem, 4vw, 3rem); align-items: start; }
-/* Das Portraet ist quadratisch. Kein Rahmen, nur die Flaeche darunter, falls
-   das Bild einmal fehlt. */
+/* Das Portraet ist rund. Die Datei ist quadratisch, ein Radius von 50 Prozent
+   ergibt deshalb einen exakten Kreis ohne Verzerrung. Kein Rahmen, nur die
+   Flaeche darunter, falls das Bild einmal fehlt.
+
+   Die 6 px der Buttons gelten hier nicht: die Regel in CLAUDE.md meint
+   Schaltflaechen, und das Verbot abgerundeter Quadrate meint Icon-Kacheln.
+   Ein rundes Portraet ist weder das eine noch das andere. */
 .site .about-photo {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 50%;
   background: var(--tint-deep);
 }
 .site .about-name { font-size: 1.125rem; color: var(--head); margin-top: .5rem; }
